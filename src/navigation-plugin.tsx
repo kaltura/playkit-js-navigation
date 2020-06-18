@@ -1,13 +1,13 @@
 import { h } from "preact";
 import {
+  ContribPluginConfigs,
+  ContribPluginData,
   ContribPluginManager,
+  ContribServices,
   CorePlugin,
   OnMediaLoad,
   OnMediaUnload,
-  OnPluginSetup,
-  ContribServices,
-  ContribPluginData,
-  ContribPluginConfigs
+  OnPluginSetup
 } from "@playkit-js-contrib/plugin";
 import { getContribLogger } from "@playkit-js-contrib/common";
 import * as styles from "./navigation-plugin.scss";
@@ -73,7 +73,9 @@ export class NavigationPlugin
       label: "Navigation",
       expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       renderIcon: () => (
-        <div className={styles.pluginIcon} role="button" tabIndex={1} />
+        <button className={styles.pluginButton} tabIndex={1}>
+          <div className={styles.pluginIcon} />
+        </button>
       ),
       position: getConfigValue(
         position,
@@ -103,7 +105,7 @@ ContribPluginManager.registerPlugin(
   },
   {
     defaultConfig: {
-      expandOnFirstPlay: false,
+      expandOnFirstPlay: true,
       position: KitchenSinkPositions.Right
     }
   }
