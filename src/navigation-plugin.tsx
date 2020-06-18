@@ -61,7 +61,7 @@ export class NavigationPlugin
   private _renderKitchenSinkContent = (
     props: KitchenSinkContentRendererProps
   ) => {
-    return <div>DDDDDDDFDFDF</div>;
+    return <div className={styles.navigationUi}>CONTENT - TO BE REPLACED</div>;
   };
 
   private _addKitchenSinkItem(): void {
@@ -73,6 +73,7 @@ export class NavigationPlugin
       label: "Navigation",
       expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       renderIcon: () => (
+        // TODO - resolve tabIndex race with the core.
         <button className={styles.pluginButton} tabIndex={1}>
           <div className={styles.pluginIcon} />
         </button>
