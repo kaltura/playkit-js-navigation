@@ -106,7 +106,7 @@ export class NavigationPlugin
 
   onPluginDestroy(): void {}
 
-  private getUserId(): string {
+  private getUserId(): string { // TODO: consider move to contrib
     const { session } = this._configs.playerConfig;
 
     if (
@@ -147,26 +147,26 @@ export class NavigationPlugin
     });
   }
 
-  private _onQnaMessage = (e: any) => {
+  private _onPushNotificationReceived = (e: any) => {
     console.log(">> PUSH NOTIFICATION RECEIVED, message", e);
   };
 
   private _constructPluginListener(): void {
     this._pushNotification.on(
       PushNotificationEventTypes.PushNotificationsError,
-      this._onQnaMessage // TODO: handle error
+      this._onPushNotificationReceived // TODO: handle error
     );
     this._pushNotification.on(
       PushNotificationEventTypes.PublicNotifications,
-      this._onQnaMessage // TODO: handle aoa
+      this._onPushNotificationReceived // TODO: handle aoa
     );
     this._pushNotification.on(
       PushNotificationEventTypes.ThumbNotification,
-      this._onQnaMessage// TODO: handle thumbs
+      this._onPushNotificationReceived// TODO: handle thumbs
     );
     this._pushNotification.on(
       PushNotificationEventTypes.SlideNotification,
-      this._onQnaMessage // TODO: handle slides
+      this._onPushNotificationReceived // TODO: handle slides
     );
   };
 

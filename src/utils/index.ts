@@ -1,4 +1,4 @@
-export function getConfigValue(
+export function getConfigValue( // TODO: consider move to contrib
   value: any,
   condition: (value: any) => boolean,
   defaultValue: any
