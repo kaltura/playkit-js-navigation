@@ -32,12 +32,9 @@ import {
   KalturaMultiResponse,
   KalturaRequest,
 } from "kaltura-typescript-client";
+import { getConfigValue, sortData } from "./utils";
 import {
-  getConfigValue,
-  sortData,
-} from "./utils";
-import {
-  QnaPushNotification,
+  PushNotification,
   PushNotificationEventTypes,
 } from "./pushNotification";
 import * as styles from "./navigation-plugin.scss";
@@ -66,7 +63,7 @@ export class NavigationPlugin
   implements OnMediaLoad, OnMediaUnload, OnPluginSetup, OnMediaUnload {
   private _kitchenSinkItem: KitchenSinkItem | null = null;
   private _upperBarItem: UpperBarItem | null = null;
-  private _qnaPushNotification: QnaPushNotification;
+  private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
 
   constructor(
@@ -82,9 +79,7 @@ export class NavigationPlugin
     this._kalturaClient.setDefaultRequestOptions({
       ks: playerConfig.provider.ks,
     });
-    this._qnaPushNotification = new QnaPushNotification(
-      this._corePlugin.player
-    );
+    this._pushNotification = new PushNotification(this._corePlugin.player);
     this._constructPluginListener();
   }
 
@@ -99,14 +94,14 @@ export class NavigationPlugin
         playerConfig: { sources },
       } = this._configs;
       const userId = this.getUserId();
-      this._qnaPushNotification.registerToPushServer(sources.id, userId);
+      this._pushNotification.registerToPushServer(sources.id, userId);
     } else {
       this._fetchVodData();
     }
   }
 
   onMediaUnload(): void {
-    this._qnaPushNotification.reset();
+    this._pushNotification.reset();
   }
 
   onPluginDestroy(): void {}
@@ -144,7 +139,7 @@ export class NavigationPlugin
       playerConfig: { provider },
     } = this._configs;
     // should be created once on pluginSetup (entryId/userId registration will be called onMediaLoad)
-    this._qnaPushNotification.init({
+    this._pushNotification.init({
       ks: ks,
       serviceUrl: provider.env.serviceUrl,
       clientTag: "playkit-js-navigation",
@@ -153,27 +148,27 @@ export class NavigationPlugin
   }
 
   private _onQnaMessage = (e: any) => {
-    console.log(">> PUSH NOTIFICATION RECEIVED, message", e); // TODO: keep and manage data;
+    console.log(">> PUSH NOTIFICATION RECEIVED, message", e);
   };
 
   private _constructPluginListener(): void {
-    this._qnaPushNotification.on(
+    this._pushNotification.on(
       PushNotificationEventTypes.PushNotificationsError,
-      this._onQnaMessage
+      this._onQnaMessage // TODO: handle error
     );
-    this._qnaPushNotification.on(
-      PushNotificationEventTypes.CodeNotifications,
-      this._onQnaMessage
-    );
-    this._qnaPushNotification.on(
+    this._pushNotification.on(
       PushNotificationEventTypes.PublicNotifications,
-      this._onQnaMessage
+      this._onQnaMessage // TODO: handle aoa
     );
-    this._qnaPushNotification.on(
-      PushNotificationEventTypes.UserNotifications,
-      this._onQnaMessage
+    this._pushNotification.on(
+      PushNotificationEventTypes.ThumbNotification,
+      this._onQnaMessage// TODO: handle thumbs
     );
-  }
+    this._pushNotification.on(
+      PushNotificationEventTypes.SlideNotification,
+      this._onQnaMessage // TODO: handle slides
+    );
+  };
 
   private _initKitchensinkAndUpperBarItems(): void {
     if (!this._upperBarItem && !this._kitchenSinkItem) {

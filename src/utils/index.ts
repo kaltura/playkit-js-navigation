@@ -1,18 +1,3 @@
-export function getEnumByEnumValue(myEnum: any, enumValue: string) {
-  let keys = Object.keys(myEnum).filter((x) => myEnum[x] == enumValue);
-  return keys.length > 0 ? myEnum[keys[0]] : null;
-}
-
-export function getValueFromXml(xmlDoc: Document, key: string): string | null {
-  let node: Element = xmlDoc.getElementsByTagName(key)[0];
-
-  if (!node || !node.childNodes || !node.childNodes[0]) {
-    return null;
-  }
-
-  return node.childNodes[0].nodeValue;
-}
-
 export function getConfigValue(
   value: any,
   condition: (value: any) => boolean,
