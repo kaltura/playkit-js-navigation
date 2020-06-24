@@ -1,34 +1,26 @@
-//TODO - improve structure
-
-.Hotspot {
-  .icon {
-    background-image: url("../../../assets/images/hotspot.svg");
-  }
-}
-.AnswerOnAir {
-  .icon {
-    background-image: url("../../../assets/images/answerOnAir.svg");
-  }
-}
-.Slide {
-  .icon {
-    background-image: url("../../../assets/images/slide.svg");
-  }
-}
-.Chapter {
-  .icon {
-    background-image: url("../../../assets/images/chapter.svg");
-  }
-}
-
-.Chapter,
-.Slide,
-.AnswerOnAir,
-.Hotspot {
+.navigationItem {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   border-radius: 3px;
   min-height: 32px;
+  border-left: 2px solid transparent;
+  &.mid,
+  &.last,
+  &.first {
+    border-left: 2px solid #01accd;
+  }
+  &.first {
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 0;
+  }
+  &.last {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 2px;
+  }
+  &.mid {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0px;
+  }
 }
 .navigationItem:hover {
   background: rgba(255, 255, 255, 0.2);
@@ -36,31 +28,16 @@
 
 .content {
   text-align: left;
-
-  padding-left: 24px;
   flex-grow: 1;
+  padding: 6px 0 0 4px;
+  font-size: 14px;
 }
 .metadata {
+  color: #cccccc;
   text-align: right;
-  padding-left: 4px;
+  padding-top: 8px;
   font-size: 12px;
-  min-width: 65px;
-}
-
-.groupIndicator {
-  width: 2px;
-  min-height: 32px;
-}
-.mid,
-.last,
-.first {
-  background: #01accd;
-}
-.first {
-  border-radius: 2px 0px 0px 0px;
-}
-.last {
-  border-radius: 0px 0px 0px 2px;
+  min-width: 56px;
 }
 .icon {
   width: 12px;
@@ -68,10 +45,18 @@
   display: inline-block;
   margin-left: 8px;
 }
-.showMore {
+.showMoreButton {
+  font-size: 14px;
   display: block;
   background: none;
   border: none;
   color: #01accd;
   padding: 0;
+  margin-bottom: 6px;
+}
+.description {
+  font-size: 12px;
+  color: #cccccc;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }

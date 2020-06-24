@@ -1,6 +1,7 @@
 import { h, Component } from "preact";
 import * as styles from "./NavigationItem.scss";
 import { groupTypes } from "../../../utils";
+import { IconsFactory } from "../icons/IconsFactory";
 
 export interface itemData {
   groupData?: groupTypes;
@@ -23,21 +24,26 @@ export class NavigationItem extends Component<props> {
       displayDescription
     } = props.data;
     return (
-      <div className={styles[itemType]}>
-        <div
-          className={[styles[groupData], styles.groupIndicator].join(" ")}
-        ></div>
+      <div className={[styles[groupData], styles.navigationItem].join(" ")}>
         <div className={styles.metadata}>
           <span>{displayTime}</span>
-          <div className={styles.icon}> </div>
+          <IconsFactory iconType={itemType}></IconsFactory>
         </div>
         <div className={styles.content}>
           {displayTitle && <span className={styles.title}>{displayTitle}</span>}
-          {displayDescription && (
-            <button className={styles.showMore}>Read More</button>
-          )}
           {displayDescription && this.state.showDescription && (
-            <span className={styles.description}>{displayDescription}</span>
+            <div className={styles.description}>{displayDescription}</div>
+          )}
+          {displayDescription && (
+            <button
+              className={styles.showMoreButton}
+              onClick={() =>
+                this.setState({ showDescription: !this.state.showDescription })
+              }
+            >
+              {/* TODO - locale*/}
+              {this.state.showDescription ? "Read Less" : "Read More"}
+            </button>
           )}
         </div>
       </div>
