@@ -1,0 +1,56 @@
+.search-root {
+  ::-moz-placeholder {
+    opacity: 1
+  }
+
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  width: 100%;
+  max-width: 599px;
+  height: 32px;
+  background-color: rgba(255, 255, 255, 0.24);
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  .search-input {
+    width: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 15px;
+    padding: 0 6px 1px 0;
+    color: #cccccc;
+    background: transparent;
+    border: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:focus {
+      outline: none !important; // prevent focus styles inherited from playkit-player.playkit-nav
+    }
+    &::placeholder {
+      color: #cccccc;
+    }
+    &::selection {
+      background-color: #5b80a7;
+    }
+  }
+  .clear-icon {
+    flex: 0 0 32px;
+    max-width: 32px;
+    max-height: 32px;
+    background-color: transparent;
+    background-position: center;
+    background-image: url('../../assets/images/clear.svg');
+    width: 32px;
+    height: 32px;
+    border: none;
+    cursor: pointer;
+  }
+  &.active {
+    color: #cccccc;
+    background: #000000;
+  }
+  &.focused {
+    box-shadow: 0 0 0 1px #00cbff;
+    border-radius: 4px;
+  }
+}
