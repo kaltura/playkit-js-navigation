@@ -1,0 +1,45 @@
+.filter-root {
+  display: flex;
+  .tab {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    background-color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    border: none;
+    cursor: pointer;
+    &.active {
+      border-bottom: 1px solid white;
+    }
+    &.aoa {
+      background-image: url('../../assets/images/answerOnAir.svg');
+      &.active {
+        background-image: url('../../assets/images/answerOnAir.svg');
+        border-color: yellow;
+      }
+    }
+    &.chapter {
+      background-image: url('../../assets/images/chapter.svg');
+      &.active {
+        background-image: url('../../assets/images/chapter.svg');
+        border-color: red;
+      }
+    }
+    &.hotspot {
+      background-image: url('../../assets/images/hotspot.svg');
+      &.active {
+        background-image: url('../../assets/images/hotspot.svg');
+        border-color: green;
+      }
+    }
+    &.slide {
+      background-image: url('../../assets/images/slide.svg');
+      &.active {
+        background-image: url('../../assets/images/hotspot.svg');
+        border-color: purple;
+      }
+    }
+  }
+}
