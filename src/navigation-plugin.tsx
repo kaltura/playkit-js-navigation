@@ -1,4 +1,5 @@
 import { h } from "preact";
+
 import {
   ContribPluginConfigs,
   ContribPluginData,
@@ -32,12 +33,13 @@ import {
   KalturaMultiResponse,
   KalturaRequest
 } from "kaltura-typescript-client";
-import { getConfigValue, sortData } from "./utils/index";
+import { getConfigValue, perpareData } from "./utils/index";
 import {
   PushNotification,
   PushNotificationEventTypes
 } from "./pushNotification";
 import * as styles from "./navigation-plugin.scss";
+import { NavigationList } from "./components/navigation/navigation-list/NavigationList";
 
 const pluginName = `navigation`;
 
@@ -65,6 +67,8 @@ export class NavigationPlugin
   private _upperBarItem: UpperBarItem | null = null;
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
+  private _listData: Array<any> = [];
+  private _playerConfig: any;
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -179,9 +183,14 @@ export class NavigationPlugin
   private _renderKitchenSinkContent = (
     props: KitchenSinkContentRendererProps
   ) => {
-    return <div className={styles.navigationUi}>CONTENT - TO BE REPLACED</div>;
+    // return <NavigationList data={this._listData} />;
+    return <NavigationList data={this._listData}></NavigationList>;
   };
-
+  private _updateKitchenSink() {
+    if (this._kitchenSinkItem) {
+      this._kitchenSinkItem.update();
+    }
+  }
   private _addKitchenSinkItem(): void {
     const { position, expandOnFirstPlay } = this._configs.pluginConfig;
     this._kitchenSinkItem = this._contribServices.kitchenSinkManager.add({
@@ -235,17 +244,13 @@ export class NavigationPlugin
     requests.push(chaptersAndSlidesRequest, hotspotsRequest);
     this._kalturaClient.multiRequest(requests).then(
       (responses: KalturaMultiResponse | null) => {
-        const sortedData = sortData(responses);
-        console.table(sortedData, [
-          "startTime",
-          "startTime",
-          "id",
-          "tags",
-          "title",
-          "inGroup",
-          "groupFirst",
-          "groupLast"
-        ]);
+        const sortedData = perpareData(
+          responses,
+          this._configs.playerConfig.provider.ks,
+          this._configs.playerConfig.provider.env.serviceUrl
+        );
+        this._listData = sortedData;
+        this._updateKitchenSink();
       },
       error => {
         console.log("error", error);
@@ -266,7 +271,7 @@ ContribPluginManager.registerPlugin(
   {
     defaultConfig: {
       expandOnFirstPlay: true,
-      position: KitchenSinkPositions.Left,
+      position: KitchenSinkPositions.Right,
       userRole: UserRole.anonymousRole
     }
   }
