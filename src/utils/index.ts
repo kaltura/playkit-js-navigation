@@ -46,10 +46,13 @@ export const convertTime = (sec: number) => {
   }
 };
 
-export const fillData = (item: any) => {
+export const fillData = (item: any, ks: string, serviceUrl: string) => {
   item.originalTime = item.startTime; // TODO - remove later if un-necessary
   item.startTime = Math.floor(item.startTime / 1000);
   item.displayTime = convertTime(item.startTime);
+  if (item.assetId) {
+    item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}`;
+  }
   switch (item.cuePointType) {
     // TODO - support AnsweOnAir later
     case "annotation.Annotation":
@@ -74,7 +77,15 @@ export const fillData = (item: any) => {
   //todo - clear unwanted fields?
 };
 
-export const sortData = (multirequestData: Array<any> | null): Array<any> => {
+// main function for data handel. This sorts the cuepoints by startTime, and enriches the items with data so that the
+// items component will not contain too much logic in it and mostly will be a
+// dumb display-component (no offence - NavigationItem...)
+
+export const perpareData = (
+  multirequestData: Array<any> | null,
+  ks: string,
+  serviceUrl: string
+): Array<any> => {
   if (!multirequestData || multirequestData.length === 0) {
     // Wrong or empty data
     throw new Error("ERROR ! multirequestData");
@@ -98,7 +109,7 @@ export const sortData = (multirequestData: Array<any> | null): Array<any> => {
   receivedCuepoints = receivedCuepoints
     .sort((item1: any, item2: any) => item1.startTime - item2.startTime)
     .map((cuepoint: any) => {
-      fillData(cuepoint); // normlise time, extract description and title, find thumbnail if exist etc'
+      fillData(cuepoint, ks, serviceUrl); // normlise time, extract description and title, find thumbnail if exist etc'
       return cuepoint;
     })
     .reduce(

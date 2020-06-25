@@ -33,7 +33,7 @@ import {
   KalturaMultiResponse,
   KalturaRequest
 } from "kaltura-typescript-client";
-import { getConfigValue, sortData } from "./utils/index";
+import { getConfigValue, perpareData } from "./utils/index";
 import {
   PushNotification,
   PushNotificationEventTypes
@@ -68,6 +68,7 @@ export class NavigationPlugin
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
   private _listData: Array<any> = [];
+  private _playerConfig: any;
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -243,7 +244,11 @@ export class NavigationPlugin
     requests.push(chaptersAndSlidesRequest, hotspotsRequest);
     this._kalturaClient.multiRequest(requests).then(
       (responses: KalturaMultiResponse | null) => {
-        const sortedData = sortData(responses);
+        const sortedData = perpareData(
+          responses,
+          this._configs.playerConfig.provider.ks,
+          this._configs.playerConfig.provider.env.serviceUrl
+        );
         this._listData = sortedData;
         this._updateKitchenSink();
       },
@@ -266,7 +271,7 @@ ContribPluginManager.registerPlugin(
   {
     defaultConfig: {
       expandOnFirstPlay: true,
-      position: KitchenSinkPositions.Left,
+      position: KitchenSinkPositions.Right,
       userRole: UserRole.anonymousRole
     }
   }
