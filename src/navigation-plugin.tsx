@@ -8,18 +8,18 @@ import {
   CorePlugin,
   OnMediaLoad,
   OnMediaUnload,
-  OnPluginSetup
+  OnPluginSetup,
 } from "@playkit-js-contrib/plugin";
 import {
   getContribLogger,
-  KalturaLiveServices
+  KalturaLiveServices,
 } from "@playkit-js-contrib/common";
 import {
   KitchenSinkContentRendererProps,
   KitchenSinkExpandModes,
   KitchenSinkItem,
   KitchenSinkPositions,
-  UpperBarItem
+  UpperBarItem,
 } from "@playkit-js-contrib/ui";
 import { KalturaThumbCuePoint } from "kaltura-typescript-client/api/types";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types";
@@ -31,21 +31,21 @@ import { KalturaThumbCuePointFilter } from "kaltura-typescript-client/api/types/
 import {
   KalturaClient,
   KalturaMultiResponse,
-  KalturaRequest
+  KalturaRequest,
 } from "kaltura-typescript-client";
 import { getConfigValue, perpareData } from "./utils/index";
 import {
   PushNotification,
-  PushNotificationEventTypes
+  PushNotificationEventTypes,
 } from "./pushNotification";
 import * as styles from "./navigation-plugin.scss";
-import { NavigationList } from "./components/navigation/navigation-list/NavigationList";
+import { Navigation } from "./components/navigation";
 
 const pluginName = `navigation`;
 
 const logger = getContribLogger({
   class: "NavigationPlugin",
-  module: "navigation-plugin"
+  module: "navigation-plugin",
 });
 
 interface NavigationPluginConfig {
@@ -58,7 +58,7 @@ const DefaultAnonymousPrefix = "Guest";
 
 enum UserRole {
   anonymousRole = "anonymousRole",
-  unmoderatedAdminRole = "unmoderatedAdminRole"
+  unmoderatedAdminRole = "unmoderatedAdminRole",
 }
 
 export class NavigationPlugin
@@ -68,7 +68,9 @@ export class NavigationPlugin
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
   private _listData: Array<any> = [];
-  private _playerConfig: any;
+  private _triggeredByKeyboard = false;
+  private _isLoading = false; // TODO: handle is loading state
+  private _hasError = false; // TODO: handle error state
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -78,10 +80,10 @@ export class NavigationPlugin
     const { playerConfig } = this._configs;
     this._kalturaClient.setOptions({
       clientTag: "playkit-js-navigation",
-      endpointUrl: playerConfig.provider.env.serviceUrl
+      endpointUrl: playerConfig.provider.env.serviceUrl,
     });
     this._kalturaClient.setDefaultRequestOptions({
-      ks: playerConfig.provider.ks
+      ks: playerConfig.provider.ks,
     });
     this._pushNotification = new PushNotification(this._corePlugin.player);
     this._constructPluginListener();
@@ -95,7 +97,7 @@ export class NavigationPlugin
   onMediaLoad(): void {
     if (this._corePlugin.player.isLive()) {
       const {
-        playerConfig: { sources }
+        playerConfig: { sources },
       } = this._configs;
       const userId = this.getUserId();
       this._pushNotification.registerToPushServer(sources.id, userId);
@@ -109,6 +111,10 @@ export class NavigationPlugin
   }
 
   onPluginDestroy(): void {}
+
+  private _seekTo = (time: number) => {
+    this._corePlugin.player.currentTime = time;
+  };
 
   private getUserId(): string {
     // TODO: consider move to contrib
@@ -135,20 +141,20 @@ export class NavigationPlugin
           "(both providers and session objects returned with an undefined KS)," +
           " please check your configuration file.",
         {
-          method: "_initPluginManagers"
+          method: "_initPluginManagers",
         }
       );
       return;
     }
     const {
-      playerConfig: { provider }
+      playerConfig: { provider },
     } = this._configs;
     // should be created once on pluginSetup (entryId/userId registration will be called onMediaLoad)
     this._pushNotification.init({
       ks: ks,
       serviceUrl: provider.env.serviceUrl,
       clientTag: "playkit-js-navigation",
-      kalturaPlayer: this._corePlugin.player
+      kalturaPlayer: this._corePlugin.player,
     });
   }
 
@@ -183,14 +189,33 @@ export class NavigationPlugin
   private _renderKitchenSinkContent = (
     props: KitchenSinkContentRendererProps
   ) => {
-    // return <NavigationList data={this._listData} />;
-    return <NavigationList data={this._listData}></NavigationList>;
+    return (
+      <Navigation
+        {...props}
+        data={this._listData}
+        onSeek={this._seekTo}
+        isLoading={this._isLoading}
+        hasError={this._hasError}
+        currentTime={this._corePlugin.player.currentTime}
+        kitchenSinkActive={!!this._kitchenSinkItem?.isActive()}
+        toggledWithEnter={this._triggeredByKeyboard}
+      />
+    );
   };
   private _updateKitchenSink() {
     if (this._kitchenSinkItem) {
       this._kitchenSinkItem.update();
     }
   }
+
+  private _handleIconClick = (event: MouseEvent) => {
+    if (event.x === 0 && event.y === 0) {
+      this._triggeredByKeyboard = true;
+    } else {
+      this._triggeredByKeyboard = false;
+    }
+  };
+
   private _addKitchenSinkItem(): void {
     const { position, expandOnFirstPlay } = this._configs.pluginConfig;
     this._kitchenSinkItem = this._contribServices.kitchenSinkManager.add({
@@ -198,7 +223,11 @@ export class NavigationPlugin
       expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       renderIcon: () => (
         // TODO - resolve tabIndex race with the core.
-        <button className={styles.pluginButton} tabIndex={1}>
+        <button
+          className={styles.pluginButton}
+          tabIndex={1}
+          onClick={this._handleIconClick}
+        >
           <div className={styles.pluginIcon} />
         </button>
       ),
@@ -210,7 +239,7 @@ export class NavigationPlugin
             position === KitchenSinkPositions.Right),
         KitchenSinkPositions.Right
       ),
-      renderContent: this._renderKitchenSinkContent
+      renderContent: this._renderKitchenSinkContent,
     });
 
     if (expandOnFirstPlay) {
@@ -224,21 +253,21 @@ export class NavigationPlugin
       filter: new KalturaThumbCuePointFilter({
         entryIdEqual: this._corePlugin.player.config.sources.id,
         cuePointTypeEqual: KalturaCuePointType.thumb,
-        subTypeIn: `${KalturaThumbCuePointSubType.slide},${KalturaThumbCuePointSubType.chapter}`
-      })
+        subTypeIn: `${KalturaThumbCuePointSubType.slide},${KalturaThumbCuePointSubType.chapter}`,
+      }),
     });
     const hotspotsRequest = new CuePointListAction({
       filter: new KalturaCuePointFilter({
         entryIdEqual: this._corePlugin.player.config.sources.id,
-        cuePointTypeEqual: KalturaCuePointType.annotation
-      })
+        cuePointTypeEqual: KalturaCuePointType.annotation,
+      }),
     });
 
     chaptersAndSlidesRequest.setRequestOptions({
-      acceptedTypes: [KalturaThumbCuePoint]
+      acceptedTypes: [KalturaThumbCuePoint],
     });
     hotspotsRequest.setRequestOptions({
-      acceptedTypes: [KalturaAnnotation]
+      acceptedTypes: [KalturaAnnotation],
     });
 
     requests.push(chaptersAndSlidesRequest, hotspotsRequest);
@@ -252,7 +281,7 @@ export class NavigationPlugin
         this._listData = sortedData;
         this._updateKitchenSink();
       },
-      error => {
+      (error) => {
         console.log("error", error);
       }
     );
@@ -272,7 +301,7 @@ ContribPluginManager.registerPlugin(
     defaultConfig: {
       expandOnFirstPlay: true,
       position: KitchenSinkPositions.Right,
-      userRole: UserRole.anonymousRole
-    }
+      userRole: UserRole.anonymousRole,
+    },
   }
 );

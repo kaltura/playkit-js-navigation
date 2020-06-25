@@ -1,6 +1,6 @@
 import { h } from "preact";
 import * as styles from "./navigation-search.scss";
-const { useState, useCallback, useRef } = KalturaPlayer.ui.preactHooks;
+const { useState, useCallback, useRef, useEffect } = KalturaPlayer.ui.preactHooks;
 
 export interface props {
   onChange(value: string): void;
@@ -39,6 +39,10 @@ export const NavigationSearch = ({ onChange, searchQuery }: props) => {
     }
     onChange("");
   }, []);
+
+    // useEffect(() => {
+      
+    // }, [])
 
   const handleMouseDown = useCallback(() => {
     focusedByMouse = true;
