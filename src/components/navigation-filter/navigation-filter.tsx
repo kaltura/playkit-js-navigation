@@ -1,9 +1,11 @@
 import { h, Component } from "preact";
 import * as styles from "./navigation-filter.scss";
+import { itemTypes } from "../../utils"
 
 export interface FilterProps {
-  onChange(value: number): void;
-  activeTab: number;
+  onChange(value: any): void;
+  activeTab: itemTypes | null;
+  availableTabs: Array<itemTypes|null>;
 }
 
 interface FilterState {}
@@ -11,28 +13,29 @@ interface FilterState {}
 export class NavigationFilter extends Component<FilterProps, FilterState> {
   state: FilterState = {};
 
-  public _getIcon = (type: number): string => {
+  public _getIcon = (type: itemTypes): string => {
     switch (type) {
-      case 2:
+      case itemTypes.AnswerOnAir:
         return "aoa";
-      case 3:
+      case itemTypes.Chapter:
         return "chapter";
-      case 4:
+      case itemTypes.Hotspot:
         return "hotspot";
-      case 5:
+      case itemTypes.Slide:
         return "slide";
       default:
         return "";
     }
   };
 
-  public _handleChange = (type: number) => {
+  public _handleChange = (type: itemTypes | null) => {
     this.props.onChange(type);
   };
 
   public _renderTab = (tab: any) => {
     return (
       <button
+        key={tab.type}
         className={[
           styles.tab,
           styles[this._getIcon(tab.type)],
@@ -40,38 +43,31 @@ export class NavigationFilter extends Component<FilterProps, FilterState> {
         ].join(" ")}
         onClick={() => this._handleChange(tab.type)}
       >
-        {tab.type === 1 && "All"}
+        {tab.type === null && "All"}
       </button>
     );
   };
 
+  private _prepareTabs = (): any[] => {
+    const { availableTabs, activeTab } = this.props;
+    const tabs = availableTabs.map((tab: itemTypes | null) => {
+      return {
+        type: tab,
+        isActive: activeTab === tab,
+      }
+    });
+    tabs.unshift({
+      type: null,
+      isActive: activeTab === null,
+    })
+    return tabs;
+  }
+
   render() {
-    const tabs = [
-      {
-        type: 1,
-        isActive: this.props.activeTab === 1,
-      },
-      {
-        type: 2,
-        isActive: this.props.activeTab === 2,
-      },
-      {
-        type: 3,
-        isActive: this.props.activeTab === 3,
-      },
-      {
-        type: 4,
-        isActive: this.props.activeTab === 4,
-      },
-      {
-        type: 5,
-        isActive: this.props.activeTab === 5,
-      },
-    ];
     const {} = this.props;
     return (
       <div className={styles.filterRoot}>
-        {tabs.map((tab) => {
+        {this._prepareTabs().map((tab) => {
           return this._renderTab(tab);
         })}
       </div>

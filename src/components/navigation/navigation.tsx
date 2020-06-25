@@ -5,6 +5,13 @@ import * as styles from "./navigaton.scss";
 import { NavigationList } from "./navigation-list/NavigationList";
 import { NavigationSearch } from "../navigation-search/navigation-search-hook";
 import { NavigationFilter } from "../navigation-filter";
+import { itemTypes } from "../../utils"
+
+interface SearchFilter {
+  searchQuery: string;
+  activeTab: itemTypes | null;
+  availableTabs: itemTypes[];
+}
 
 export interface NavigationProps {
   data: Array<any>;
@@ -19,12 +26,19 @@ export interface NavigationProps {
 
 interface NavigationState {
   widgetWidth: number;
+  searchFilter: SearchFilter;
 }
 
 const logger = getContribLogger({
   class: "Navigation",
   module: "navigation-plugin",
 });
+
+const initialSearchFilter = {
+  searchQuery: "",
+  activeTab: null,
+  availableTabs: [itemTypes.AnswerOnAir, itemTypes.Slide, itemTypes.Hotspot, itemTypes.Chapter]
+}
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
@@ -35,6 +49,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
   state: NavigationState = {
     widgetWidth: 0,
+    searchFilter: { ...initialSearchFilter } 
   };
 
   componentDidUpdate(
@@ -48,8 +63,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     if (this._widgetRootRef) {
       const {
         width,
-        height,
-        top,
       } = this._widgetRootRef.getBoundingClientRect();
       if (this.state.widgetWidth !== width) {
         this.setState({
@@ -70,16 +83,29 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return styles.smallWidth;
   };
 
+  private _handleSearchFilterChange = (property: string) => (data: itemTypes | string | null) => {
+    console.log(data, property)
+    this.setState((state: NavigationState) => {
+      return {
+        searchFilter: {
+          ...state.searchFilter,
+          [property]: data,
+        }
+      }
+    })
+  }
+
   private _renderHeader = () => {
     const { toggledWithEnter, kitchenSinkActive } = this.props;
+    const { searchFilter } = this.state;
     return (
       <div className={[styles.header, this._getHeaderStyles()].join(" ")}>
         <div className={styles.header}>
           <NavigationSearch
-            onChange={val => console.log(val)}
-            searchQuery=""
-            toggledWithEnter={false}
-            kitchenSinkActive={true}
+            onChange={this._handleSearchFilterChange("searchQuery")}
+            searchQuery={searchFilter.searchQuery}
+            toggledWithEnter={toggledWithEnter}
+            kitchenSinkActive={kitchenSinkActive}
           />
           <button
               className={styles.closeButton}
@@ -87,8 +113,9 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
               onClick={this.props.onClose}
           />
           <NavigationFilter
-            onChange={val => console.log(val)}
-            activeTab={1}
+            onChange={this._handleSearchFilterChange("activeTab")}
+            activeTab={searchFilter.activeTab}
+            availableTabs={searchFilter.availableTabs}
           />
         </div>
       </div>
