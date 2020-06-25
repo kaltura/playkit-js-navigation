@@ -199,7 +199,7 @@ export class NavigationPlugin
           typeof position === "string" &&
           (position === KitchenSinkPositions.Bottom ||
             position === KitchenSinkPositions.Right),
-        KitchenSinkPositions.Bottom
+        KitchenSinkPositions.Right
       ),
       renderContent: this._renderKitchenSinkContent
     });

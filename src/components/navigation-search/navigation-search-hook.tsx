@@ -1,10 +1,12 @@
 import { h } from "preact";
-import { useState, useCallback, useRef } from "preact/hooks";
 import * as styles from "./navigation-search.scss";
+const { useState, useCallback, useRef } = KalturaPlayer.ui.preactHooks;
 
 export interface props {
   onChange(value: string): void;
   searchQuery: string;
+  kitchenSinkActive: boolean;
+  toggledWithEnter: boolean;
 }
 
 let focusedByMouse = false;
@@ -24,8 +26,8 @@ export const NavigationSearch = ({ onChange, searchQuery }: props) => {
   }, []);
 
   const onBlur = useCallback(() => {
-      setIsActive(true);
-      setIsFocused(true);
+      setIsActive(false);
+      setIsFocused(false);
   }, []);
 
   const onClear = useCallback((event: MouseEvent) => {
