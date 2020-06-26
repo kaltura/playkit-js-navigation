@@ -17,6 +17,7 @@ export enum groupTypes {
 }
 
 export enum itemTypes {
+  All = "All",
   AnswerOnAir = "AnswerOnAir",
   Chapter = "Chapter",
   Slide = "Slide",

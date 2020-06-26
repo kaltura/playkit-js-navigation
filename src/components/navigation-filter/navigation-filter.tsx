@@ -1,9 +1,12 @@
 import { h, Component } from "preact";
 import * as styles from "./navigation-filter.scss";
+import { itemTypes } from "../../utils";
+import { IconsFactory, IconColors } from "../navigation/icons/IconsFactory";
 
 export interface FilterProps {
-  onChange(value: number): void;
-  activeTab: number;
+  onChange(value: any): void;
+  activeTab: itemTypes;
+  availableTabs: itemTypes[];
 }
 
 interface FilterState {}
@@ -11,67 +14,49 @@ interface FilterState {}
 export class NavigationFilter extends Component<FilterProps, FilterState> {
   state: FilterState = {};
 
-  public _getIcon = (type: number): string => {
-    switch (type) {
-      case 2:
-        return "aoa";
-      case 3:
-        return "chapter";
-      case 4:
-        return "hotspot";
-      case 5:
-        return "slide";
-      default:
-        return "";
-    }
-  };
-
-  public _handleChange = (type: number) => {
+  public _handleChange = (type: itemTypes) => {
     this.props.onChange(type);
   };
 
-  public _renderTab = (tab: any) => {
+  public _renderTab = (tab: { isActive: boolean; type: itemTypes }) => {
     return (
       <button
-        className={[
-          styles.tab,
-          styles[this._getIcon(tab.type)],
-          tab.isActive ? styles.active : "",
-        ].join(" ")}
+        key={tab.type}
+        tabIndex={1}
+        className={[styles.tab, tab.isActive ? styles.active : ""].join(" ")}
+        style={{
+          borderColor: IconColors[tab.type],
+        }}
         onClick={() => this._handleChange(tab.type)}
       >
-        {tab.type === 1 && "All"}
+        {tab.type === itemTypes.All ? (
+          <span>All</span>
+        ) : (
+          <IconsFactory
+            iconType={tab.type}
+            color={tab.isActive ? null : IconColors.All}
+          />
+        )}
       </button>
     );
   };
 
+  private _getTabData = (): any[] => {
+    const { availableTabs, activeTab } = this.props;
+    const tabs = availableTabs.map((tab: itemTypes) => {
+      return {
+        type: tab,
+        isActive: activeTab === tab,
+      };
+    });
+    return tabs;
+  };
+
   render() {
-    const tabs = [
-      {
-        type: 1,
-        isActive: this.props.activeTab === 1,
-      },
-      {
-        type: 2,
-        isActive: this.props.activeTab === 2,
-      },
-      {
-        type: 3,
-        isActive: this.props.activeTab === 3,
-      },
-      {
-        type: 4,
-        isActive: this.props.activeTab === 4,
-      },
-      {
-        type: 5,
-        isActive: this.props.activeTab === 5,
-      },
-    ];
     const {} = this.props;
     return (
       <div className={styles.filterRoot}>
-        {tabs.map((tab) => {
+        {this._getTabData().map((tab) => {
           return this._renderTab(tab);
         })}
       </div>
