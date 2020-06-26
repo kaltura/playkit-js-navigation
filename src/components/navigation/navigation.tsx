@@ -3,19 +3,19 @@ import { KeyboardKeys } from "@playkit-js-contrib/ui";
 import { getContribLogger } from "@playkit-js-contrib/common";
 import * as styles from "./navigaton.scss";
 import { NavigationList } from "./navigation-list/NavigationList";
-import { NavigationSearch } from "../navigation-search/navigation-search-hook";
+import { NavigationSearch } from "../navigation-search/navigation-search";
 import { NavigationFilter } from "../navigation-filter";
-import { itemTypes } from "../../utils"
+import { itemTypes } from "../../utils";
 
 interface SearchFilter {
   searchQuery: string;
-  activeTab: itemTypes | null;
+  activeTab: itemTypes;
   availableTabs: itemTypes[];
 }
 
 export interface NavigationProps {
   data: Array<any>;
-  onSeek(time: number): void;
+  onItemClicked(time: number): void;
   onClose: () => void;
   isLoading: boolean;
   hasError: boolean;
@@ -36,9 +36,15 @@ const logger = getContribLogger({
 
 const initialSearchFilter = {
   searchQuery: "",
-  activeTab: null,
-  availableTabs: [itemTypes.AnswerOnAir, itemTypes.Slide, itemTypes.Hotspot, itemTypes.Chapter]
-}
+  activeTab: itemTypes.All,
+  availableTabs: [
+    itemTypes.All,
+    itemTypes.Chapter,
+    itemTypes.Slide,
+    itemTypes.Hotspot,
+    itemTypes.AnswerOnAir,
+  ],
+};
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
@@ -49,7 +55,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
   state: NavigationState = {
     widgetWidth: 0,
-    searchFilter: { ...initialSearchFilter } 
+    searchFilter: { ...initialSearchFilter },
   };
 
   componentDidUpdate(
@@ -61,9 +67,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _setWidgetSize = () => {
     if (this._widgetRootRef) {
-      const {
-        width,
-      } = this._widgetRootRef.getBoundingClientRect();
+      const { width } = this._widgetRootRef.getBoundingClientRect();
       if (this.state.widgetWidth !== width) {
         this.setState({
           widgetWidth: width,
@@ -83,41 +87,43 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return styles.smallWidth;
   };
 
-  private _handleSearchFilterChange = (property: string) => (data: itemTypes | string | null) => {
-    console.log(data, property)
+  private _handleSearchFilterChange = (property: string) => (
+    data: itemTypes | string | null
+  ) => {
+    console.log(data, property);
     this.setState((state: NavigationState) => {
       return {
         searchFilter: {
           ...state.searchFilter,
           [property]: data,
-        }
-      }
-    })
-  }
+        },
+      };
+    });
+  };
 
   private _renderHeader = () => {
     const { toggledWithEnter, kitchenSinkActive } = this.props;
     const { searchFilter } = this.state;
     return (
-      <div className={[styles.header, this._getHeaderStyles()].join(" ")}>
-        <div className={styles.header}>
+      <div className={styles.header}>
+        <div class={[styles.searchWrapper, this._getHeaderStyles()].join(" ")}>
           <NavigationSearch
             onChange={this._handleSearchFilterChange("searchQuery")}
             searchQuery={searchFilter.searchQuery}
             toggledWithEnter={toggledWithEnter}
             kitchenSinkActive={kitchenSinkActive}
           />
-          <button
-              className={styles.closeButton}
-              tabIndex={1}
-              onClick={this.props.onClose}
-          />
-          <NavigationFilter
-            onChange={this._handleSearchFilterChange("activeTab")}
-            activeTab={searchFilter.activeTab}
-            availableTabs={searchFilter.availableTabs}
-          />
         </div>
+        <button
+          className={styles.closeButton}
+          tabIndex={1}
+          onClick={this.props.onClose}
+        />
+        <NavigationFilter
+          onChange={this._handleSearchFilterChange("activeTab")}
+          activeTab={searchFilter.activeTab}
+          availableTabs={searchFilter.availableTabs}
+        />
       </div>
     );
   };
@@ -141,7 +147,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   render(props: NavigationProps) {
-    const { onClose, isLoading, kitchenSinkActive } = props;
+    const { isLoading, kitchenSinkActive } = props;
     return (
       <div
         className={`${styles.root} ${kitchenSinkActive ? "" : styles.hidden}`}
@@ -152,11 +158,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       >
         <div className={styles.globalContainer}>
           {this._renderHeader()}
-          <button
-            className={styles.closeButton}
-            tabIndex={1}
-            onClick={onClose}
-          />
           <div className={styles.body}>
             {isLoading ? this._renderLoading() : this._renderNavigation()}
           </div>

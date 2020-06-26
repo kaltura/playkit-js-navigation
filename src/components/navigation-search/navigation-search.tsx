@@ -1,106 +1,77 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import * as styles from "./navigation-search.scss";
+const { useState, useCallback, useRef, useEffect } = KalturaPlayer.ui.preactHooks;
 
-export interface SearchProps {
-    onChange(value: string): void;
-    searchQuery: string;
-    kitchenSinkActive: boolean;
-    toggledWithEnter: boolean;
+export interface props {
+  onChange(value: string): void;
+  searchQuery: string;
+  kitchenSinkActive: boolean;
+  toggledWithEnter: boolean;
 }
 
-interface SearchState {
-    active: boolean;
-    focused: boolean;
-}
+let focusedByMouse = false;
 
-export class NavigationSearch extends Component<SearchProps, SearchState> {
-    state: SearchState = {
-        active: false,
-        focused: false,
-    };
-    private _inputRef: null | HTMLInputElement = null;
-    private _focusedByMouse = false;
+export const NavigationSearch = ({ onChange, searchQuery }: props) => {
+  const [isActive, setIsActive] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputEl: any = useRef(null);
+  const handleOnChange = useCallback((e: any) => {
+    onChange(e.target.value);
+  }, []);
 
-    shouldComponentUpdate(
-        nextProps: Readonly<SearchProps>,
-        nextState: Readonly<SearchState>
-    ) {
-        const { searchQuery, kitchenSinkActive } = this.props;
-        if (
-            searchQuery !== nextProps.searchQuery ||
-            kitchenSinkActive !== nextProps.kitchenSinkActive ||
-            this.state.active !== nextState.active
-        ) {
-            return true;
-        }
-        return false;
+  const onFocus = useCallback(() => {
+    setIsActive(true);
+    setIsFocused(!focusedByMouse);
+    focusedByMouse = false;
+  }, []);
+
+  const onBlur = useCallback(() => {
+      setIsActive(false);
+      setIsFocused(false);
+  }, []);
+
+  const onClear = useCallback((event: MouseEvent) => {
+    if (event.x !== 0 && event.y !== 0) {
+      focusedByMouse = true;
     }
-    componentDidUpdate(previousProps: Readonly<SearchProps>): void {
-        const { kitchenSinkActive, toggledWithEnter } = this.props;
-        if (!previousProps.kitchenSinkActive && kitchenSinkActive && toggledWithEnter) {
-            this._inputRef?.focus();
-        }
+    if (inputEl && inputEl.current) {
+      inputEl?.current?.focus();
     }
-    private _handleOnChange = (e: any) => {
-        this.props.onChange(e.target.value);
-    };
+    onChange("");
+  }, []);
 
-    private _onClear = (event: MouseEvent) => {
-        if (event.x !== 0 && event.y !== 0) {
-            this._focusedByMouse = true;
-        }
-        this._inputRef?.focus();
-        this.props.onChange("");
-    };
+    // useEffect(() => {
+      
+    // }, [])
 
-    private _onFocus = () => {
-        this.setState({
-            active: true,
-            focused: !this._focusedByMouse,
-        });
-        this._focusedByMouse = false;
-    }
+  const handleMouseDown = useCallback(() => {
+    focusedByMouse = true;
+  }, []);
 
-    private _onBlur = () => {
-        this.setState({
-            active: false,
-            focused: false
-        });
-    }
-
-    _handleMouseDown = () => {
-        this._focusedByMouse = true;
-    };
-
-    render() {
-        const { searchQuery } = this.props;
-        return (
-            <div className={[
-                styles.searchRoot,
-                (searchQuery || this.state.active) ? styles.active : "",
-                this.state.focused ? styles.focused : "",
-            ].join(" ")}>
-                <input
-                    className={styles.searchInput}
-                    placeholder={"Search in video"}
-                    value={searchQuery}
-                    onInput={this._handleOnChange}
-                    onFocus={this._onFocus}
-                    onBlur={this._onBlur}
-                    onMouseDown={this._handleMouseDown}
-                    tabIndex={1}
-                    ref={(node) => {
-                        this._inputRef = node;
-                    }}
-                />
-                {searchQuery && (
-                    <button
-                        className={styles.clearIcon}
-                        onClick={this._onClear}
-                        tabIndex={1}
-                    />
-                )}
-            </div>
-        );
-    }
-}
+  return (
+    <div className={[
+        styles.searchRoot,
+        (searchQuery || isActive) ? styles.active : "",
+        isFocused ? styles.focused : "",
+    ].join(" ")}>
+      <input
+        className={styles.searchInput}
+        placeholder={"Search in video"}
+        value={searchQuery}
+        onInput={handleOnChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onMouseDown={handleMouseDown}
+        tabIndex={1}
+        ref={inputEl}
+      />
+      {searchQuery && (
+        <button
+          className={styles.clearIcon}
+          onClick={onClear}
+          tabIndex={1}
+        />
+      )}
+    </div>
+  );
+};

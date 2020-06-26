@@ -3,7 +3,7 @@ import * as styles from "./NavigationList.scss";
 import { NavigationItem } from "../navigation-item/NavigationItem";
 
 export interface props {
-  data?: Array<any>;
+  data?: Array<any>; // TODO: add interface
 }
 const convertData = (data: Array<any> | undefined) => {
   if (!data || !data.length) {
@@ -18,7 +18,6 @@ export class NavigationList extends Component<props> {
   render(props: props) {
     return (
       <div className={styles.navigationList}>
-        <div className={"filter-replace-later"}>FILTER UI HERE</div>
         {props.data && convertData(props.data)}
       </div>
     );

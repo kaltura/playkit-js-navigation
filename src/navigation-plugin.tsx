@@ -193,7 +193,7 @@ export class NavigationPlugin
       <Navigation
         {...props}
         data={this._listData}
-        onSeek={this._seekTo}
+        onItemClicked={this._seekTo}
         isLoading={this._isLoading}
         hasError={this._hasError}
         currentTime={this._corePlugin.player.currentTime}
