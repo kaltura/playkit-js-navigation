@@ -22,6 +22,7 @@ export class NavigationFilter extends Component<FilterProps, FilterState> {
     return (
       <button
         key={tab.type}
+        tabIndex={1}
         className={[styles.tab, tab.isActive ? styles.active : ""].join(" ")}
         style={{
           borderColor: IconColors[tab.type],

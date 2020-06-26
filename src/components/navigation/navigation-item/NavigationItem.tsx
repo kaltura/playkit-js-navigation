@@ -28,7 +28,7 @@ export class NavigationItem extends Component<props> {
     return (
       <div className={[styles[groupData], styles.navigationItem].join(" ")}>
         <div className={styles.metadata}>
-          <span>{displayTime}</span>
+          <span className={styles.time}>{displayTime}</span>
           <IconsFactory iconType={itemType}></IconsFactory>
         </div>
         <div className={styles.content}>
