@@ -7,7 +7,7 @@ import { NavigationSearch } from "../navigation-search/navigation-search";
 import { NavigationFilter } from "../navigation-filter";
 import { itemTypes } from "../../utils";
 
-interface SearchFilter {
+export interface SearchFilter {
   searchQuery: string;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
@@ -31,7 +31,7 @@ interface NavigationState {
 
 const logger = getContribLogger({
   class: "Navigation",
-  module: "navigation-plugin",
+  module: "navigation-plugin"
 });
 
 const initialSearchFilter = {
@@ -42,20 +42,20 @@ const initialSearchFilter = {
     itemTypes.Chapter,
     itemTypes.Slide,
     itemTypes.Hotspot,
-    itemTypes.AnswerOnAir,
-  ],
+    itemTypes.AnswerOnAir
+  ]
 };
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
   private _log = (msg: string, method: string) => {
     logger.trace(msg, {
-      method: method || "Method not defined",
+      method: method || "Method not defined"
     });
   };
   state: NavigationState = {
     widgetWidth: 0,
-    searchFilter: { ...initialSearchFilter },
+    searchFilter: { ...initialSearchFilter }
   };
 
   componentDidUpdate(
@@ -70,7 +70,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       const { width } = this._widgetRootRef.getBoundingClientRect();
       if (this.state.widgetWidth !== width) {
         this.setState({
-          widgetWidth: width,
+          widgetWidth: width
         });
       }
     }
@@ -95,8 +95,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       return {
         searchFilter: {
           ...state.searchFilter,
-          [property]: data,
-        },
+          [property]: data
+        }
       };
     });
   };
@@ -129,7 +129,9 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderNavigation = () => {
-    return <NavigationList data={this.props.data} />;
+    return (
+      <NavigationList data={this.props.data} filter={this.state.searchFilter} />
+    );
   };
 
   private _renderLoading = () => {
@@ -151,7 +153,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return (
       <div
         className={`${styles.root} ${kitchenSinkActive ? "" : styles.hidden}`}
-        ref={(node) => {
+        ref={node => {
           this._widgetRootRef = node;
         }}
         onKeyUp={this._handleClose}

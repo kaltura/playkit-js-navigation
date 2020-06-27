@@ -74,7 +74,16 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
       }
       break;
   }
-
+  let indexedText = "";
+  if (item.displayDescription) {
+    indexedText = item.displayDescription;
+  }
+  if (item.title) {
+    indexedText += " " + item.title;
+  }
+  indexedText += " " + item.itemType;
+  indexedText += " " + item.displayTime;
+  item.indexedText = indexedText.toLowerCase();
   //todo - clear unwanted fields?
 };
 

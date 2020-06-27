@@ -51,10 +51,11 @@
                         const langOptions = options[2];
                         const env = envOptions.env[envOptions.modes.bundlerEnv];
 
-                    const bundlerUrl = env.bundler + '/p/' + configOptions.data.partnerId + '/embedPlaykitJs/uiconf_id/' + configOptions.data.uiConfId +
+                    const bundlerUrl1 = env.bundler + '/p/' + configOptions.data.partnerId + '/embedPlaykitJs/uiconf_id/' + configOptions.data.uiConfId +
                         (envOptions.modes.bundler === "uiConf"
                             ? ''
                             : '/versions/kaltura-ovp-player=' + envOptions.bundler.customPlayerVersion);
+                            let bundlerUrl = "https://qa-apache-php7.dev.kaltura.com/p/6222/embedPlaykitJs/uiconf_id/15225868/versions/kaltura-ovp-player=0.54.1-canary-5-6c76aef.0"
 
                         let loaderRunner = function() {
                             return callback(env, configOptions, langOptions);
