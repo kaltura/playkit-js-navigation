@@ -52,7 +52,7 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
   item.startTime = Math.floor(item.startTime / 1000);
   item.displayTime = convertTime(item.startTime);
   if (item.assetId) {
-    item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}`;
+    item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=150`;
   }
   switch (item.cuePointType) {
     // TODO - support AnsweOnAir later
