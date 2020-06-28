@@ -32,40 +32,42 @@ export class NavigationItem extends Component<props> {
           <IconsFactory iconType={itemType}></IconsFactory>
         </div>
         <div className={styles.content}>
-          {previewImage && (
-            <img
-              src={previewImage}
-              alt={"Slide Preview"}
-              className={styles.thumbnail}
-            />
-          )}
-
-          <div className={styles.contentText}>
-            {shorthandTitle && !this.state.showDescription && (
-              <span className={styles.title}>{shorthandTitle}</span>
+          <div className={styles.contentInner}>
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt={"Slide Preview"}
+                className={styles.thumbnail}
+              />
             )}
 
-            {displayTitle &&
-              (!shorthandTitle || this.state.showDescription) && (
-                <span className={styles.title}>{displayTitle}</span>
+            <div className={styles.contentText}>
+              {shorthandTitle && !this.state.showDescription && (
+                <span className={styles.title}>{shorthandTitle}</span>
               )}
 
-            {displayDescription && this.state.showDescription && (
-              <div className={styles.description}>{displayDescription}</div>
-            )}
-            {(displayDescription || shorthandTitle) && (
-              <button
-                className={styles.showMoreButton}
-                onClick={() =>
-                  this.setState({
-                    showDescription: !this.state.showDescription
-                  })
-                }
-              >
-                {/* TODO - locale */}
-                {this.state.showDescription ? "Read Less" : "Read More"}
-              </button>
-            )}
+              {displayTitle &&
+                (!shorthandTitle || this.state.showDescription) && (
+                  <span className={styles.title}>{displayTitle}</span>
+                )}
+
+              {displayDescription && this.state.showDescription && (
+                <div className={styles.description}>{displayDescription}</div>
+              )}
+              {(displayDescription || shorthandTitle) && (
+                <button
+                  className={styles.showMoreButton}
+                  onClick={() =>
+                    this.setState({
+                      showDescription: !this.state.showDescription
+                    })
+                  }
+                >
+                  {/* TODO - locale */}
+                  {this.state.showDescription ? "Read Less" : "Read More"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
