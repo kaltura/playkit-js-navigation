@@ -5,7 +5,7 @@ export const EmptyList = () => {
     <div
       style={{
         "text-align": "center",
-        "margin-top": "auto",
+        "margin-top": "50%",
         "margin-bottom": "auto"
       }}
     >
