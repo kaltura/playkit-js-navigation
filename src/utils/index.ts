@@ -51,9 +51,6 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
   item.originalTime = item.startTime; // TODO - remove later if un-necessary
   item.startTime = Math.floor(item.startTime / 1000);
   item.displayTime = convertTime(item.startTime);
-  if (item.assetId) {
-    item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
-  }
   switch (item.cuePointType) {
     // TODO - support AnsweOnAir later
     case "annotation.Annotation":
@@ -67,9 +64,17 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
       switch (item.subType) {
         case 1:
           item.itemType = itemTypes.Slide;
+          if (item.assetId) {
+            item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
+          }
           break;
         case 2:
           item.itemType = itemTypes.Chapter;
+          item.previewImage = `${serviceUrl.split("api_v3")[0]}/p/${
+            item.partnerId
+          }/sp/${item.partnerId}00/thumbnail/entry_id/${
+            item.entryId
+          }/width/400/vid_sec/${item.startTime}/ks/${ks}`;
           break;
       }
       break;

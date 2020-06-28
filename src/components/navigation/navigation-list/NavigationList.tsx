@@ -14,22 +14,22 @@ const convertData = (data: Array<any> | undefined, filter: SearchFilter) => {
   if (!returnValue || !returnValue.length) {
     return null;
   }
-  if (filter.activeTab !== itemTypes.All) {
-    returnValue = returnValue.filter(
-      (item: any) => item.itemType === filter.activeTab
-    );
-    //clear group values
-    returnValue.map(item => {
-      item.groupData = null;
-      return item;
-    });
-  }
   if (filter.searchQuery) {
     const lowerQuery = filter.searchQuery.toLowerCase();
     returnValue = returnValue.filter((item: any) => {
       return item.indexedText.indexOf(lowerQuery) > -1;
     });
 
+    returnValue.map(item => {
+      item.groupData = null;
+      return item;
+    });
+  }
+  if (filter.activeTab !== itemTypes.All) {
+    returnValue = returnValue.filter(
+      (item: any) => item.itemType === filter.activeTab
+    );
+    //clear group values
     returnValue.map(item => {
       item.groupData = null;
       return item;
@@ -51,7 +51,6 @@ export class NavigationList extends Component<props> {
     return (
       <div className={styles.navigationList}>
         {covertedData && covertedData}
-        {!covertedData && "Empty"}
       </div>
     );
   }

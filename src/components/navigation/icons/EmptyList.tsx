@@ -2,7 +2,13 @@ import { h, Component } from "preact";
 
 export const EmptyList = () => {
   return (
-    <div style={{ width: "100%", height: "100%", background: "#dddddd" }}>
+    <div
+      style={{
+        "text-align": "center",
+        "margin-top": "auto",
+        "margin-bottom": "auto"
+      }}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="184"

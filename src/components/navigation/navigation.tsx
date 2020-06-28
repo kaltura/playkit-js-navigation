@@ -48,10 +48,29 @@ const initialSearchFilter = {
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
+  private _getAvailableTabs = (): itemTypes[] => {
+    const localData = this.props.data;
+    const ret = localData.reduce((acc: [], item: any) => {
+      // @ts-ignore
+      if (item.itemType && acc.indexOf(item.itemType) === -1) {
+        // @ts-ignore
+        acc.push(item.itemType);
+      }
+      return acc;
+    }, []);
+    // @ts-ignore
+    ret.unshift(itemTypes.All);
+    return ret;
+  };
   private _log = (msg: string, method: string) => {
     logger.trace(msg, {
       method: method || "Method not defined"
     });
+  };
+  filterData = {
+    searchQuery: "",
+    activeTab: itemTypes.All,
+    availableTabs: this._getAvailableTabs()
   };
   state: NavigationState = {
     widgetWidth: 0,
@@ -90,11 +109,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _handleSearchFilterChange = (property: string) => (
     data: itemTypes | string | null
   ) => {
-    console.log(data, property);
     this.setState((state: NavigationState) => {
       return {
         searchFilter: {
           ...state.searchFilter,
+          availableTabs: this._getAvailableTabs(),
           [property]: data
         }
       };
