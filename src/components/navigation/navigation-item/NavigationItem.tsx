@@ -14,7 +14,6 @@ export interface props {
 
 export class NavigationItem extends Component<props> {
   state = { showDescription: false };
-
   render(props: props) {
     const {
       previewImage,
@@ -22,6 +21,7 @@ export class NavigationItem extends Component<props> {
       displayTime,
       groupData,
       displayTitle,
+      shorthandTitle,
       displayDescription
     } = props.data;
 
@@ -32,7 +32,6 @@ export class NavigationItem extends Component<props> {
           <IconsFactory iconType={itemType}></IconsFactory>
         </div>
         <div className={styles.content}>
-          {/* TODO - build better */}
           {previewImage && (
             <img
               src={previewImage}
@@ -40,15 +39,21 @@ export class NavigationItem extends Component<props> {
               className={styles.thumbnail}
             />
           )}
-          {/* TODO - do we really need this container for title and description? */}
-          <div className={styles.content}>
-            {displayTitle && (
-              <span className={styles.title}>{displayTitle}</span>
+
+          <div className={styles.contentText}>
+            {shorthandTitle && !this.state.showDescription && (
+              <span className={styles.title}>{shorthandTitle}</span>
             )}
+
+            {displayTitle &&
+              (!shorthandTitle || this.state.showDescription) && (
+                <span className={styles.title}>{displayTitle}</span>
+              )}
+
             {displayDescription && this.state.showDescription && (
               <div className={styles.description}>{displayDescription}</div>
             )}
-            {displayDescription && (
+            {(displayDescription || shorthandTitle) && (
               <button
                 className={styles.showMoreButton}
                 onClick={() =>

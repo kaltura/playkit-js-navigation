@@ -1,28 +1,22 @@
 .navigationItem {
   display: flex;
   align-items: flex-start;
-  border-radius: 3px;
   min-height: 32px;
   border-left: 2px solid transparent;
-  margin-top: 8px;
   &.mid,
   &.last,
   &.first {
     border-left: 2px solid #01accd;
   }
   &.first {
+    margin-top: 4px;
     border-top-left-radius: 2px;
     border-bottom-left-radius: 0;
   }
   &.last {
-    margin-top: 0px;
+    margin-top: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 2px;
-  }
-  &.mid {
-    margin-top: 0px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
   }
   .time {
     margin-right: 4px;
@@ -35,9 +29,8 @@
 .content {
   text-align: left;
   flex-grow: 1;
-  padding: 6px 0 0 4px;
+  padding: 4px 4px 0 6px;
   font-size: 14px;
-  //color: #00ffff;
 }
 .metadata {
   color: #cccccc;
@@ -53,8 +46,9 @@
   margin-left: 8px;
 }
 .showMoreButton {
+  cursor: pointer;
   font-size: 14px;
-  display: block;
+  display: inline-block;
   background: none;
   border: none;
   color: #01accd;
@@ -64,13 +58,14 @@
 .description {
   font-size: 12px;
   color: #cccccc;
-  //color: #00ff00;
   margin-top: 4px;
   margin-bottom: 4px;
 }
 
 .thumbnail {
   display: block;
-  max-width: 160px;
-  max-heigh: 90px;
+  max-width: 400px;
+  width: 100%;
+  border-radius: 4px;
+  margin-top: 1px;
 }

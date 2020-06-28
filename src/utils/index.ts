@@ -52,7 +52,7 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
   item.startTime = Math.floor(item.startTime / 1000);
   item.displayTime = convertTime(item.startTime);
   if (item.assetId) {
-    item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=150`;
+    item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
   }
   switch (item.cuePointType) {
     // TODO - support AnsweOnAir later
@@ -74,6 +74,23 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
       }
       break;
   }
+
+  if (item.displayTitle && item.displayTitle.length > 79) {
+    let elipsisString = item.displayTitle.slice(0, 79);
+    elipsisString = elipsisString.trim();
+    item.shorthandTitle = elipsisString + "... ";
+  }
+  if (
+    !item.displayTitle &&
+    item.displayDescription &&
+    item.displayDescription.length > 79
+  ) {
+    let elipsisDescription = item.displayTitle.slice(0, 79);
+    elipsisDescription = elipsisDescription.trim();
+    item.shorthandDesctipyion = elipsisDescription + "... ";
+  }
+
+  // indexed text to save calculation at runtime + filter
   let indexedText = "";
   if (item.displayDescription) {
     indexedText = item.displayDescription;

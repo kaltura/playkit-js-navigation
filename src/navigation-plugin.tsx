@@ -8,18 +8,18 @@ import {
   CorePlugin,
   OnMediaLoad,
   OnMediaUnload,
-  OnPluginSetup,
+  OnPluginSetup
 } from "@playkit-js-contrib/plugin";
 import {
   getContribLogger,
-  KalturaLiveServices,
+  KalturaLiveServices
 } from "@playkit-js-contrib/common";
 import {
   KitchenSinkContentRendererProps,
   KitchenSinkExpandModes,
   KitchenSinkItem,
   KitchenSinkPositions,
-  UpperBarItem,
+  UpperBarItem
 } from "@playkit-js-contrib/ui";
 import { KalturaThumbCuePoint } from "kaltura-typescript-client/api/types";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types";
@@ -31,12 +31,12 @@ import { KalturaThumbCuePointFilter } from "kaltura-typescript-client/api/types/
 import {
   KalturaClient,
   KalturaMultiResponse,
-  KalturaRequest,
+  KalturaRequest
 } from "kaltura-typescript-client";
 import { getConfigValue, perpareData } from "./utils/index";
 import {
   PushNotification,
-  PushNotificationEventTypes,
+  PushNotificationEventTypes
 } from "./pushNotification";
 import * as styles from "./navigation-plugin.scss";
 import { Navigation } from "./components/navigation";
@@ -45,7 +45,7 @@ const pluginName = `navigation`;
 
 const logger = getContribLogger({
   class: "NavigationPlugin",
-  module: "navigation-plugin",
+  module: "navigation-plugin"
 });
 
 interface NavigationPluginConfig {
@@ -58,7 +58,7 @@ const DefaultAnonymousPrefix = "Guest";
 
 enum UserRole {
   anonymousRole = "anonymousRole",
-  unmoderatedAdminRole = "unmoderatedAdminRole",
+  unmoderatedAdminRole = "unmoderatedAdminRole"
 }
 
 export class NavigationPlugin
@@ -80,10 +80,10 @@ export class NavigationPlugin
     const { playerConfig } = this._configs;
     this._kalturaClient.setOptions({
       clientTag: "playkit-js-navigation",
-      endpointUrl: playerConfig.provider.env.serviceUrl,
+      endpointUrl: playerConfig.provider.env.serviceUrl
     });
     this._kalturaClient.setDefaultRequestOptions({
-      ks: playerConfig.provider.ks,
+      ks: playerConfig.provider.ks
     });
     this._pushNotification = new PushNotification(this._corePlugin.player);
     this._constructPluginListener();
@@ -97,7 +97,7 @@ export class NavigationPlugin
   onMediaLoad(): void {
     if (this._corePlugin.player.isLive()) {
       const {
-        playerConfig: { sources },
+        playerConfig: { sources }
       } = this._configs;
       const userId = this.getUserId();
       this._pushNotification.registerToPushServer(sources.id, userId);
@@ -141,20 +141,20 @@ export class NavigationPlugin
           "(both providers and session objects returned with an undefined KS)," +
           " please check your configuration file.",
         {
-          method: "_initPluginManagers",
+          method: "_initPluginManagers"
         }
       );
       return;
     }
     const {
-      playerConfig: { provider },
+      playerConfig: { provider }
     } = this._configs;
     // should be created once on pluginSetup (entryId/userId registration will be called onMediaLoad)
     this._pushNotification.init({
       ks: ks,
       serviceUrl: provider.env.serviceUrl,
       clientTag: "playkit-js-navigation",
-      kalturaPlayer: this._corePlugin.player,
+      kalturaPlayer: this._corePlugin.player
     });
   }
 
@@ -239,7 +239,7 @@ export class NavigationPlugin
             position === KitchenSinkPositions.Right),
         KitchenSinkPositions.Right
       ),
-      renderContent: this._renderKitchenSinkContent,
+      renderContent: this._renderKitchenSinkContent
     });
 
     if (expandOnFirstPlay) {
@@ -253,21 +253,21 @@ export class NavigationPlugin
       filter: new KalturaThumbCuePointFilter({
         entryIdEqual: this._corePlugin.player.config.sources.id,
         cuePointTypeEqual: KalturaCuePointType.thumb,
-        subTypeIn: `${KalturaThumbCuePointSubType.slide},${KalturaThumbCuePointSubType.chapter}`,
-      }),
+        subTypeIn: `${KalturaThumbCuePointSubType.slide},${KalturaThumbCuePointSubType.chapter}`
+      })
     });
     const hotspotsRequest = new CuePointListAction({
       filter: new KalturaCuePointFilter({
         entryIdEqual: this._corePlugin.player.config.sources.id,
-        cuePointTypeEqual: KalturaCuePointType.annotation,
-      }),
+        cuePointTypeEqual: KalturaCuePointType.annotation
+      })
     });
 
     chaptersAndSlidesRequest.setRequestOptions({
-      acceptedTypes: [KalturaThumbCuePoint],
+      acceptedTypes: [KalturaThumbCuePoint]
     });
     hotspotsRequest.setRequestOptions({
-      acceptedTypes: [KalturaAnnotation],
+      acceptedTypes: [KalturaAnnotation]
     });
 
     requests.push(chaptersAndSlidesRequest, hotspotsRequest);
@@ -281,7 +281,7 @@ export class NavigationPlugin
         this._listData = sortedData;
         this._updateKitchenSink();
       },
-      (error) => {
+      error => {
         console.log("error", error);
       }
     );
@@ -300,8 +300,8 @@ ContribPluginManager.registerPlugin(
   {
     defaultConfig: {
       expandOnFirstPlay: true,
-      position: KitchenSinkPositions.Right,
-      userRole: UserRole.anonymousRole,
-    },
+      position: KitchenSinkPositions.Left,
+      userRole: UserRole.anonymousRole
+    }
   }
 );
