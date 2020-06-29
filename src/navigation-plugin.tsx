@@ -67,6 +67,7 @@ export class NavigationPlugin
   private _upperBarItem: UpperBarItem | null = null;
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
+  private _currentPosition = 0;
   private _listData: Array<any> = [];
   private _triggeredByKeyboard = false;
   private _isLoading = false; // TODO: handle is loading state
@@ -75,7 +76,8 @@ export class NavigationPlugin
   constructor(
     private _corePlugin: CorePlugin,
     private _contribServices: ContribServices,
-    private _configs: ContribPluginConfigs<NavigationPluginConfig>
+    private _configs: ContribPluginConfigs<NavigationPluginConfig>,
+    private _player: KalturaPlayerTypes.Player
   ) {
     const { playerConfig } = this._configs;
     this._kalturaClient.setOptions({
@@ -92,6 +94,14 @@ export class NavigationPlugin
   onPluginSetup(): void {
     this._initKitchensinkAndUpperBarItems();
     this._initPluginManagers();
+    console.log(">>>> this._player.Event", this._player.Event);
+    this._player.addEventListener(
+      this._player.Event.TIME_UPDATE,
+      this._onTimeUpdate
+    );
+    this._player.addEventListener(this._player.Event.SEEKED, a =>
+      console.log(">>>> USER SEEKED", this._player.currentTime)
+    );
   }
 
   onMediaLoad(): void {
@@ -196,17 +206,26 @@ export class NavigationPlugin
         onItemClicked={this._seekTo}
         isLoading={this._isLoading}
         hasError={this._hasError}
-        currentTime={this._corePlugin.player.currentTime}
+        currentTime={this._currentPosition}
         kitchenSinkActive={!!this._kitchenSinkItem?.isActive()}
         toggledWithEnter={this._triggeredByKeyboard}
       />
     );
   };
+
   private _updateKitchenSink() {
     if (this._kitchenSinkItem) {
       this._kitchenSinkItem.update();
     }
   }
+  private _onTimeUpdate = (a: any): void => {
+    // reduce refresh to only when the time really chanes - check UX speed
+    const newTime = Math.ceil(this._player.currentTime);
+    if (newTime !== this._currentPosition) {
+      this._currentPosition = newTime;
+      this._updateKitchenSink();
+    }
+  };
 
   private _handleIconClick = (event: MouseEvent) => {
     if (event.x === 0 && event.y === 0) {
@@ -294,7 +313,8 @@ ContribPluginManager.registerPlugin(
     return new NavigationPlugin(
       data.corePlugin,
       data.contribServices,
-      data.configs
+      data.configs,
+      data.player
     );
   },
   {

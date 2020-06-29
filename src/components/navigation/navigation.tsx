@@ -6,6 +6,7 @@ import { NavigationList } from "./navigation-list/NavigationList";
 import { NavigationSearch } from "../navigation-search/navigation-search";
 import { NavigationFilter } from "../navigation-filter";
 import { itemTypes } from "../../utils";
+import { AutoscrollIcon } from "./icons/AutoscrollIcon";
 
 export interface SearchFilter {
   searchQuery: string;
@@ -27,6 +28,7 @@ export interface NavigationProps {
 interface NavigationState {
   widgetWidth: number;
   searchFilter: SearchFilter;
+  autoscroll: boolean;
 }
 
 const logger = getContribLogger({
@@ -73,6 +75,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     availableTabs: this._getAvailableTabs()
   };
   state: NavigationState = {
+    autoscroll: true,
     widgetWidth: 0,
     searchFilter: { ...initialSearchFilter }
   };
@@ -149,7 +152,18 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _renderNavigation = () => {
     return (
-      <NavigationList data={this.props.data} filter={this.state.searchFilter} />
+      <NavigationList
+        onWheel={() => this.setState({ autoscroll: false })}
+        autoScroll={this.state.autoscroll}
+        onSeek={n => {
+          this.props.onItemClicked(n);
+          // we want to also autoscroll to the item
+          this.setState({ autoscroll: true });
+        }}
+        data={this.props.data}
+        filter={this.state.searchFilter}
+        currentTime={this.props.currentTime}
+      />
     );
   };
 
@@ -167,8 +181,9 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     }
   };
 
-  render(props: NavigationProps) {
+  render(props: NavigationProps, state: NavigationState) {
     const { isLoading, kitchenSinkActive } = props;
+    const { autoscroll } = state;
     return (
       <div
         className={`${styles.root} ${kitchenSinkActive ? "" : styles.hidden}`}
@@ -181,6 +196,16 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           {this._renderHeader()}
           <div className={styles.body}>
             {isLoading ? this._renderLoading() : this._renderNavigation()}
+            {!autoscroll && (
+              <button
+                className={styles.skipButton}
+                onClick={() => {
+                  this.setState({ autoscroll: true });
+                }}
+              >
+                <AutoscrollIcon></AutoscrollIcon>
+              </button>
+            )}
           </div>
         </div>
       </div>
