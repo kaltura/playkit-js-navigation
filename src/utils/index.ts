@@ -162,6 +162,7 @@ export const perpareData = (
           }
           currentCuepoint.groupData = groupTypes.last;
         }
+        // TODO - enforce order
         prevArr.push(currentCuepoint);
         return prevArr;
       },

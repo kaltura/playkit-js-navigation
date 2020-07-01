@@ -20,6 +20,7 @@ export interface props {
 export class NavigationItem extends Component<props> {
   state = { showDescription: false };
 
+  // TODO - improve - componentDidUpdate
   shouldComponentUpdate(
     nextProps: Readonly<props>,
     nextState: Readonly<{}>,
@@ -41,7 +42,7 @@ export class NavigationItem extends Component<props> {
   }
 
   onClickHandler(event: any) {
-    // make sure the show more button does not trigger the item
+    // TODO - make sure the show more button does not trigger the item
     if (event.target.tagName !== "BUTTON") {
       this.props.onClick(this.props.data.startTime);
     }
@@ -67,7 +68,7 @@ export class NavigationItem extends Component<props> {
         className={[
           styles[groupData],
           styles.navigationItem,
-          selectedItem === startTime ? styles.selected : null
+          selectedItem === startTime ? styles.selected : null // TODO move to parent or switch to engine
         ].join(" ")}
         onClick={e => this.onClickHandler(e)}
       >
@@ -101,7 +102,8 @@ export class NavigationItem extends Component<props> {
               {(displayDescription || shorthandTitle) && (
                 <button
                   className={styles.showMoreButton}
-                  onClick={() =>
+                  // consider use method and stopPropagation
+                  onClick={e =>
                     this.setState({
                       showDescription: !this.state.showDescription
                     })

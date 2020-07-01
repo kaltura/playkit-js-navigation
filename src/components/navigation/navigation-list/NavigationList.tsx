@@ -30,6 +30,7 @@ export class NavigationList extends Component<props, navigationListState> {
     if (nextProps.currentTime !== this.state.selectedTime) {
       return true;
     }
+    // also cover data changes - check if filter too, autoScroll
     return false;
   }
 
@@ -40,17 +41,16 @@ export class NavigationList extends Component<props, navigationListState> {
   ) {
     if (!previousProps.autoScroll && this.props.autoScroll) {
       // this is click on resume to autoscroll button
-
       this.listElement.current.parentElement.scrollTo(
         0,
-        this.state.selectedElementY - 87
+        this.state.selectedElementY - 94 // convert to const
       );
     }
   }
 
   componentDidMount() {
     this.listElement.current.parentElement.onwheel = (e: any) =>
-      this.props.onWheel();
+      this.props.onWheel(); // touch does work
   }
 
   componentWillUnmount() {
@@ -66,6 +66,7 @@ export class NavigationList extends Component<props, navigationListState> {
     if (!returnValue || !returnValue.length) {
       return null;
     }
+    // apply the query string filter
     if (filter.searchQuery) {
       const lowerQuery = filter.searchQuery.toLowerCase();
       returnValue = returnValue.filter((item: any) => {
@@ -77,6 +78,7 @@ export class NavigationList extends Component<props, navigationListState> {
         return item;
       });
     }
+    // apply the activeTab filter
     if (filter.activeTab !== itemTypes.All) {
       returnValue = returnValue.filter(
         (item: any) => item.itemType === filter.activeTab
@@ -87,6 +89,7 @@ export class NavigationList extends Component<props, navigationListState> {
         return item;
       });
     }
+
     if (returnValue.length) {
       // todo - ask product if important to re-assign group items
       return returnValue.map((item: any, index: number) => {
@@ -101,9 +104,8 @@ export class NavigationList extends Component<props, navigationListState> {
           />
         );
       });
-    } else {
-      return <EmptyList></EmptyList>;
     }
+    return <EmptyList></EmptyList>;
   };
 
   listElement = useRef(null);
@@ -112,9 +114,10 @@ export class NavigationList extends Component<props, navigationListState> {
     if (this.props.autoScroll) {
       this.listElement.current.parentElement.scrollTo(
         0,
-        selctedItemData.itemY - 87
+        selctedItemData.itemY - 94 //TODO magic number
       );
     }
+    // TODO - try to not use setState and use local variable instead
     this.setState({
       selectedTime: selctedItemData.time,
       selectedElementY: selctedItemData.itemY

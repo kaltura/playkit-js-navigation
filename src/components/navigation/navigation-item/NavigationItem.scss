@@ -25,6 +25,12 @@
   .time {
     margin-right: 4px;
   }
+  &.mid,
+  &.last {
+    .metadata {
+      visibility: hidden;
+    }
+  }
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);

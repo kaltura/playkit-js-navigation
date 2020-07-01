@@ -94,13 +94,9 @@ export class NavigationPlugin
   onPluginSetup(): void {
     this._initKitchensinkAndUpperBarItems();
     this._initPluginManagers();
-    console.log(">>>> this._player.Event", this._player.Event);
     this._player.addEventListener(
       this._player.Event.TIME_UPDATE,
       this._onTimeUpdate
-    );
-    this._player.addEventListener(this._player.Event.SEEKED, a =>
-      console.log(">>>> USER SEEKED", this._player.currentTime)
     );
   }
 
