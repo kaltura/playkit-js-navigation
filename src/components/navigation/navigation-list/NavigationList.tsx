@@ -1,137 +1,87 @@
-import { Component, h, Fragment } from "preact";
+import { Component, h } from "preact";
 import * as styles from "./NavigationList.scss";
-import { NavigationItem } from "../navigation-item/NavigationItem";
-import { SearchFilter } from "..";
-import { itemTypes } from "../../../utils";
+import { NavigationItem, ItemData } from "../navigation-item/NavigationItem";
 import { EmptyList } from "../icons/EmptyList";
-import { AutoscrollIcon } from "../icons/AutoscrollIcon";
-const { useRef } = KalturaPlayer.ui.preactHooks;
+import { convertData } from "../../../utils";
 
-export interface props {
-  data?: Array<any>; // TODO: add interface
-  filter: SearchFilter;
-  currentTime: number;
+export interface Props {
+  data: Array<ItemData>;
   onSeek: (n: number) => void;
   autoScroll: boolean;
   onWheel: () => void;
+  highlightedMap: Record<string, true>;
+  filter: any;
 }
 
-export interface navigationListState {
-  selectedTime: number;
-  selectedElementY: number;
-}
+const HEADER_HEIGHT = 94;
 
-export class NavigationList extends Component<props, navigationListState> {
-  shouldComponentUpdate(
-    nextProps: Readonly<props>,
-    nextState: Readonly<navigationListState>,
-    nextContext: any
-  ): boolean {
-    if (nextProps.currentTime !== this.state.selectedTime) {
+export class NavigationList extends Component<Props> {
+  private _listElementRef: HTMLDivElement | null = null;
+  private _selectedElementY: number = 0;
+  shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
+    if (
+      nextProps.highlightedMap !== this.props.highlightedMap ||
+      nextProps.data !== this.props.data ||
+      nextProps.filter !== this.props.filter ||
+      nextProps.autoScroll !== this.props.autoScroll
+    ) {
       return true;
     }
-    // also cover data changes - check if filter too, autoScroll
     return false;
   }
 
-  componentDidUpdate(
-    previousProps: Readonly<props>,
-    previousState: Readonly<navigationListState>,
-    snapshot: any
-  ) {
+  componentDidUpdate(previousProps: Readonly<Props>) {
     if (!previousProps.autoScroll && this.props.autoScroll) {
       // this is click on resume to autoscroll button
-      this.listElement.current.parentElement.scrollTo(
-        0,
-        this.state.selectedElementY - 94 // convert to const
-      );
+      this._makeScroll();
     }
   }
 
   componentDidMount() {
-    this.listElement.current.parentElement.onwheel = (e: any) =>
-      this.props.onWheel(); // touch does work
-  }
+  };
 
   componentWillUnmount() {
-    this.listElement.current.parentElement.onwheel = null;
-  }
-
-  private convertData = (
-    data: Array<any> | undefined,
-    filter: SearchFilter,
-    currentTime: number
-  ): any => {
-    let returnValue = data?.slice();
-    if (!returnValue || !returnValue.length) {
-      return null;
-    }
-    // apply the query string filter
-    if (filter.searchQuery) {
-      const lowerQuery = filter.searchQuery.toLowerCase();
-      returnValue = returnValue.filter((item: any) => {
-        return item.indexedText.indexOf(lowerQuery) > -1;
-      });
-
-      returnValue.map(item => {
-        item.groupData = null;
-        return item;
-      });
-    }
-    // apply the activeTab filter
-    if (filter.activeTab !== itemTypes.All) {
-      returnValue = returnValue.filter(
-        (item: any) => item.itemType === filter.activeTab
-      );
-      //clear group values
-      returnValue.map(item => {
-        item.groupData = null;
-        return item;
-      });
-    }
-
-    if (returnValue.length) {
-      // todo - ask product if important to re-assign group items
-      return returnValue.map((item: any, index: number) => {
-        return (
-          <NavigationItem
-            onClick={n => this.props.onSeek(n)}
-            currentTime={currentTime}
-            selectedItem={this.state.selectedTime}
-            key={item.id}
-            data={item}
-            onSelected={this.updateSelected}
-          />
-        );
-      });
-    }
-    return <EmptyList></EmptyList>;
   };
 
-  listElement = useRef(null);
+  private _makeScroll = () => {
+    this._listElementRef?.parentElement?.scrollTo(
+      0,
+      this._selectedElementY - HEADER_HEIGHT
+    );
+  };
 
   private updateSelected = (selctedItemData: any) => {
+    this._selectedElementY = selctedItemData.itemY;
     if (this.props.autoScroll) {
-      this.listElement.current.parentElement.scrollTo(
-        0,
-        selctedItemData.itemY - 94 //TODO magic number
-      );
+      this._makeScroll();
     }
-    // TODO - try to not use setState and use local variable instead
-    this.setState({
-      selectedTime: selctedItemData.time,
-      selectedElementY: selctedItemData.itemY
-    });
   };
-  render(props: props) {
-    const covertedData = this.convertData(
-      props.data,
-      props.filter,
-      props.currentTime
-    );
+
+  render(props: Props) {
+    const { data, filter } = this.props;
+    const convertedData = convertData(data, filter);
+    if (!convertedData) {
+      return <EmptyList />;
+    }
     return (
-      <div ref={this.listElement} className={styles.navigationList}>
-        {covertedData}
+      <div
+        ref={node => {
+          this._listElementRef = node;
+        }}
+        className={styles.navigationList}
+        onWheel={this.props.onWheel}
+      >
+        {convertedData.map((item: ItemData, index: number) => {
+          return (
+            <NavigationItem
+              onClick={n => this.props.onSeek(n)}
+              selectedItem={this.props.highlightedMap[item.id]}
+              key={item.id}
+              data={item}
+              onSelected={this.updateSelected}
+            />
+          )})
+        }
       </div>
     );
   }

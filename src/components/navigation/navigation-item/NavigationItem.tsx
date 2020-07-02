@@ -1,58 +1,59 @@
 import { h, Component } from "preact";
-const { useRef } = KalturaPlayer.ui.preactHooks;
 import * as styles from "./NavigationItem.scss";
-import { groupTypes } from "../../../utils";
+import { groupTypes, itemTypes } from "../../../utils";
 import { IconsFactory } from "../icons/IconsFactory";
 
-export interface itemData {
-  groupData?: groupTypes;
-  displayTime?: string;
+export interface ItemData {
+  id: string;
+  startTime: number;
+  previewImage: string;
+  itemType: itemTypes;
+  displayTime: string;
+  groupData: groupTypes | null;
+  displayTitle: string;
+  shorthandTitle: string;
+  displayDescription: string;
 }
 
 export interface props {
   data?: any;
   onSelected: (a: any) => void;
-  currentTime: number;
-  selectedItem: number;
+  selectedItem: boolean;
   onClick: (a: any) => void;
 }
 
 export class NavigationItem extends Component<props> {
+  private _itemElementRef: HTMLDivElement | null  = null;
   state = { showDescription: false };
 
-  // TODO - improve - componentDidUpdate
-  shouldComponentUpdate(
-    nextProps: Readonly<props>,
-    nextState: Readonly<{}>,
-    nextContext: any
-  ): boolean {
+  componentDidUpdate(
+    previousProps: Readonly<props>,
+  ) {
     if (
-      nextProps.currentTime === nextProps.data.startTime &&
-      nextProps.selectedItem !== nextProps.currentTime &&
-      (!nextProps.data.groupData ||
-        nextProps.data.groupData === groupTypes.first)
+        this.props.selectedItem &&
+        (!this.props.data.groupData ||
+          this.props.data.groupData === groupTypes.first)
     ) {
-      // notify the parent that we need a scroll
       this.props.onSelected({
-        time: nextProps.currentTime,
-        itemY: this.itemElement.current.offsetTop
+        time: this.props.data.startTime,
+        itemY: this._itemElementRef?.offsetTop
       });
     }
-    return true;
   }
 
-  onClickHandler(event: any) {
-    // TODO - make sure the show more button does not trigger the item
-    if (event.target.tagName !== "BUTTON") {
-      this.props.onClick(this.props.data.startTime);
-    }
+  private _handleClickHandler = () => {
+    this.props.onClick(this.props.data.startTime);
   }
 
-  itemElement = useRef(null);
+  private _handleExpandChange = (event: Event) => {
+    event.stopImmediatePropagation();
+    this.setState({
+      showDescription: !this.state.showDescription
+    });
+  }
 
   render(props: props) {
     const {
-      startTime,
       previewImage,
       itemType,
       displayTime,
@@ -64,13 +65,15 @@ export class NavigationItem extends Component<props> {
     const { selectedItem } = this.props;
     return (
       <div
-        ref={this.itemElement}
+        ref={node => {
+          this._itemElementRef = node;
+        }}
         className={[
-          styles[groupData],
+          styles[groupData ? groupData : "single"],
           styles.navigationItem,
-          selectedItem === startTime ? styles.selected : null // TODO move to parent or switch to engine
+          selectedItem ? styles.selected : null // TODO move to parent or switch to engine
         ].join(" ")}
-        onClick={e => this.onClickHandler(e)}
+        onClick={this._handleClickHandler}
       >
         <div className={styles.metadata}>
           <span className={styles.time}>{displayTime}</span>
@@ -103,11 +106,7 @@ export class NavigationItem extends Component<props> {
                 <button
                   className={styles.showMoreButton}
                   // consider use method and stopPropagation
-                  onClick={e =>
-                    this.setState({
-                      showDescription: !this.state.showDescription
-                    })
-                  }
+                  onClick={this._handleExpandChange}
                 >
                   {/* TODO - locale */}
                   {this.state.showDescription ? "Read Less" : "Read More"}

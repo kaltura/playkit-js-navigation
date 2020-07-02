@@ -1,17 +1,13 @@
-.navigationItem {
+.navigation-item {
   &.selected {
     background: rgba(255, 255, 255, 0.15);
+    border-left: 2px solid #01accd;
   }
 
   display: flex;
   align-items: flex-start;
   min-height: 32px;
   border-left: 2px solid transparent;
-  &.mid,
-  &.last,
-  &.first {
-    border-left: 2px solid #01accd;
-  }
   &.first {
     margin-top: 4px;
     border-top-left-radius: 2px;
@@ -20,6 +16,10 @@
   &.last {
     margin-top: 0;
     border-top-left-radius: 0;
+    border-bottom-left-radius: 2px;
+  }
+  &.single {
+    border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
   }
   .time {
@@ -35,7 +35,7 @@
   &:hover {
     background: rgba(255, 255, 255, 0.2);
   }
-  .contentInner {
+  .content-inner {
     width: 100%;
     position: relative;
   }
@@ -58,7 +58,7 @@
     display: inline-block;
     margin-left: 8px;
   }
-  .showMoreButton {
+  .show-more-button {
     cursor: pointer;
     font-size: 14px;
     display: inline-block;

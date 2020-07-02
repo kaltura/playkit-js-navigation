@@ -51,6 +51,7 @@ const logger = getContribLogger({
 interface NavigationPluginConfig {
   expandOnFirstPlay: boolean;
   position: KitchenSinkPositions;
+  forceChaptersThumb: boolean;
   userRole: string;
 }
 
@@ -291,7 +292,8 @@ export class NavigationPlugin
         const sortedData = perpareData(
           responses,
           this._configs.playerConfig.provider.ks,
-          this._configs.playerConfig.provider.env.serviceUrl
+          this._configs.playerConfig.provider.env.serviceUrl,
+          this._corePlugin.config.forceChaptersThumb
         );
         this._listData = sortedData;
         this._updateKitchenSink();
@@ -317,7 +319,8 @@ ContribPluginManager.registerPlugin(
     defaultConfig: {
       expandOnFirstPlay: true,
       position: KitchenSinkPositions.Left,
-      userRole: UserRole.anonymousRole
+      forceChaptersThumb: false,
+      userRole: UserRole.anonymousRole,
     }
   }
 );

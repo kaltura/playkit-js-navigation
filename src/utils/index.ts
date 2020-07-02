@@ -1,3 +1,6 @@
+import { SearchFilter } from "../components/navigation";
+import { ItemData } from "../components/navigation/navigation-item/NavigationItem";
+
 export function getConfigValue( // TODO: consider move to contrib
   value: any,
   condition: (value: any) => boolean,
@@ -25,7 +28,7 @@ export enum itemTypes {
 }
 
 // TODO check if exist in QNA and if QNA did it more elegant
-export const convertTime = (sec: number) => {
+export const convertTime = (sec: number): string => {
   const hours = Math.floor(sec / 3600);
   if (hours >= 1) {
     sec = sec - hours * 3600;
@@ -47,7 +50,12 @@ export const convertTime = (sec: number) => {
   }
 };
 
-export const fillData = (item: any, ks: string, serviceUrl: string) => {
+export const fillData = (
+  item: any,
+  ks: string,
+  serviceUrl: string,
+  forceChaptersThumb: boolean
+) => {
   item.originalTime = item.startTime; // TODO - remove later if un-necessary
   item.startTime = Math.floor(item.startTime / 1000);
   item.displayTime = convertTime(item.startTime);
@@ -61,20 +69,22 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
     case "thumbCuePoint.Thumb": // chapters and slides
       item.displayDescription = item.description;
       item.displayTitle = item.title;
+      if (item.assetId) {
+        item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
+      }
       switch (item.subType) {
         case 1:
           item.itemType = itemTypes.Slide;
-          if (item.assetId) {
-            item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
-          }
           break;
         case 2:
           item.itemType = itemTypes.Chapter;
-          item.previewImage = `${serviceUrl.split("api_v3")[0]}/p/${
-            item.partnerId
-          }/sp/${item.partnerId}00/thumbnail/entry_id/${
-            item.entryId
-          }/width/400/vid_sec/${item.startTime}/ks/${ks}`;
+          if (!item.previewImage && forceChaptersThumb) {
+            item.previewImage = `${serviceUrl.split("api_v3")[0]}/p/${
+              item.partnerId
+            }/sp/${item.partnerId}00/thumbnail/entry_id/${
+              item.entryId
+            }/width/400/vid_sec/${item.startTime}/ks/${ks}`;
+          }
           break;
       }
       break;
@@ -106,7 +116,6 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
   indexedText += " " + item.itemType;
   indexedText += " " + item.displayTime;
   item.indexedText = indexedText.toLowerCase();
-  //todo - clear unwanted fields?
 };
 
 // main function for data handel. This sorts the cuepoints by startTime, and enriches the items with data so that the
@@ -116,8 +125,9 @@ export const fillData = (item: any, ks: string, serviceUrl: string) => {
 export const perpareData = (
   multirequestData: Array<any> | null,
   ks: string,
-  serviceUrl: string
-): Array<any> => {
+  serviceUrl: string,
+  forceChaptersThumb: boolean
+): Array<ItemData> => {
   if (!multirequestData || multirequestData.length === 0) {
     // Wrong or empty data
     throw new Error("ERROR ! multirequestData");
@@ -141,7 +151,7 @@ export const perpareData = (
   receivedCuepoints = receivedCuepoints
     .sort((item1: any, item2: any) => item1.startTime - item2.startTime)
     .map((cuepoint: any) => {
-      fillData(cuepoint, ks, serviceUrl); // normlise time, extract description and title, find thumbnail if exist etc'
+      fillData(cuepoint, ks, serviceUrl, forceChaptersThumb); // normlise time, extract description and title, find thumbnail if exist etc'
       return cuepoint;
     })
     .reduce(
@@ -169,4 +179,39 @@ export const perpareData = (
       []
     );
   return receivedCuepoints;
+};
+
+
+export const convertData = (
+  data: Array<ItemData> | undefined,
+  filter: SearchFilter,
+): any[] | null => { // TODO: add types
+  let returnValue = data?.slice();
+  if (!returnValue || !returnValue.length) {
+    return null;
+  }
+  // apply the query string filter
+  if (filter.searchQuery) {
+    const lowerQuery = filter.searchQuery.toLowerCase();
+    returnValue = returnValue.filter((item: any) => {
+      return item.indexedText.indexOf(lowerQuery) > -1;
+    });
+
+    returnValue.map(item => {
+      item.groupData = null;
+      return item;
+    });
+  }
+  // apply the activeTab filter
+  if (filter.activeTab !== itemTypes.All) {
+    returnValue = returnValue.filter(
+      (item: any) => item.itemType === filter.activeTab
+    );
+    //clear group values
+    returnValue.map(item => {
+      item.groupData = null;
+      return item;
+    });
+  }
+  return returnValue;
 };

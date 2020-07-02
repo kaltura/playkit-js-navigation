@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { KeyboardKeys } from "@playkit-js-contrib/ui";
-import { getContribLogger } from "@playkit-js-contrib/common";
+import { getContribLogger, CuepointEngine } from "@playkit-js-contrib/common";
 import * as styles from "./navigaton.scss";
 import { NavigationList } from "./navigation-list/NavigationList";
 import { NavigationSearch } from "../navigation-search/navigation-search";
@@ -29,6 +29,7 @@ interface NavigationState {
   widgetWidth: number;
   searchFilter: SearchFilter;
   autoscroll: boolean;
+  highlightedMap: Record<number, true>;
 }
 
 const logger = getContribLogger({
@@ -50,6 +51,9 @@ const initialSearchFilter = {
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
+  private _engine: CuepointEngine<any> | null = null;
+  private _keepHighlighted = false;
+
   private _getAvailableTabs = (): itemTypes[] => {
     const localData = this.props.data;
     const ret = localData.reduce((acc: [], item: any) => {
@@ -77,15 +81,88 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   state: NavigationState = {
     autoscroll: true,
     widgetWidth: 0,
-    searchFilter: { ...initialSearchFilter }
+    highlightedMap: {},
+    searchFilter: { ...initialSearchFilter },
   };
+
+  componentDidMount(): void {
+    this._log("Creating engine", "componentDidMount");
+    this._createEngine();
+  }
 
   componentDidUpdate(
     previousProps: Readonly<NavigationProps>,
     previousState: Readonly<NavigationState>
   ): void {
+    if (previousProps.data !== this.props.data) {
+      this._log("Re-creating engine", "componentDidUpdate");
+      this._createEngine();
+    }
+
+    if (previousProps.currentTime !== this.props.currentTime) {
+        this._syncVisibleData();
+    }
     this._setWidgetSize();
   }
+
+  componentWillUnmount(): void {
+    this._log("Removing engine", "componentWillUnmount");
+    this._engine = null;
+  }
+
+  private _createEngine = () => {
+    const { data } = this.props;
+    if (!data || data.length === 0) {
+        this._engine = null;
+        return;
+    }
+    this._engine = new CuepointEngine<any>(data);
+    this._syncVisibleData();
+  };
+
+  private _makeHighlightedMap = (cuepoints: any[]) => {
+    const maxTime = cuepoints.reduce((acc, item) => {
+      return ( acc > item.startTime ? acc : item.startTime );
+    }, 0);
+    const filtered = cuepoints.filter((item) => (item.startTime === maxTime))
+    const highlightedMap = filtered.reduce((acc, item) => {
+        return { ...acc, [item.id]: true };
+    }, {});
+    return highlightedMap;
+  }
+
+  private _syncVisibleData = (forceSnapshot = false) => {
+    const { currentTime } = this.props;
+    this.setState((state: NavigationState) => {
+        if (!this._engine) {
+            return {
+                highlightedMap: {}
+            };
+        }
+        const transcriptUpdate = this._engine.updateTime(currentTime, forceSnapshot);
+        if (transcriptUpdate.snapshot) {
+            this._keepHighlighted = false;
+            return { highlightedMap: this._makeHighlightedMap(transcriptUpdate.snapshot) };
+        }
+        if (!transcriptUpdate.delta) {
+            return state;
+        }
+        const { show, hide } = transcriptUpdate.delta;
+
+        if (show.length === 0 && hide.length > 0) {
+            this._keepHighlighted = true;
+            return state;
+        }
+
+        if (show.length > 0) {
+            if (this._keepHighlighted) {
+                this._keepHighlighted = false;
+            }
+            return { highlightedMap: this._makeHighlightedMap(show) };
+        }
+        return state;
+    });
+  };
 
   private _setWidgetSize = () => {
     if (this._widgetRootRef) {
@@ -156,13 +233,14 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         onWheel={() => this.setState({ autoscroll: false })}
         autoScroll={this.state.autoscroll}
         onSeek={n => {
-          this.props.onItemClicked(n);
           // we want to also autoscroll to the item
-          this.setState({ autoscroll: true });
+          this.setState({ autoscroll: true }, () => {
+            this.props.onItemClicked(n);
+          });
         }}
-        data={this.props.data}
         filter={this.state.searchFilter}
-        currentTime={this.props.currentTime}
+        data={this.props.data}
+        highlightedMap={this.state.highlightedMap}
       />
     );
   };
@@ -203,7 +281,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
                   this.setState({ autoscroll: true });
                 }}
               >
-                <AutoscrollIcon></AutoscrollIcon>
+                <AutoscrollIcon />
               </button>
             )}
           </div>
