@@ -5,7 +5,6 @@ import {
   PushNotificationsOptions,
   PushNotificationsProvider,
 } from "@playkit-js-contrib/push-notifications";
-import { KalturaCodeCuePoint } from "kaltura-typescript-client/api/types/KalturaCodeCuePoint";
 
 export enum PushNotificationEventTypes {
   PublicNotifications = "PUBLIC_QNA_NOTIFICATIONS",

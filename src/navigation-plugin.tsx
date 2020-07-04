@@ -1,5 +1,4 @@
 import { h } from "preact";
-
 import {
   ContribPluginConfigs,
   ContribPluginData,
@@ -36,7 +35,11 @@ import {
 import { getConfigValue, perpareData } from "./utils/index";
 import {
   PushNotification,
-  PushNotificationEventTypes
+  PushNotificationEventTypes,
+  PublicNotificationsEvent,
+  ThumbNotificationsEvent,
+  SlideNotificationsEvent,
+  NotificationsErrorEvent
 } from "./pushNotification";
 import * as styles from "./navigation-plugin.scss";
 import { Navigation } from "./components/navigation";
@@ -73,12 +76,12 @@ export class NavigationPlugin
   private _triggeredByKeyboard = false;
   private _isLoading = false; // TODO: handle is loading state
   private _hasError = false; // TODO: handle error state
+  private _lastId3Timestamp: number | null = null;
 
   constructor(
     private _corePlugin: CorePlugin,
     private _contribServices: ContribServices,
     private _configs: ContribPluginConfigs<NavigationPluginConfig>,
-    private _player: KalturaPlayerTypes.Player
   ) {
     const { playerConfig } = this._configs;
     this._kalturaClient.setOptions({
@@ -89,23 +92,70 @@ export class NavigationPlugin
       ks: playerConfig.provider.ks
     });
     this._pushNotification = new PushNotification(this._corePlugin.player);
-    this._constructPluginListener();
   }
 
   onPluginSetup(): void {
     this._initKitchensinkAndUpperBarItems();
     this._initPluginManagers();
-    this._player.addEventListener(
-      this._player.Event.TIME_UPDATE,
+    this._corePlugin.player.addEventListener(
+      this._corePlugin.player.Event.TIME_UPDATE,
       this._onTimeUpdate
     );
+    this._addPlayerListeners();
   }
+
+  private _addPlayerListeners() {
+    if (!this._corePlugin.player) return;
+    this._removePlayerListeners();
+    this._corePlugin.player.addEventListener(
+      this._corePlugin.player.Event.TIMED_METADATA,
+        this._onTimedMetadataLoaded
+    );
+  }
+
+  private _removePlayerListeners() {
+      if (!this._corePlugin.player) return;
+      this._corePlugin.player.removeEventListener(
+        this._corePlugin.player.Event.TIMED_METADATA,
+          this._onTimedMetadataLoaded
+      );
+  }
+
+  private _onTimedMetadataLoaded = (event: any): void => {
+    const id3TagCues = event.payload.cues.filter(
+        (cue: any) => cue.value && cue.value.key === "TEXT"
+    );
+    if (id3TagCues.length) {
+        try {
+            this._lastId3Timestamp = JSON.parse(
+                id3TagCues[id3TagCues.length - 1].value.data
+            ).timestamp;
+            logger.debug(
+                `Calling cuepoint engine updateTime with id3 timestamp: ${
+                    this._lastId3Timestamp
+                }`,
+                {
+                    method: "_onTimedMetadataLoaded"
+                }
+            );
+            // this._handlePendingKsMessages();
+            // this._triggerAndHandleCuepointsData();
+            console.log(">> _onTimedMetadataLoaded", this._lastId3Timestamp)
+        } catch (e) {
+            logger.debug("failed retrieving id3 tag metadata", {
+                method: "_onTimedMetadataLoaded",
+                data: e
+            });
+        }
+    }
+};
 
   onMediaLoad(): void {
     if (this._corePlugin.player.isLive()) {
       const {
         playerConfig: { sources }
       } = this._configs;
+      this._constructPluginListener();
       const userId = this.getUserId();
       this._pushNotification.registerToPushServer(sources.id, userId);
     } else {
@@ -114,10 +164,16 @@ export class NavigationPlugin
   }
 
   onMediaUnload(): void {
-    this._pushNotification.reset();
+    if (this._corePlugin.player.isLive()) {
+      this._pushNotification.reset();
+    }
   }
 
-  onPluginDestroy(): void {}
+  onPluginDestroy(): void {
+    if (this._corePlugin.player.isLive()) {
+      this._removePluginListener();
+    }
+  }
 
   private _seekTo = (time: number) => {
     this._corePlugin.player.currentTime = time;
@@ -165,29 +221,81 @@ export class NavigationPlugin
     });
   }
 
-  private _onPushNotificationReceived = (e: any) => {
-    console.log(">> PUSH NOTIFICATION RECEIVED, message", e);
+  private _handleAoaMessages = ({ messages }: PublicNotificationsEvent): void => {
+    logger.debug("handle push notification event", {
+        method: "_handleAoaMessages",
+        data: messages
+    });
+    let aoaMessages: any[] = messages
+        .filter((message: any) => {
+            return "AnswerOnAir" === message.type;
+        })
+        .map(
+            (qnaMessage: any): any => {
+                return {
+                    id: qnaMessage.id,
+                    startTime: qnaMessage.createdAt.getTime(),
+                    endTime: qnaMessage.createdAt.getTime() + 60000,
+                    updated: false,
+                    qnaMessage
+                };
+            }
+        );
+    console.log(">> aoaMessages:", aoaMessages)
+    // this._listData = ;
+    // this._updateKitchenSink();
+
   };
+
+  private _handleThumbMessages = ({ thumbs }: ThumbNotificationsEvent): void => {
+    console.log(">> Thumb RECEIVED, message", thumbs);
+  }
+
+  private _handleSlideMessages = ({ slides }: SlideNotificationsEvent): void => {
+    console.log(">> Slide RECEIVED, message", slides);
+  }
+
+  private _handlePushNotificationError = ({ error }: NotificationsErrorEvent): void => {
+    console.log(">> Push notification error", error);
+  }
 
   private _constructPluginListener(): void {
     this._pushNotification.on(
       PushNotificationEventTypes.PushNotificationsError,
-      this._onPushNotificationReceived // TODO: handle error
+      this._handlePushNotificationError
     );
     this._pushNotification.on(
       PushNotificationEventTypes.PublicNotifications,
-      this._onPushNotificationReceived // TODO: handle aoa
+      this._handleAoaMessages
     );
     this._pushNotification.on(
       PushNotificationEventTypes.ThumbNotification,
-      this._onPushNotificationReceived // TODO: handle thumbs
+      this._handleThumbMessages
     );
     this._pushNotification.on(
       PushNotificationEventTypes.SlideNotification,
-      this._onPushNotificationReceived // TODO: handle slides
+      this._handleSlideMessages
     );
   }
 
+  private _removePluginListener(): void {
+    this._pushNotification.off(
+      PushNotificationEventTypes.PushNotificationsError,
+      this._handlePushNotificationError
+    );
+    this._pushNotification.off(
+      PushNotificationEventTypes.PublicNotifications,
+      this._handleAoaMessages
+    );
+    this._pushNotification.off(
+      PushNotificationEventTypes.ThumbNotification,
+      this._handleThumbMessages
+    );
+    this._pushNotification.off(
+      PushNotificationEventTypes.SlideNotification,
+      this._handleSlideMessages
+    );
+  }
   private _initKitchensinkAndUpperBarItems(): void {
     if (!this._upperBarItem && !this._kitchenSinkItem) {
       this._addKitchenSinkItem();
@@ -217,7 +325,7 @@ export class NavigationPlugin
   }
   private _onTimeUpdate = (a: any): void => {
     // reduce refresh to only when the time really chanes - check UX speed
-    const newTime = Math.ceil(this._player.currentTime);
+    const newTime = Math.ceil(this._corePlugin.player.currentTime);
     if (newTime !== this._currentPosition) {
       this._currentPosition = newTime;
       this._updateKitchenSink();
@@ -312,7 +420,6 @@ ContribPluginManager.registerPlugin(
       data.corePlugin,
       data.contribServices,
       data.configs,
-      data.player
     );
   },
   {

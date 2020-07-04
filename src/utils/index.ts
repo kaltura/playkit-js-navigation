@@ -215,3 +215,18 @@ export const convertData = (
   }
   return returnValue;
 };
+
+export const getAvailableTabs = (data: any): itemTypes[] => {
+  const localData = [...data];
+  const ret = localData.reduce((acc: [], item: any) => {
+    // @ts-ignore
+    if (item.itemType && acc.indexOf(item.itemType) === -1) {
+      // @ts-ignore
+      acc.push(item.itemType);
+    }
+    return acc;
+  }, []);
+  // @ts-ignore
+  ret.unshift(itemTypes.All);
+  return ret;
+};

@@ -5,7 +5,7 @@ import * as styles from "./navigaton.scss";
 import { NavigationList } from "./navigation-list/NavigationList";
 import { NavigationSearch } from "../navigation-search/navigation-search";
 import { NavigationFilter } from "../navigation-filter";
-import { itemTypes } from "../../utils";
+import { itemTypes, getAvailableTabs, convertData } from "../../utils";
 import { AutoscrollIcon } from "./icons/AutoscrollIcon";
 
 export interface SearchFilter {
@@ -54,29 +54,10 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _engine: CuepointEngine<any> | null = null;
   private _keepHighlighted = false;
 
-  private _getAvailableTabs = (): itemTypes[] => {
-    const localData = this.props.data;
-    const ret = localData.reduce((acc: [], item: any) => {
-      // @ts-ignore
-      if (item.itemType && acc.indexOf(item.itemType) === -1) {
-        // @ts-ignore
-        acc.push(item.itemType);
-      }
-      return acc;
-    }, []);
-    // @ts-ignore
-    ret.unshift(itemTypes.All);
-    return ret;
-  };
   private _log = (msg: string, method: string) => {
     logger.trace(msg, {
       method: method || "Method not defined"
     });
-  };
-  filterData = {
-    searchQuery: "",
-    activeTab: itemTypes.All,
-    availableTabs: this._getAvailableTabs()
   };
   state: NavigationState = {
     autoscroll: true,
@@ -87,6 +68,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   componentDidMount(): void {
     this._log("Creating engine", "componentDidMount");
+    this._setAvailableTabs();
     this._createEngine();
   }
 
@@ -96,6 +78,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   ): void {
     if (previousProps.data !== this.props.data) {
       this._log("Re-creating engine", "componentDidUpdate");
+      this._setAvailableTabs();
       this._createEngine();
     }
 
@@ -108,6 +91,17 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   componentWillUnmount(): void {
     this._log("Removing engine", "componentWillUnmount");
     this._engine = null;
+  }
+
+  private _setAvailableTabs = () => {
+    this.setState((state: NavigationState) => {
+      return {
+        searchFilter: {
+          ...state.searchFilter,
+          availableTabs: getAvailableTabs(this.props.data),
+        }
+      };
+    });
   }
 
   private _createEngine = () => {
@@ -193,7 +187,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       return {
         searchFilter: {
           ...state.searchFilter,
-          availableTabs: this._getAvailableTabs(),
+          availableTabs: getAvailableTabs(this.props.data),
           [property]: data
         }
       };
