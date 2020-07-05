@@ -1,4 +1,3 @@
-import { SearchFilter } from "../components/navigation";
 import { ItemData } from "../components/navigation/navigation-item/NavigationItem";
 
 export function getConfigValue( // TODO: consider move to contrib
@@ -217,14 +216,14 @@ export const filterDataByActiveTab = (
     return data;
   }
   const filteredData = data.filter(
-    (item: any) => item.itemType === activeTab
+    (item: ItemData) => item.itemType === activeTab
   );
   return clearGroupData(filteredData);
 }
 
-export const getAvailableTabs = (data: any): itemTypes[] => {
+export const getAvailableTabs = (data: ItemData[]): itemTypes[] => {
   const localData = [...data];
-  const ret = localData.reduce((acc: [], item: any) => {
+  const ret = localData.reduce((acc: [], item: ItemData) => {
     // @ts-ignore
     if (item.itemType && acc.indexOf(item.itemType) === -1) {
       // @ts-ignore
@@ -232,7 +231,9 @@ export const getAvailableTabs = (data: any): itemTypes[] => {
     }
     return acc;
   }, []);
-  // @ts-ignore
-  ret.unshift(itemTypes.All);
+  if (ret.length) {
+    // @ts-ignore
+    ret.unshift(itemTypes.All);
+  }
   return ret;
 };
