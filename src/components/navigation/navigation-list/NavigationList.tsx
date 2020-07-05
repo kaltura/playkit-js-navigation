@@ -2,7 +2,6 @@ import { Component, h } from "preact";
 import * as styles from "./NavigationList.scss";
 import { NavigationItem, ItemData } from "../navigation-item/NavigationItem";
 import { EmptyList } from "../icons/EmptyList";
-import { convertData } from "../../../utils";
 
 export interface Props {
   data: Array<ItemData>;
@@ -10,7 +9,6 @@ export interface Props {
   autoScroll: boolean;
   onWheel: () => void;
   highlightedMap: Record<string, true>;
-  filter: any;
 }
 
 const HEADER_HEIGHT = 94;
@@ -22,7 +20,6 @@ export class NavigationList extends Component<Props> {
     if (
       nextProps.highlightedMap !== this.props.highlightedMap ||
       nextProps.data !== this.props.data ||
-      nextProps.filter !== this.props.filter ||
       nextProps.autoScroll !== this.props.autoScroll
     ) {
       return true;
@@ -58,9 +55,8 @@ export class NavigationList extends Component<Props> {
   };
 
   render(props: Props) {
-    const { data, filter } = this.props;
-    const convertedData = convertData(data, filter);
-    if (!convertedData) {
+    const { data } = this.props;
+    if (!data.length) {
       return <EmptyList />;
     }
     return (
@@ -71,7 +67,7 @@ export class NavigationList extends Component<Props> {
         className={styles.navigationList}
         onWheel={this.props.onWheel}
       >
-        {convertedData.map((item: ItemData, index: number) => {
+        {data.map((item: ItemData, index: number) => {
           return (
             <NavigationItem
               onClick={n => this.props.onSeek(n)}

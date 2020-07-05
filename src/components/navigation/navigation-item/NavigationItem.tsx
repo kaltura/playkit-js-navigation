@@ -13,6 +13,7 @@ export interface ItemData {
   displayTitle: string;
   shorthandTitle: string;
   displayDescription: string;
+  indexedText: string;
 }
 
 export interface props {

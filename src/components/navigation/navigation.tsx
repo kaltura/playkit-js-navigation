@@ -5,8 +5,9 @@ import * as styles from "./navigaton.scss";
 import { NavigationList } from "./navigation-list/NavigationList";
 import { NavigationSearch } from "../navigation-search/navigation-search";
 import { NavigationFilter } from "../navigation-filter";
-import { itemTypes, getAvailableTabs, convertData } from "../../utils";
+import { itemTypes, getAvailableTabs, filterDataBySearchQuery, filterDataByActiveTab } from "../../utils";
 import { AutoscrollIcon } from "./icons/AutoscrollIcon";
+import { ItemData } from "./navigation-item/NavigationItem";
 
 export interface SearchFilter {
   searchQuery: string;
@@ -15,7 +16,7 @@ export interface SearchFilter {
 }
 
 export interface NavigationProps {
-  data: Array<any>;
+  data: Array<ItemData>;
   onItemClicked(time: number): void;
   onClose: () => void;
   isLoading: boolean;
@@ -30,6 +31,7 @@ interface NavigationState {
   searchFilter: SearchFilter;
   autoscroll: boolean;
   highlightedMap: Record<number, true>;
+  convertedData: ItemData[];
 }
 
 const logger = getContribLogger({
@@ -59,16 +61,21 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       method: method || "Method not defined"
     });
   };
-  state: NavigationState = {
-    autoscroll: true,
-    widgetWidth: 0,
-    highlightedMap: {},
-    searchFilter: { ...initialSearchFilter },
-  };
+
+  constructor(props: NavigationProps) {
+    super(props);
+    this.state = {
+      autoscroll: true,
+      widgetWidth: 0,
+      highlightedMap: {},
+      searchFilter: { ...initialSearchFilter },
+      convertedData: [],
+    };
+  }
 
   componentDidMount(): void {
     this._log("Creating engine", "componentDidMount");
-    this._setAvailableTabs();
+    this._prepareDataAndTabs();
     this._createEngine();
   }
 
@@ -78,10 +85,9 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   ): void {
     if (previousProps.data !== this.props.data) {
       this._log("Re-creating engine", "componentDidUpdate");
-      this._setAvailableTabs();
+      this._prepareDataAndTabs();
       this._createEngine();
     }
-
     if (previousProps.currentTime !== this.props.currentTime) {
         this._syncVisibleData();
     }
@@ -93,16 +99,26 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     this._engine = null;
   }
 
-  private _setAvailableTabs = () => {
+  private _prepareDataAndTabs = () => {
+    const { searchQuery, activeTab } = this.state.searchFilter;
+    const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
+    this.setState({
+      convertedData: filterDataByActiveTab(filteredBySearchQuery, activeTab)
+    }, () => {;
+      this._setAvailableTabs(filteredBySearchQuery);
+    });
+  };
+
+  private _setAvailableTabs = (data: ItemData[]) => {
     this.setState((state: NavigationState) => {
       return {
         searchFilter: {
           ...state.searchFilter,
-          availableTabs: getAvailableTabs(this.props.data),
+          availableTabs: getAvailableTabs(data),
         }
       };
     });
-  }
+  };
 
   private _createEngine = () => {
     const { data } = this.props;
@@ -123,7 +139,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         return { ...acc, [item.id]: true };
     }, {});
     return highlightedMap;
-  }
+  };
 
   private _syncVisibleData = (forceSnapshot = false) => {
     const { currentTime } = this.props;
@@ -183,14 +199,13 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _handleSearchFilterChange = (property: string) => (
     data: itemTypes | string | null
   ) => {
-    this.setState((state: NavigationState) => {
-      return {
-        searchFilter: {
-          ...state.searchFilter,
-          availableTabs: getAvailableTabs(this.props.data),
-          [property]: data
-        }
-      };
+    this.setState((state: NavigationState) => ({
+      searchFilter: {
+        ...state.searchFilter,
+        [property]: data
+      }
+    }), () => {
+      this._prepareDataAndTabs();
     });
   };
 
@@ -232,8 +247,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             this.props.onItemClicked(n);
           });
         }}
-        filter={this.state.searchFilter}
-        data={this.props.data}
+        data={this.state.convertedData}
         highlightedMap={this.state.highlightedMap}
       />
     );

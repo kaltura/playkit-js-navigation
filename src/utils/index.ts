@@ -181,40 +181,46 @@ export const perpareData = (
   return receivedCuepoints;
 };
 
-
-export const convertData = (
-  data: Array<ItemData> | undefined,
-  filter: SearchFilter,
-): any[] | null => { // TODO: add types
-  let returnValue = data?.slice();
-  if (!returnValue || !returnValue.length) {
-    return null;
-  }
-  // apply the query string filter
-  if (filter.searchQuery) {
-    const lowerQuery = filter.searchQuery.toLowerCase();
-    returnValue = returnValue.filter((item: any) => {
-      return item.indexedText.indexOf(lowerQuery) > -1;
-    });
-
-    returnValue.map(item => {
-      item.groupData = null;
-      return item;
-    });
-  }
-  // apply the activeTab filter
-  if (filter.activeTab !== itemTypes.All) {
-    returnValue = returnValue.filter(
-      (item: any) => item.itemType === filter.activeTab
-    );
-    //clear group values
-    returnValue.map(item => {
-      item.groupData = null;
-      return item;
-    });
-  }
-  return returnValue;
+const clearGroupData = (data: Array<ItemData>) => {
+  return data.map((item: ItemData) => ({
+    ...item,
+    groupData: null
+  }));
 };
+
+export const filterDataBySearchQuery = (
+  data: Array<ItemData> | undefined,
+  searchQuery: string
+) => {
+  if (!data || !data.length) {
+    return [];
+  }
+  if (!searchQuery) {
+    return data;
+  }
+  const lowerQuery = searchQuery.toLowerCase();
+  const filteredData = data.filter((item: ItemData) => {
+    return item.indexedText.indexOf(lowerQuery) > -1;
+  });
+  //clear group values
+  return clearGroupData(filteredData);
+}
+
+export const filterDataByActiveTab = (
+  data: Array<ItemData> | undefined,
+  activeTab: itemTypes
+) => {
+  if (!data || !data.length) {
+    return [];
+  }
+  if (activeTab === itemTypes.All) {
+    return data;
+  }
+  const filteredData = data.filter(
+    (item: any) => item.itemType === activeTab
+  );
+  return clearGroupData(filteredData);
+}
 
 export const getAvailableTabs = (data: any): itemTypes[] => {
   const localData = [...data];
