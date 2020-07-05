@@ -1,76 +1,87 @@
-.navigationItem {
-  display: flex;
-  align-items: flex-start;
-  border-radius: 3px;
-  min-height: 32px;
-  border-left: 2px solid transparent;
-  margin-top: 8px;
-  &.mid,
-  &.last,
-  &.first {
+.navigation-item {
+  &.selected {
+    background: rgba(255, 255, 255, 0.15);
     border-left: 2px solid #01accd;
   }
+
+  display: flex;
+  align-items: flex-start;
+  min-height: 32px;
+  border-left: 2px solid transparent;
   &.first {
+    margin-top: 4px;
     border-top-left-radius: 2px;
     border-bottom-left-radius: 0;
   }
   &.last {
-    margin-top: 0px;
+    margin-top: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 2px;
   }
-  &.mid {
-    margin-top: 0px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+  &.single {
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
   }
   .time {
     margin-right: 4px;
   }
-}
-.navigationItem:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
+  &.mid,
+  &.last {
+    .metadata {
+      visibility: hidden;
+    }
+  }
 
-.content {
-  text-align: left;
-  flex-grow: 1;
-  padding: 6px 0 0 4px;
-  font-size: 14px;
-  //color: #00ffff;
-}
-.metadata {
-  color: #cccccc;
-  text-align: right;
-  padding-top: 8px;
-  font-size: 12px;
-  min-width: 56px;
-}
-.icon {
-  width: 12px;
-  height: 12px;
-  display: inline-block;
-  margin-left: 8px;
-}
-.showMoreButton {
-  font-size: 14px;
-  display: block;
-  background: none;
-  border: none;
-  color: #01accd;
-  padding: 0;
-  margin-bottom: 6px;
-}
-.description {
-  font-size: 12px;
-  color: #cccccc;
-  //color: #00ff00;
-  margin-top: 4px;
-  margin-bottom: 4px;
-}
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .content-inner {
+    width: 100%;
+    position: relative;
+  }
+  .content {
+    text-align: left;
+    flex-grow: 1;
+    padding: 4px 4px 0 6px;
+    font-size: 14px;
+  }
+  .metadata {
+    color: #cccccc;
+    text-align: right;
+    padding-top: 8px;
+    font-size: 12px;
+    min-width: 56px;
+  }
+  .icon {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin-left: 8px;
+  }
+  .show-more-button {
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-block;
+    background: none;
+    border: none;
+    color: #01accd;
+    padding: 0;
+    margin-bottom: 6px;
+  }
+  .description {
+    font-size: 12px;
+    color: #cccccc;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
 
-.thumbnail {
-  display: block;
-  max-width: 160px;
-  max-heigh: 90px;
+  .thumbnail {
+    display: block;
+    max-width: 400px;
+    width: 100%;
+    border-radius: 4px;
+    margin-top: 1px;
+  }
+  .contentText {
+  }
 }
