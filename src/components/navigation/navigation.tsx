@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { KeyboardKeys } from "@playkit-js-contrib/ui";
-import { getContribLogger, CuepointEngine } from "@playkit-js-contrib/common";
+import { getContribLogger, CuepointEngine, Cuepoint } from "@playkit-js-contrib/common";
 import * as styles from "./navigaton.scss";
 import { NavigationList } from "./navigation-list/NavigationList";
 import { NavigationSearch } from "../navigation-search/navigation-search";
@@ -53,7 +53,7 @@ const initialSearchFilter = {
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
-  private _engine: CuepointEngine<any> | null = null;
+  private _engine: CuepointEngine<Cuepoint> | null = null;
   private _keepHighlighted = false;
 
   private _log = (msg: string, method: string) => {
@@ -74,9 +74,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   }
 
   componentDidMount(): void {
-    this._log("Creating engine", "componentDidMount");
-    this._prepareDataAndTabs();
-    this._createEngine();
+    this._log("Create navigation data", "componentDidMount");
+    this._prepareNavigationData();
   }
 
   componentDidUpdate(
@@ -84,9 +83,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     previousState: Readonly<NavigationState>
   ): void {
     if (previousProps.data !== this.props.data) {
-      this._log("Re-creating engine", "componentDidUpdate");
-      this._prepareDataAndTabs();
-      this._createEngine();
+      this._log("Prepare navigation data", "componentDidUpdate");
+      this._prepareNavigationData();
     }
     if (previousProps.currentTime !== this.props.currentTime) {
         this._syncVisibleData();
@@ -99,13 +97,14 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     this._engine = null;
   }
 
-  private _prepareDataAndTabs = () => {
+  private _prepareNavigationData = () => {
     const { searchQuery, activeTab } = this.state.searchFilter;
     const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
     this.setState({
       convertedData: filterDataByActiveTab(filteredBySearchQuery, activeTab)
     }, () => {;
       this._setAvailableTabs(filteredBySearchQuery);
+      this._createEngine();
     });
   };
 
@@ -121,12 +120,12 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _createEngine = () => {
-    const { data } = this.props;
-    if (!data || data.length === 0) {
+    const { convertedData } = this.state;
+    if (!convertedData || convertedData.length === 0) {
         this._engine = null;
         return;
     }
-    this._engine = new CuepointEngine<any>(data);
+    this._engine = new CuepointEngine<Cuepoint>(convertedData);
     this._syncVisibleData();
   };
 
@@ -205,7 +204,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         [property]: data
       }
     }), () => {
-      this._prepareDataAndTabs();
+      this._prepareNavigationData();
     });
   };
 

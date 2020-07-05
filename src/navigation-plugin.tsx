@@ -43,6 +43,7 @@ import {
 } from "./pushNotification";
 import * as styles from "./navigation-plugin.scss";
 import { Navigation } from "./components/navigation";
+import { ItemData } from "./components/navigation/navigation-item/NavigationItem";
 
 const pluginName = `navigation`;
 
@@ -72,7 +73,7 @@ export class NavigationPlugin
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
   private _currentPosition = 0;
-  private _listData: Array<any> = [];
+  private _listData: Array<ItemData> = [];
   private _triggeredByKeyboard = false;
   private _isLoading = false; // TODO: handle is loading state
   private _hasError = false; // TODO: handle error state
