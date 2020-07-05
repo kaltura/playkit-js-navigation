@@ -139,9 +139,8 @@ export class NavigationPlugin
                     method: "_onTimedMetadataLoaded"
                 }
             );
-            // this._handlePendingKsMessages();
-            // this._triggerAndHandleCuepointsData();
-            console.log(">> _onTimedMetadataLoaded", this._lastId3Timestamp)
+            // TODO: update quepoint engine
+            // console.log(">> _onTimedMetadataLoaded", this._lastId3Timestamp)
         } catch (e) {
             logger.debug("failed retrieving id3 tag metadata", {
                 method: "_onTimedMetadataLoaded",
@@ -224,32 +223,46 @@ export class NavigationPlugin
 
   private _handleAoaMessages = ({ messages }: PublicNotificationsEvent): void => {
     logger.debug("handle push notification event", {
-        method: "_handleAoaMessages",
-        data: messages
+      method: "_handleAoaMessages",
+      data: messages
     });
-    let aoaMessages: any[] = messages
-        .filter((message: any) => {
-            return "AnswerOnAir" === message.type;
-        })
-        .map(
-            (qnaMessage: any): any => {
-                return {
-                    id: qnaMessage.id,
-                    startTime: qnaMessage.createdAt.getTime(),
-                    endTime: qnaMessage.createdAt.getTime() + 60000,
-                    updated: false,
-                    qnaMessage
-                };
-            }
-        );
+    const aoaMessages: any[] = messages
+      .filter((message: any) => {
+        return "AnswerOnAir" === message.type;
+      })
+      .map(
+        (qnaMessage: any): any => {
+          return {
+            id: qnaMessage.id,
+            startTime: qnaMessage.createdAt.getTime(),
+            endTime: qnaMessage.createdAt.getTime() + 60000,
+            updated: false,
+            qnaMessage
+          };
+        }
+      );
     console.log(">> aoaMessages:", aoaMessages)
-    // this._listData = ;
-    // this._updateKitchenSink();
-
+    // TODO: should be added to this._listData and update KitchenSink
   };
 
   private _handleThumbMessages = ({ thumbs }: ThumbNotificationsEvent): void => {
-    console.log(">> Thumb RECEIVED, message", thumbs);
+    logger.debug("handle push notification event", {
+      method: "_handleThumbMessages",
+      data: thumbs
+    });
+    const thumbMessages: any[] = thumbs
+      .map(
+        (thumbMessage: any): any => {
+          return {
+              id: thumbMessage.id,
+              // startTime: thumbMessage.createdAt.getTime(),
+              startTime: thumbMessage.createdAt, // TODO: check where aoa has getTime() method
+              thumbMessage
+          };
+        }
+      );
+      console.log(">> thumbMessages", thumbMessages);
+      // TODO: should be added to this._listData and update KitchenSink
   }
 
   private _handleSlideMessages = ({ slides }: SlideNotificationsEvent): void => {
