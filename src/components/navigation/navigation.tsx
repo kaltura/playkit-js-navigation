@@ -125,6 +125,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     const { convertedData } = stateData;
     if (!convertedData || convertedData.length === 0) {
         this._engine = null;
+        this.setState(stateData);
         return;
     }
     this._engine = new CuepointEngine<Cuepoint>(convertedData);
@@ -195,7 +196,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _handleSearchFilterChange = (property: string) => (
     data: itemTypes | string | null
   ) => {
-    const searchFilter = {
+    const searchFilter: SearchFilter = {
       ...this.state.searchFilter,
       [property]: data
     }
