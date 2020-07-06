@@ -97,12 +97,6 @@ export class NavigationPlugin
 
   onPluginSetup(): void {
     this._initKitchensinkAndUpperBarItems();
-    this._initPluginManagers();
-    this._corePlugin.player.addEventListener(
-      this._corePlugin.player.Event.TIME_UPDATE,
-      this._onTimeUpdate
-    );
-    this._addPlayerListeners();
   }
 
   private _addPlayerListeners() {
@@ -155,10 +149,17 @@ export class NavigationPlugin
       const {
         playerConfig: { sources }
       } = this._configs;
+      this._initNotification();
+      this._addPlayerListeners();
       this._constructPluginListener();
       const userId = this.getUserId();
       this._pushNotification.registerToPushServer(sources.id, userId);
     } else {
+      if (!this._corePlugin.player) return;
+      this._corePlugin.player.addEventListener(
+        this._corePlugin.player.Event.TIME_UPDATE,
+        this._onTimeUpdate
+      );
       this._fetchVodData();
     }
   }
@@ -195,7 +196,7 @@ export class NavigationPlugin
     return session.userId;
   }
 
-  private _initPluginManagers(): void {
+  private _initNotification(): void {
     const ks = this._contribServices.getPlayerKS();
     if (!ks) {
       logger.warn(
