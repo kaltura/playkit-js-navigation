@@ -4,9 +4,15 @@ import { itemTypes } from "../../utils";
 import { IconsFactory, IconColors } from "../navigation/icons/IconsFactory";
 
 export interface FilterProps {
-  onChange(value: any): void;
+  onChange(value: itemTypes): void;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
+  resultsAmount: number | null;
+}
+
+export interface TabData {
+  type: itemTypes;
+  isActive: boolean;
 }
 
 interface FilterState {}
@@ -41,7 +47,7 @@ export class NavigationFilter extends Component<FilterProps, FilterState> {
     );
   };
 
-  private _getTabData = (): any[] => {
+  private _getTabData = (): TabData[] => {
     const { availableTabs, activeTab } = this.props;
     const tabs = availableTabs.map((tab: itemTypes) => {
       return {
@@ -53,12 +59,19 @@ export class NavigationFilter extends Component<FilterProps, FilterState> {
   };
 
   render() {
-    const {} = this.props;
+    const { resultsAmount } = this.props;
     return (
       <div className={styles.filterRoot}>
-        {this._getTabData().map((tab) => {
-          return this._renderTab(tab);
-        })}
+        {resultsAmount !== 0 && (
+        <div className={styles.tabsWrapper}>
+          {this._getTabData().map((tab) => {
+            return this._renderTab(tab);
+          })}
+        </div>
+        )}
+        {!!resultsAmount &&
+          <div className={styles.resultsAmount}>{`${resultsAmount} result${resultsAmount > 1 ? 's' : ''} in all content`}</div>
+        }
       </div>
     );
   }

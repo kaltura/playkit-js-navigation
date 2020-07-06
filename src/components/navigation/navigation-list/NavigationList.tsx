@@ -9,9 +9,8 @@ export interface Props {
   autoScroll: boolean;
   onWheel: () => void;
   highlightedMap: Record<string, true>;
+  headerHeight: number;
 }
-
-const HEADER_HEIGHT = 94;
 
 export class NavigationList extends Component<Props> {
   private _listElementRef: HTMLDivElement | null = null;
@@ -43,7 +42,7 @@ export class NavigationList extends Component<Props> {
   private _makeScroll = () => {
     this._listElementRef?.parentElement?.scrollTo(
       0,
-      this._selectedElementY - HEADER_HEIGHT
+      this._selectedElementY - this.props.headerHeight
     );
   };
 
@@ -67,7 +66,7 @@ export class NavigationList extends Component<Props> {
         className={styles.navigationList}
         onWheel={this.props.onWheel}
       >
-        {data.map((item: ItemData, index: number) => {
+        {data.map((item: ItemData) => {
           return (
             <NavigationItem
               onClick={n => this.props.onSeek(n)}
