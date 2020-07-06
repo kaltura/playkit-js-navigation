@@ -15,10 +15,19 @@ export interface TabData {
   isActive: boolean;
 }
 
-interface FilterState {}
+export class NavigationFilter extends Component<FilterProps> {
 
-export class NavigationFilter extends Component<FilterProps, FilterState> {
-  state: FilterState = {};
+  shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
+    const { activeTab, availableTabs, totalResults } = this.props;
+    if (
+      activeTab !== nextProps.activeTab ||
+      availableTabs !== nextProps.availableTabs ||
+      totalResults !== nextProps.totalResults
+    ) {
+        return true;
+    }
+    return false;
+  }
 
   public _handleChange = (type: itemTypes) => {
     this.props.onChange(type);
