@@ -1,21 +1,32 @@
 .filter-root {
   display: flex;
-  height: 32px;
+  flex-direction: column;
   width: 100%;
   margin-top: 8px;
-  .tab {
+  .tabs-wrapper {
     display: flex;
-    flex-grow: 1;
-    justify-content: center;
-    align-items: center;
-    background-color: transparent;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: white;
-    border: none;
-    cursor: pointer;
-    &.active {
-      border-bottom: 2px solid;
+    height: 32px;
+    width: 100%;
+    .tab {
+      display: flex;
+      flex-grow: 1;
+      justify-content: center;
+      align-items: center;
+      background-color: transparent;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: white;
+      border: none;
+      cursor: pointer;
+      &.active {
+        border-bottom: 2px solid;
+      }
     }
+  }
+  .results-amount {
+    margin-top: 8px;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.29;
   }
 }

@@ -13,6 +13,7 @@ export interface SearchFilter {
   searchQuery: string;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
+  resultsAmount: number;
 }
 
 export interface NavigationProps {
@@ -34,6 +35,9 @@ interface NavigationState {
   convertedData: ItemData[];
 }
 
+const HEADER_HEIGHT = 94;
+const HEADER_HEIGHT_WITH_AMOUNT = 120;
+
 const logger = getContribLogger({
   class: "Navigation",
   module: "navigation-plugin"
@@ -48,7 +52,8 @@ const initialSearchFilter = {
     itemTypes.Slide,
     itemTypes.Hotspot,
     itemTypes.AnswerOnAir
-  ]
+  ],
+  resultsAmount: 0
 };
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
@@ -110,10 +115,12 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _setAvailableTabs = (data: ItemData[]) => {
     this.setState((state: NavigationState) => {
+      const { availableTabs, resultsAmount } = getAvailableTabs(data);
       return {
         searchFilter: {
           ...state.searchFilter,
-          availableTabs: getAvailableTabs(data),
+          availableTabs,
+          resultsAmount,
         }
       };
     });
@@ -230,12 +237,14 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           onChange={this._handleSearchFilterChange("activeTab")}
           activeTab={searchFilter.activeTab}
           availableTabs={searchFilter.availableTabs}
+          resultsAmount={searchFilter.searchQuery ? searchFilter.resultsAmount : null}
         />
       </div>
     );
   };
 
   private _renderNavigation = () => {
+    const { searchFilter } = this.state;
     return (
       <NavigationList
         onWheel={() => this.setState({ autoscroll: false })}
@@ -248,6 +257,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         }}
         data={this.state.convertedData}
         highlightedMap={this.state.highlightedMap}
+        headerHeight={searchFilter.searchQuery ? HEADER_HEIGHT_WITH_AMOUNT : HEADER_HEIGHT}
       />
     );
   };

@@ -222,9 +222,11 @@ export const filterDataByActiveTab = (
   return clearGroupData(filteredData);
 }
 
-export const getAvailableTabs = (data: ItemData[]): itemTypes[] => {
+export const getAvailableTabs = (data: ItemData[]): { availableTabs: itemTypes[], resultsAmount: number} => {
   const localData = [...data];
-  const ret = localData.reduce((acc: [], item: ItemData) => {
+  let resultsAmount = 0;
+  const ret: itemTypes[] = localData.reduce((acc: [], item: ItemData) => {
+    resultsAmount = resultsAmount + 1;
     // @ts-ignore
     if (item.itemType && acc.indexOf(item.itemType) === -1) {
       // @ts-ignore
@@ -236,5 +238,5 @@ export const getAvailableTabs = (data: ItemData[]): itemTypes[] => {
     // @ts-ignore
     ret.unshift(itemTypes.All);
   }
-  return ret;
+  return { availableTabs: ret, resultsAmount };
 };
