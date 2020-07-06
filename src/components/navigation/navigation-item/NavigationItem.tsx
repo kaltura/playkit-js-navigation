@@ -14,6 +14,7 @@ export interface ItemData {
   shorthandTitle: string;
   displayDescription: string;
   indexedText: string;
+  originalTime: number;
 }
 
 export interface props {

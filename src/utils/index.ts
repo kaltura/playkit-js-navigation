@@ -50,11 +50,12 @@ export const convertTime = (sec: number): string => {
 };
 
 export const fillData = (
-  item: any,
+  originalItem: any,
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean
 ) => {
+  const item: any = { ...originalItem };
   item.originalTime = item.startTime; // TODO - remove later if un-necessary
   item.startTime = Math.floor(item.startTime / 1000);
   item.displayTime = convertTime(item.startTime);
@@ -115,6 +116,7 @@ export const fillData = (
   indexedText += " " + item.itemType;
   indexedText += " " + item.displayTime;
   item.indexedText = indexedText.toLowerCase();
+  return item;
 };
 
 // main function for data handel. This sorts the cuepoints by startTime, and enriches the items with data so that the
@@ -150,8 +152,7 @@ export const perpareData = (
   receivedCuepoints = receivedCuepoints
     .sort((item1: any, item2: any) => item1.startTime - item2.startTime)
     .map((cuepoint: any) => {
-      fillData(cuepoint, ks, serviceUrl, forceChaptersThumb); // normlise time, extract description and title, find thumbnail if exist etc'
-      return cuepoint;
+      return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb); // normlise time, extract description and title, find thumbnail if exist etc'
     })
     .reduce(
       // mark groupData:
