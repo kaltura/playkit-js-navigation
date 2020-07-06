@@ -13,7 +13,7 @@ export interface SearchFilter {
   searchQuery: string;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
-  resultsAmount: number;
+  totalResults: number;
 }
 
 export interface NavigationProps {
@@ -35,7 +35,7 @@ interface NavigationState {
   convertedData: ItemData[];
 }
 
-const HEADER_HEIGHT = 94;
+const HEADER_HEIGHT = 94; // TODO: calculate Header height in runtime (only once);
 const HEADER_HEIGHT_WITH_AMOUNT = 120;
 
 const logger = getContribLogger({
@@ -53,7 +53,7 @@ const initialSearchFilter = {
     itemTypes.Hotspot,
     itemTypes.AnswerOnAir
   ],
-  resultsAmount: 0
+  totalResults: 0
 };
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
@@ -107,7 +107,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
     this.setState({
       convertedData: filterDataByActiveTab(filteredBySearchQuery, activeTab)
-    }, () => {;
+    }, () => {
       this._setAvailableTabs(filteredBySearchQuery);
       this._createEngine();
     });
@@ -115,12 +115,12 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _setAvailableTabs = (data: ItemData[]) => {
     this.setState((state: NavigationState) => {
-      const { availableTabs, resultsAmount } = getAvailableTabs(data);
+      const { availableTabs, totalResults } = getAvailableTabs(data);
       return {
         searchFilter: {
           ...state.searchFilter,
           availableTabs,
-          resultsAmount,
+          totalResults,
         }
       };
     });
@@ -237,7 +237,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           onChange={this._handleSearchFilterChange("activeTab")}
           activeTab={searchFilter.activeTab}
           availableTabs={searchFilter.availableTabs}
-          resultsAmount={searchFilter.searchQuery ? searchFilter.resultsAmount : null}
+          totalResults={searchFilter.searchQuery ? searchFilter.totalResults : null}
         />
       </div>
     );

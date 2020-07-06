@@ -7,7 +7,7 @@ export interface FilterProps {
   onChange(value: itemTypes): void;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
-  resultsAmount: number | null;
+  totalResults: number | null;
 }
 
 export interface TabData {
@@ -58,19 +58,24 @@ export class NavigationFilter extends Component<FilterProps, FilterState> {
     return tabs;
   };
 
+  private _getResultLabel = (totalResults: number): string => {
+    // TODO: add locale (i18n)
+    return `${totalResults} result${totalResults > 1 ? 's' : ''} in all content`
+  }
+
   render() {
-    const { resultsAmount } = this.props;
+    const { totalResults } = this.props;
     return (
       <div className={styles.filterRoot}>
-        {resultsAmount !== 0 && (
+        {totalResults !== 0 && (
         <div className={styles.tabsWrapper}>
           {this._getTabData().map((tab) => {
             return this._renderTab(tab);
           })}
         </div>
         )}
-        {!!resultsAmount &&
-          <div className={styles.resultsAmount}>{`${resultsAmount} result${resultsAmount > 1 ? 's' : ''} in all content`}</div>
+        {!!totalResults &&
+          <div className={styles.totalResults}>{this._getResultLabel(totalResults)}</div>
         }
       </div>
     );
