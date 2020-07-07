@@ -56,7 +56,7 @@ export class NavigationFilter extends Component<FilterProps> {
     );
   };
 
-  private _getTabData = (): TabData[] => {
+  private _getTabsData = (): TabData[] => {
     const { availableTabs, activeTab } = this.props;
     const tabs = availableTabs.map((tab: itemTypes) => {
       return {
@@ -69,6 +69,7 @@ export class NavigationFilter extends Component<FilterProps> {
 
   private _getResultLabel = (totalResults: number): string => {
     // TODO: add locale (i18n)
+    // TODO: look how player translates plural and single
     return `${totalResults} result${totalResults > 1 ? 's' : ''} in all content`
   }
 
@@ -78,7 +79,7 @@ export class NavigationFilter extends Component<FilterProps> {
       <div className={styles.filterRoot}>
         {totalResults !== 0 && (
         <div className={styles.tabsWrapper}>
-          {this._getTabData().map((tab) => {
+          {this._getTabsData().map((tab) => {
             return this._renderTab(tab);
           })}
         </div>

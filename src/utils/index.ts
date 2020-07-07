@@ -225,17 +225,14 @@ export const filterDataByActiveTab = (
 export const getAvailableTabs = (data: ItemData[]): { availableTabs: itemTypes[], totalResults: number} => {
   const localData = [...data];
   let totalResults = 0;
-  const ret: itemTypes[] = localData.reduce((acc: [], item: ItemData) => {
-    totalResults = totalResults + 1;
-    // @ts-ignore
+  const ret: itemTypes[] = localData.reduce((acc: itemTypes[], item: ItemData) => {
+    totalResults = totalResults + 1
     if (item.itemType && acc.indexOf(item.itemType) === -1) {
-      // @ts-ignore
       acc.push(item.itemType);
     }
     return acc;
   }, []);
   if (ret.length) {
-    // @ts-ignore
     ret.unshift(itemTypes.All);
   }
   return { availableTabs: ret, totalResults };

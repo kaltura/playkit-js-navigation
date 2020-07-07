@@ -19,7 +19,8 @@ export class NavigationList extends Component<Props> {
     if (
       nextProps.highlightedMap !== this.props.highlightedMap ||
       nextProps.data !== this.props.data ||
-      nextProps.autoScroll !== this.props.autoScroll
+      nextProps.autoScroll !== this.props.autoScroll ||
+      nextProps.headerHeight !== this.props.headerHeight
     ) {
       return true;
     }
