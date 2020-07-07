@@ -4,15 +4,30 @@ import { itemTypes } from "../../utils";
 import { IconsFactory, IconColors } from "../navigation/icons/IconsFactory";
 
 export interface FilterProps {
-  onChange(value: any): void;
+  onChange(value: itemTypes): void;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
+  totalResults: number | null;
 }
 
-interface FilterState {}
+export interface TabData {
+  type: itemTypes;
+  isActive: boolean;
+}
 
-export class NavigationFilter extends Component<FilterProps, FilterState> {
-  state: FilterState = {};
+export class NavigationFilter extends Component<FilterProps> {
+
+  shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
+    const { activeTab, availableTabs, totalResults } = this.props;
+    if (
+      activeTab !== nextProps.activeTab ||
+      availableTabs !== nextProps.availableTabs ||
+      totalResults !== nextProps.totalResults
+    ) {
+        return true;
+    }
+    return false;
+  }
 
   public _handleChange = (type: itemTypes) => {
     this.props.onChange(type);
@@ -41,7 +56,7 @@ export class NavigationFilter extends Component<FilterProps, FilterState> {
     );
   };
 
-  private _getTabData = (): any[] => {
+  private _getTabsData = (): TabData[] => {
     const { availableTabs, activeTab } = this.props;
     const tabs = availableTabs.map((tab: itemTypes) => {
       return {
@@ -52,13 +67,26 @@ export class NavigationFilter extends Component<FilterProps, FilterState> {
     return tabs;
   };
 
+  private _getResultLabel = (totalResults: number): string => {
+    // TODO: add locale (i18n)
+    // TODO: look how player translates plural and single
+    return `${totalResults} result${totalResults > 1 ? 's' : ''} in all content`
+  }
+
   render() {
-    const {} = this.props;
+    const { totalResults } = this.props;
     return (
       <div className={styles.filterRoot}>
-        {this._getTabData().map((tab) => {
-          return this._renderTab(tab);
-        })}
+        {totalResults !== 0 && (
+        <div className={styles.tabsWrapper}>
+          {this._getTabsData().map((tab) => {
+            return this._renderTab(tab);
+          })}
+        </div>
+        )}
+        {!!totalResults &&
+          <div className={styles.totalResults}>{this._getResultLabel(totalResults)}</div>
+        }
       </div>
     );
   }

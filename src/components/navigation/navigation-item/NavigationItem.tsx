@@ -14,21 +14,35 @@ export interface ItemData {
   shorthandTitle: string;
   displayDescription: string;
   indexedText: string;
+  originalTime: number;
 }
 
-export interface props {
+export interface Props {
   data?: any;
   onSelected: (a: any) => void;
   selectedItem: boolean;
   onClick: (a: any) => void;
 }
 
-export class NavigationItem extends Component<props> {
+export class NavigationItem extends Component<Props> {
   private _itemElementRef: HTMLDivElement | null  = null;
   state = { showDescription: false };
 
+  shouldComponentUpdate(
+    nextProps: Readonly<Props>,
+  ) {
+      const { selectedItem, data } = this.props;
+      if (
+        selectedItem !== nextProps.selectedItem ||
+        data !== nextProps.data
+      ) {
+          return true;
+      }
+      return false;
+  }
+
   componentDidUpdate(
-    previousProps: Readonly<props>,
+    previousProps: Readonly<Props>,
   ) {
     if (
         this.props.selectedItem &&
@@ -53,7 +67,7 @@ export class NavigationItem extends Component<props> {
     });
   }
 
-  render(props: props) {
+  render(props: Props) {
     const {
       previewImage,
       itemType,

@@ -13,6 +13,7 @@ export interface SearchFilter {
   searchQuery: string;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
+  totalResults: number;
 }
 
 export interface NavigationProps {
@@ -34,6 +35,9 @@ interface NavigationState {
   convertedData: ItemData[];
 }
 
+const HEADER_HEIGHT = 94; // TODO: calculate Header height in runtime (only once);
+const HEADER_HEIGHT_WITH_AMOUNT = 120;
+
 const logger = getContribLogger({
   class: "Navigation",
   module: "navigation-plugin"
@@ -48,13 +52,13 @@ const initialSearchFilter = {
     itemTypes.Slide,
     itemTypes.Hotspot,
     itemTypes.AnswerOnAir
-  ]
+  ],
+  totalResults: 0
 };
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
   private _engine: CuepointEngine<Cuepoint> | null = null;
-  private _keepHighlighted = false;
 
   private _log = (msg: string, method: string) => {
     logger.trace(msg, {
@@ -75,7 +79,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   componentDidMount(): void {
     this._log("Create navigation data", "componentDidMount");
-    this._prepareNavigationData();
+    this._prepareNavigationData(this.state.searchFilter);
   }
 
   componentDidUpdate(
@@ -84,7 +88,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   ): void {
     if (previousProps.data !== this.props.data) {
       this._log("Prepare navigation data", "componentDidUpdate");
-      this._prepareNavigationData();
+      this._prepareNavigationData(this.state.searchFilter);
     }
     if (previousProps.currentTime !== this.props.currentTime) {
         this._syncVisibleData();
@@ -97,36 +101,35 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     this._engine = null;
   }
 
-  private _prepareNavigationData = () => {
-    const { searchQuery, activeTab } = this.state.searchFilter;
+  private _prepareNavigationData = (searchFilter: SearchFilter) => {
+    const { searchQuery, activeTab } = searchFilter;
     const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
-    this.setState({
-      convertedData: filterDataByActiveTab(filteredBySearchQuery, activeTab)
-    }, () => {;
-      this._setAvailableTabs(filteredBySearchQuery);
-      this._createEngine();
-    });
+    const stateData: NavigationState = {
+      ...this.state,
+      convertedData: filterDataByActiveTab(filteredBySearchQuery, activeTab),
+      searchFilter: this._prepareSearchFilter(filteredBySearchQuery, searchFilter),
+    }
+    this._updateEngine(stateData);
   };
 
-  private _setAvailableTabs = (data: ItemData[]) => {
-    this.setState((state: NavigationState) => {
-      return {
-        searchFilter: {
-          ...state.searchFilter,
-          availableTabs: getAvailableTabs(data),
-        }
-      };
-    });
+  private _prepareSearchFilter = (data: ItemData[], searchFilter: SearchFilter): SearchFilter => {
+    const { availableTabs, totalResults } = getAvailableTabs(data);
+    return {
+      ...searchFilter,
+      availableTabs,
+      totalResults,
+    };
   };
 
-  private _createEngine = () => {
-    const { convertedData } = this.state;
+  private _updateEngine = (stateData: NavigationState) => {
+    const { convertedData } = stateData;
     if (!convertedData || convertedData.length === 0) {
         this._engine = null;
+        this.setState(stateData);
         return;
     }
     this._engine = new CuepointEngine<Cuepoint>(convertedData);
-    this._syncVisibleData();
+    this._syncVisibleData(stateData);
   };
 
   private _makeHighlightedMap = (cuepoints: any[]) => {
@@ -140,36 +143,31 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return highlightedMap;
   };
 
-  private _syncVisibleData = (forceSnapshot = false) => {
+  private _syncVisibleData = (stateData: NavigationState = this.state) => {
     const { currentTime } = this.props;
     this.setState((state: NavigationState) => {
+        const newState = { ...state, ...stateData };
         if (!this._engine) {
             return {
+                ...newState,
                 highlightedMap: {}
             };
         }
-        const transcriptUpdate = this._engine.updateTime(currentTime, forceSnapshot);
+        const transcriptUpdate = this._engine.updateTime(currentTime);
         if (transcriptUpdate.snapshot) {
-            this._keepHighlighted = false;
-            return { highlightedMap: this._makeHighlightedMap(transcriptUpdate.snapshot) };
+            return {
+              ...newState,
+              highlightedMap: this._makeHighlightedMap(transcriptUpdate.snapshot)
+            };
         }
         if (!transcriptUpdate.delta) {
-            return state;
+            return newState;
         }
-        const { show, hide } = transcriptUpdate.delta;
-
-        if (show.length === 0 && hide.length > 0) {
-            this._keepHighlighted = true;
-            return state;
-        }
-
+        const { show } = transcriptUpdate.delta;
         if (show.length > 0) {
-            if (this._keepHighlighted) {
-                this._keepHighlighted = false;
-            }
             return { highlightedMap: this._makeHighlightedMap(show) };
         }
-        return state;
+        return newState;
     });
   };
 
@@ -198,14 +196,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _handleSearchFilterChange = (property: string) => (
     data: itemTypes | string | null
   ) => {
-    this.setState((state: NavigationState) => ({
-      searchFilter: {
-        ...state.searchFilter,
-        [property]: data
-      }
-    }), () => {
-      this._prepareNavigationData();
-    });
+    const searchFilter: SearchFilter = {
+      ...this.state.searchFilter,
+      [property]: data
+    }
+    this._prepareNavigationData(searchFilter);
   };
 
   private _renderHeader = () => {
@@ -230,12 +225,14 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           onChange={this._handleSearchFilterChange("activeTab")}
           activeTab={searchFilter.activeTab}
           availableTabs={searchFilter.availableTabs}
+          totalResults={searchFilter.searchQuery ? searchFilter.totalResults : null}
         />
       </div>
     );
   };
 
   private _renderNavigation = () => {
+    const { searchFilter } = this.state;
     return (
       <NavigationList
         onWheel={() => this.setState({ autoscroll: false })}
@@ -248,6 +245,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         }}
         data={this.state.convertedData}
         highlightedMap={this.state.highlightedMap}
+        headerHeight={searchFilter.searchQuery ? HEADER_HEIGHT_WITH_AMOUNT : HEADER_HEIGHT}
       />
     );
   };
