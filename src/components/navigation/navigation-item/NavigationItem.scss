@@ -27,7 +27,7 @@
   }
   &.mid,
   &.last {
-    .metadata {
+    .metadata span {
       visibility: hidden;
     }
   }
@@ -42,15 +42,17 @@
   .content {
     text-align: left;
     flex-grow: 1;
-    padding: 4px 4px 0 6px;
+    padding: 0;
     font-size: 14px;
+    position: relative;
   }
   .metadata {
     color: #cccccc;
     text-align: right;
     padding-top: 8px;
     font-size: 12px;
-    min-width: 56px;
+    min-width: 67px;
+    padding-right: 8px;
   }
   .icon {
     width: 12px;
@@ -83,5 +85,17 @@
     margin-top: 1px;
   }
   .contentText {
+    position: absolute;
+    padding-left: 2px;
+    padding-top: 6px;
+    top: 0;
+    left: 0;
+    right: 0;
+    min-height: 36px;
+    background-image: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0),
+      rgba(0, 0, 0, 0.6) 50%
+    );
   }
 }

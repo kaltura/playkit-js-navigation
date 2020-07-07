@@ -24,34 +24,48 @@ export interface props {
 }
 
 export class NavigationItem extends Component<props> {
-  private _itemElementRef: HTMLDivElement | null  = null;
-  state = { showDescription: false };
+  matchHeight() {
+    if (this._contentContainer!.offsetHeight) {
+      this._content!.style.minHeight =
+        this._contentContainer!.offsetHeight + "px";
+    }
+  }
+  private _content: HTMLDivElement | null = null;
+  private _contentContainer: HTMLDivElement | null = null;
+  private _itemElementRef: HTMLDivElement | null = null;
 
-  componentDidUpdate(
-    previousProps: Readonly<props>,
-  ) {
+  state = { expandedText: false };
+
+  componentDidUpdate(previousProps: Readonly<props>) {
     if (
-        this.props.selectedItem &&
-        (!this.props.data.groupData ||
-          this.props.data.groupData === groupTypes.first)
+      this.props.selectedItem &&
+      (!this.props.data.groupData ||
+        this.props.data.groupData === groupTypes.first)
     ) {
       this.props.onSelected({
         time: this.props.data.startTime,
         itemY: this._itemElementRef?.offsetTop
       });
     }
+    this.matchHeight();
   }
 
   private _handleClickHandler = () => {
     this.props.onClick(this.props.data.startTime);
-  }
+  };
 
   private _handleExpandChange = (event: Event) => {
     event.stopImmediatePropagation();
-    this.setState({
-      showDescription: !this.state.showDescription
-    });
-  }
+    // if possible - calculate here the new height - for now it will happen post setState
+    this.setState(
+      {
+        expandedText: !this.state.expandedText
+      },
+      () => {
+        this.matchHeight();
+      }
+    );
+  };
 
   render(props: props) {
     const {
@@ -80,40 +94,43 @@ export class NavigationItem extends Component<props> {
           <span className={styles.time}>{displayTime}</span>
           <IconsFactory iconType={itemType}></IconsFactory>
         </div>
-        <div className={styles.content}>
-          <div className={styles.contentInner}>
-            {previewImage && (
-              <img
-                src={previewImage}
-                alt={"Slide Preview"}
-                className={styles.thumbnail}
-              />
+        <div
+          className={styles.content}
+          ref={node => {
+            this._content = node;
+          }}
+        >
+          {previewImage && (
+            <img
+              src={previewImage}
+              alt={"Slide Preview"}
+              className={styles.thumbnail}
+            />
+          )}
+          <div
+            className={styles.contentText}
+            ref={node => {
+              this._contentContainer = node;
+            }}
+          >
+            {shorthandTitle && !this.state.expandedText && (
+              <span className={styles.title}>{shorthandTitle}</span>
             )}
-
-            <div className={styles.contentText}>
-              {shorthandTitle && !this.state.showDescription && (
-                <span className={styles.title}>{shorthandTitle}</span>
-              )}
-
-              {displayTitle &&
-                (!shorthandTitle || this.state.showDescription) && (
-                  <span className={styles.title}>{displayTitle}</span>
-                )}
-
-              {displayDescription && this.state.showDescription && (
-                <div className={styles.description}>{displayDescription}</div>
-              )}
-              {(displayDescription || shorthandTitle) && (
-                <button
-                  className={styles.showMoreButton}
-                  // consider use method and stopPropagation
-                  onClick={this._handleExpandChange}
-                >
-                  {/* TODO - locale */}
-                  {this.state.showDescription ? "Read Less" : "Read More"}
-                </button>
-              )}
-            </div>
+            {displayTitle && (!shorthandTitle || this.state.expandedText) && (
+              <span className={styles.title}>{displayTitle}</span>
+            )}
+            {displayDescription && this.state.expandedText && (
+              <div className={styles.description}>{displayDescription}</div>
+            )}
+            {(displayDescription || shorthandTitle) && (
+              <button
+                className={styles.showMoreButton}
+                onClick={this._handleExpandChange}
+              >
+                {/* TODO - locale */}
+                {this.state.expandedText ? "Read Less" : "Read More"}
+              </button>
+            )}
           </div>
         </div>
       </div>
