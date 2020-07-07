@@ -57,6 +57,7 @@ export class NavigationItem extends Component<Props> {
   }
 
   private _handleClickHandler = () => {
+    console.log(">> start time of item", this.props.data.startTime)
     this.props.onClick(this.props.data.startTime);
   }
 

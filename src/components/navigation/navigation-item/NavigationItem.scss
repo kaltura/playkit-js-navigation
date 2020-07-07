@@ -27,7 +27,7 @@
   }
   &.mid,
   &.last {
-    .metadata {
+    .metadata .time {
       visibility: hidden;
     }
   }

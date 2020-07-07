@@ -2,12 +2,14 @@ import { h, Component } from "preact";
 import * as styles from "./navigation-filter.scss";
 import { itemTypes } from "../../utils";
 import { IconsFactory, IconColors } from "../navigation/icons/IconsFactory";
+// const { withText } = (KalturaPlayer as any).ui.preacti18n; // TODO: expand KalturaPlayer types (contrib) with preacti18n
 
 export interface FilterProps {
   onChange(value: itemTypes): void;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
   totalResults: number | null;
+  all?: string;
 }
 
 export interface TabData {
@@ -15,8 +17,14 @@ export interface TabData {
   isActive: boolean;
 }
 
+// @withText({
+//   all: "navigation.all",
+//   chapters: "navigation.chapters",
+//   slides: "navigation.slides",
+//   answerOnAir: "navigation.answerOnAir",
+//   hotspots: "navigation.hotspots"
+// })
 export class NavigationFilter extends Component<FilterProps> {
-
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const { activeTab, availableTabs, totalResults } = this.props;
     if (
@@ -45,6 +53,7 @@ export class NavigationFilter extends Component<FilterProps> {
         onClick={() => this._handleChange(tab.type)}
       >
         {tab.type === itemTypes.All ? (
+          // <span>{this.props.all}</span>
           <span>All</span>
         ) : (
           <IconsFactory

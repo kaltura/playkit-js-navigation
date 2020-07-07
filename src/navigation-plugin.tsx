@@ -11,7 +11,8 @@ import {
 } from "@playkit-js-contrib/plugin";
 import {
   getContribLogger,
-  KalturaLiveServices
+  KalturaLiveServices,
+  debounce
 } from "@playkit-js-contrib/common";
 import {
   KitchenSinkContentRendererProps,
@@ -32,7 +33,7 @@ import {
   KalturaMultiResponse,
   KalturaRequest
 } from "kaltura-typescript-client";
-import { getConfigValue, perpareData } from "./utils/index";
+import { getConfigValue, prepareVodData, prepareLiveData } from "./utils/index";
 import {
   PushNotification,
   PushNotificationEventTypes,
@@ -78,11 +79,15 @@ export class NavigationPlugin
   private _isLoading = false; // TODO: handle is loading state
   private _hasError = false; // TODO: handle error state
   private _lastId3Timestamp: number | null = null;
+  private _debouncedUpdateKitchenSink = debounce(
+    this._updateKitchenSink,
+    1000 // TODO: move to config
+  )
 
   constructor(
     private _corePlugin: CorePlugin,
     private _contribServices: ContribServices,
-    private _configs: ContribPluginConfigs<NavigationPluginConfig>,
+    private _configs: ContribPluginConfigs<NavigationPluginConfig>
   ) {
     const { playerConfig } = this._configs;
     this._kalturaClient.setOptions({
@@ -222,6 +227,18 @@ export class NavigationPlugin
     });
   }
 
+  private _updateData = (cuePointData: any[]) => {
+    const data = prepareLiveData(
+      this._listData,
+      cuePointData,
+      this._configs.playerConfig.provider.ks,
+      this._configs.playerConfig.provider.env.serviceUrl,
+      this._corePlugin.config.forceChaptersThumb
+    );
+    this._listData = data;
+    this._debouncedUpdateKitchenSink();
+  }
+
   private _handleAoaMessages = ({ messages }: PublicNotificationsEvent): void => {
     logger.debug("handle push notification event", {
       method: "_handleAoaMessages",
@@ -231,19 +248,8 @@ export class NavigationPlugin
       .filter((message: any) => {
         return "AnswerOnAir" === message.type;
       })
-      .map(
-        (qnaMessage: any): any => {
-          return {
-            id: qnaMessage.id,
-            startTime: qnaMessage.createdAt.getTime(),
-            endTime: qnaMessage.createdAt.getTime() + 60000,
-            updated: false,
-            qnaMessage
-          };
-        }
-      );
-    console.log(">> aoaMessages:", aoaMessages)
-    // TODO: should be added to this._listData and update KitchenSink
+    console.log(">> aoa RECEIVED, message", aoaMessages)
+    this._updateData(aoaMessages);
   };
 
   private _handleThumbMessages = ({ thumbs }: ThumbNotificationsEvent): void => {
@@ -251,23 +257,17 @@ export class NavigationPlugin
       method: "_handleThumbMessages",
       data: thumbs
     });
-    const thumbMessages: any[] = thumbs
-      .map(
-        (thumbMessage: any): any => {
-          return {
-              id: thumbMessage.id,
-              // startTime: thumbMessage.createdAt.getTime(),
-              startTime: thumbMessage.createdAt, // TODO: check where aoa has getTime() method
-              thumbMessage
-          };
-        }
-      );
-      console.log(">> thumbMessages", thumbMessages);
-      // TODO: should be added to this._listData and update KitchenSink
+      console.log(">> Thumb RECEIVED, message", thumbs);
+      this._updateData(thumbs);
   }
 
   private _handleSlideMessages = ({ slides }: SlideNotificationsEvent): void => {
+    logger.debug("handle push notification event", {
+      method: "_handleSlideMessages",
+      data: slides
+    });
     console.log(">> Slide RECEIVED, message", slides);
+    this._updateData(slides);
   }
 
   private _handlePushNotificationError = ({ error }: NotificationsErrorEvent): void => {
@@ -412,7 +412,7 @@ export class NavigationPlugin
     requests.push(chaptersAndSlidesRequest, hotspotsRequest);
     this._kalturaClient.multiRequest(requests).then(
       (responses: KalturaMultiResponse | null) => {
-        const sortedData = perpareData(
+        const sortedData = prepareVodData(
           responses,
           this._configs.playerConfig.provider.ks,
           this._configs.playerConfig.provider.env.serviceUrl,
