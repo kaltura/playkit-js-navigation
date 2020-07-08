@@ -26,6 +26,8 @@ export enum itemTypes {
   Hotspot = "Hotspot"
 }
 
+const MAX_CHARACTERS = 77;
+
 // TODO check if exist in QNA and if QNA did it more elegant
 export const convertTime = (sec: number): string => {
   const hours = Math.floor(sec / 3600);
@@ -89,9 +91,9 @@ export const fillData = (
       }
       break;
   }
-  // TODO const this 
-  if (item.displayTitle && item.displayTitle.length > 77) {
-    let elipsisString = item.displayTitle.slice(0, 77);
+  // TODO const this
+  if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS) {
+    let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
     item.shorthandTitle = elipsisString + "... ";
   }
@@ -100,9 +102,9 @@ export const fillData = (
     item.displayDescription &&
     item.displayDescription.length > 79
   ) {
-    let elipsisDescription = item.displayTitle.slice(0, 77);
+    let elipsisDescription = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisDescription = elipsisDescription.trim();
-    item.shorthandDesctipyion = elipsisDescription + "... ";
+    item.shorthandDescription = elipsisDescription + "... ";
   }
 
   // indexed text to save calculation at runtime + filter
@@ -116,7 +118,7 @@ export const fillData = (
   indexedText += " " + item.itemType;
   indexedText += " " + item.displayTime;
   item.indexedText = indexedText.toLowerCase();
-  item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
+  item.hasShowMore = item.shorthandDesctipyion || item.shorthandDesctipyion;
   return item;
 };
 

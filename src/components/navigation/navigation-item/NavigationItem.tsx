@@ -10,9 +10,10 @@ export interface ItemData {
   itemType: itemTypes;
   displayTime: string;
   groupData: groupTypes | null;
-  displayTitle: string;
-  shorthandTitle: string;
-  displayDescription: string;
+  displayTitle?: string;
+  shorthandTitle?: string;
+  displayDescription?: string;
+  shorthandDescription?: string;
   indexedText: string;
   originalTime: number;
   hasShowMore: boolean;
