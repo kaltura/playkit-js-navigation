@@ -45,8 +45,8 @@ export class NavigationItem extends Component<Props, State> {
       // no point point calculate height of there is no mechanism of show-more button
       return;
     }
-    this._itemElementRef!.style.minHeight =
-      this._textContainerRef!.offsetHeight + "px";
+    this._itemElementRef.style.minHeight =
+      this._textContainerRef.offsetHeight + "px";
   }
 
   shouldComponentUpdate(
