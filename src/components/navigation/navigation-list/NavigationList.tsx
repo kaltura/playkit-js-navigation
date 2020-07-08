@@ -8,6 +8,7 @@ export interface Props {
   onSeek: (n: number) => void;
   autoScroll: boolean;
   onWheel: () => void;
+  widgetWidth: number;
   highlightedMap: Record<string, true>;
   headerHeight: number;
 }
@@ -20,7 +21,9 @@ export class NavigationList extends Component<Props> {
       nextProps.highlightedMap !== this.props.highlightedMap ||
       nextProps.data !== this.props.data ||
       nextProps.autoScroll !== this.props.autoScroll ||
-      nextProps.headerHeight !== this.props.headerHeight
+      nextProps.headerHeight !== this.props.headerHeight ||
+      (nextProps.widgetWidth &&
+        nextProps.widgetWidth !== this.props.widgetWidth)
     ) {
       return true;
     }
@@ -33,12 +36,6 @@ export class NavigationList extends Component<Props> {
       this._makeScroll();
     }
   }
-
-  componentDidMount() {
-  };
-
-  componentWillUnmount() {
-  };
 
   private _makeScroll = () => {
     this._listElementRef?.parentElement?.scrollTo(
@@ -55,7 +52,7 @@ export class NavigationList extends Component<Props> {
   };
 
   render(props: Props) {
-    const { data } = this.props;
+    const { data, widgetWidth } = this.props;
     if (!data.length) {
       return <EmptyList />;
     }
@@ -70,14 +67,15 @@ export class NavigationList extends Component<Props> {
         {data.map((item: ItemData) => {
           return (
             <NavigationItem
+              widgetWidth={widgetWidth}
               onClick={n => this.props.onSeek(n)}
               selectedItem={this.props.highlightedMap[item.id]}
               key={item.id}
               data={item}
               onSelected={this.updateSelected}
             />
-          )})
-        }
+          );
+        })}
       </div>
     );
   }
