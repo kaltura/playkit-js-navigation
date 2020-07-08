@@ -31,6 +31,8 @@ export enum cuePointTypes {
   Thumb = "thumbCuePoint.Thumb",
 }
 
+const MAX_CHARACTERS = 77;
+
 // TODO check if exist in QNA and if QNA did it more elegant
 export const convertTime = (sec: number): string => {
   const hours = Math.floor(sec / 3600);
@@ -106,9 +108,9 @@ export const fillData = (
       }
       break;
   }
-
-  if (item.displayTitle && item.displayTitle.length > 79) {
-    let elipsisString = item.displayTitle.slice(0, 79);
+  // TODO const this
+  if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS) {
+    let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
     item.shorthandTitle = elipsisString + "... ";
   }
@@ -117,9 +119,9 @@ export const fillData = (
     item.displayDescription &&
     item.displayDescription.length > 79
   ) {
-    let elipsisDescription = item.displayTitle.slice(0, 79);
+    let elipsisDescription = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisDescription = elipsisDescription.trim();
-    item.shorthandDesctipyion = elipsisDescription + "... ";
+    item.shorthandDescription = elipsisDescription + "... ";
   }
 
   // indexed text to save calculation at runtime + filter
@@ -135,6 +137,7 @@ export const fillData = (
   }
   indexedText += " " + item.displayTime;
   item.indexedText = indexedText.toLowerCase();
+  item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
   return item;
 };
 
@@ -227,7 +230,7 @@ export const filterDataBySearchQuery = (
   });
   //clear group values
   return clearGroupData(filteredData);
-}
+};
 
 export const filterDataByActiveTab = (
   data: Array<ItemData> | undefined,
@@ -243,18 +246,23 @@ export const filterDataByActiveTab = (
     (item: ItemData) => item.itemType === activeTab
   );
   return clearGroupData(filteredData);
-}
+};
 
-export const getAvailableTabs = (data: ItemData[]): { availableTabs: itemTypes[], totalResults: number} => {
+export const getAvailableTabs = (
+  data: ItemData[]
+): { availableTabs: itemTypes[]; totalResults: number } => {
   const localData = [...data];
   let totalResults = 0;
-  const ret: itemTypes[] = localData.reduce((acc: itemTypes[], item: ItemData) => {
-    totalResults = totalResults + 1
-    if (item.itemType && acc.indexOf(item.itemType) === -1) {
-      acc.push(item.itemType);
-    }
-    return acc;
-  }, []);
+  const ret: itemTypes[] = localData.reduce(
+    (acc: itemTypes[], item: ItemData) => {
+      totalResults = totalResults + 1;
+      if (item.itemType && acc.indexOf(item.itemType) === -1) {
+        acc.push(item.itemType);
+      }
+      return acc;
+    },
+    []
+  );
   if (ret.length) {
     ret.unshift(itemTypes.All);
   }

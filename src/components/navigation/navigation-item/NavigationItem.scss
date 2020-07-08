@@ -1,13 +1,19 @@
 .navigation-item {
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+  min-height: 28px;
+  border-left: 2px solid transparent;
+
   &.selected {
     background: rgba(255, 255, 255, 0.15);
     border-left: 2px solid #01accd;
   }
+  &.first,
+  &.mid {
+    box-shadow: 0px -1px 0px black inset;
+  }
 
-  display: flex;
-  align-items: flex-start;
-  min-height: 32px;
-  border-left: 2px solid transparent;
   &.first {
     margin-top: 4px;
     border-top-left-radius: 2px;
@@ -27,7 +33,7 @@
   }
   &.mid,
   &.last {
-    .metadata .time {
+    .metadata span {
       visibility: hidden;
     }
   }
@@ -35,29 +41,22 @@
   &:hover {
     background: rgba(255, 255, 255, 0.2);
   }
-  .content-inner {
-    width: 100%;
-    position: relative;
-  }
   .content {
+    position: relative;
     text-align: left;
     flex-grow: 1;
-    padding: 4px 4px 0 6px;
     font-size: 14px;
+    margin-bottom: 4px;
   }
   .metadata {
     color: #cccccc;
     text-align: right;
-    padding-top: 8px;
     font-size: 12px;
-    min-width: 56px;
+    min-width: 64px;
+    padding-right: 8px;
+    padding-top: 6px;
   }
-  .icon {
-    width: 12px;
-    height: 12px;
-    display: inline-block;
-    margin-left: 8px;
-  }
+
   .show-more-button {
     cursor: pointer;
     font-size: 14px;
@@ -65,12 +64,11 @@
     background: none;
     border: none;
     color: #01accd;
+    margin: 0;
     padding: 0;
-    margin-bottom: 6px;
   }
   .description {
     font-size: 12px;
-    color: #cccccc;
     margin-top: 4px;
     margin-bottom: 4px;
   }
@@ -82,6 +80,16 @@
     border-radius: 4px;
     margin-top: 1px;
   }
+
+  .hasImage .contentText {
+    background: rgba(0, 0, 0, 0.65);
+  }
+
   .contentText {
+    padding: 4px 4px 10px 4px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
   }
 }
