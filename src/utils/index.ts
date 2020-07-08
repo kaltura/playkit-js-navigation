@@ -118,7 +118,7 @@ export const fillData = (
   indexedText += " " + item.itemType;
   indexedText += " " + item.displayTime;
   item.indexedText = indexedText.toLowerCase();
-  item.hasShowMore = item.shorthandDesctipyion || item.shorthandDesctipyion;
+  item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
   return item;
 };
 
