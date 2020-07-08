@@ -15,57 +15,82 @@ export interface ItemData {
   displayDescription: string;
   indexedText: string;
   originalTime: number;
+  hasShowMore: boolean;
 }
 
 export interface Props {
   data?: any;
   onSelected: (a: any) => void;
   selectedItem: boolean;
+  widgetWidth: number;
   onClick: (a: any) => void;
 }
 
-export class NavigationItem extends Component<Props> {
-  private _itemElementRef: HTMLDivElement | null  = null;
-  state = { showDescription: false };
+export interface State {
+  expandText: boolean;
+}
+
+export class NavigationItem extends Component<Props, State> {
+  private _itemElementRef: HTMLDivElement | null = null;
+  private _textContainer: HTMLDivElement | null = null;
+  state = { expandText: false };
+
+  matchHeight() {
+    if (
+      !this.props.data.hasShowMore ||
+      !this._textContainer ||
+      !this._itemElementRef
+    ) {
+      // no point point calculate height of there is no mechanism of show-more button
+      return;
+    }
+    this._itemElementRef!.style.minHeight =
+      this._textContainer!.offsetHeight + "px";
+  }
 
   shouldComponentUpdate(
     nextProps: Readonly<Props>,
+    nextState: Readonly<State>
   ) {
-      const { selectedItem, data } = this.props;
-      if (
-        selectedItem !== nextProps.selectedItem ||
-        data !== nextProps.data
-      ) {
-          return true;
-      }
-      return false;
+    const { selectedItem, data, widgetWidth } = this.props;
+    if (
+      selectedItem !== nextProps.selectedItem ||
+      data !== nextProps.data ||
+      nextState.expandText !== this.state.expandText ||
+      (data.hasShowMore && nextProps.widgetWidth !== widgetWidth)
+    ) {
+      return true;
+    }
+    return false;
   }
 
-  componentDidUpdate(
-    previousProps: Readonly<Props>,
-  ) {
+  componentDidUpdate(previousProps: Readonly<Props>) {
     if (
-        this.props.selectedItem &&
-        (!this.props.data.groupData ||
-          this.props.data.groupData === groupTypes.first)
+      this.props.selectedItem &&
+      (!this.props.data.groupData ||
+        this.props.data.groupData === groupTypes.first)
     ) {
       this.props.onSelected({
         time: this.props.data.startTime,
         itemY: this._itemElementRef?.offsetTop
       });
     }
+    this.matchHeight();
+  }
+  componentDidMount() {
+    this.matchHeight();
   }
 
   private _handleClickHandler = () => {
     this.props.onClick(this.props.data.startTime);
-  }
+  };
 
   private _handleExpandChange = (event: Event) => {
     event.stopImmediatePropagation();
     this.setState({
-      showDescription: !this.state.showDescription
+      expandText: !this.state.expandText
     });
-  }
+  };
 
   render(props: Props) {
     const {
@@ -75,6 +100,7 @@ export class NavigationItem extends Component<Props> {
       groupData,
       displayTitle,
       shorthandTitle,
+      hasShowMore,
       displayDescription
     } = props.data;
     const { selectedItem } = this.props;
@@ -94,40 +120,46 @@ export class NavigationItem extends Component<Props> {
           <span className={styles.time}>{displayTime}</span>
           <IconsFactory iconType={itemType}></IconsFactory>
         </div>
-        <div className={styles.content}>
-          <div className={styles.contentInner}>
-            {previewImage && (
-              <img
-                src={previewImage}
-                alt={"Slide Preview"}
-                className={styles.thumbnail}
-              />
+        <div
+          className={[
+            styles.content,
+            previewImage ? styles.hasImage : null
+          ].join(" ")}
+        >
+          {previewImage && (
+            <img
+              src={previewImage}
+              alt={"Slide Preview"}
+              className={styles.thumbnail}
+            />
+          )}
+
+          <div
+            className={styles.contentText}
+            ref={node => {
+              this._textContainer = node;
+            }}
+          >
+            {shorthandTitle && !this.state.expandText && (
+              <span className={styles.title}>{shorthandTitle}</span>
             )}
 
-            <div className={styles.contentText}>
-              {shorthandTitle && !this.state.showDescription && (
-                <span className={styles.title}>{shorthandTitle}</span>
-              )}
+            {displayTitle && (!shorthandTitle || this.state.expandText) && (
+              <span className={styles.title}>{displayTitle}</span>
+            )}
 
-              {displayTitle &&
-                (!shorthandTitle || this.state.showDescription) && (
-                  <span className={styles.title}>{displayTitle}</span>
-                )}
-
-              {displayDescription && this.state.showDescription && (
-                <div className={styles.description}>{displayDescription}</div>
-              )}
-              {(displayDescription || shorthandTitle) && (
-                <button
-                  className={styles.showMoreButton}
-                  // consider use method and stopPropagation
-                  onClick={this._handleExpandChange}
-                >
-                  {/* TODO - locale */}
-                  {this.state.showDescription ? "Read Less" : "Read More"}
-                </button>
-              )}
-            </div>
+            {displayDescription && this.state.expandText && (
+              <div className={styles.description}>{displayDescription}</div>
+            )}
+            {hasShowMore && (
+              <button
+                className={styles.showMoreButton}
+                onClick={this._handleExpandChange}
+              >
+                {/* TODO - locale */}
+                {this.state.expandText ? "Read Less" : "Read More"}
+              </button>
+            )}
           </div>
         </div>
       </div>

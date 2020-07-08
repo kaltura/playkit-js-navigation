@@ -82,7 +82,7 @@ export class NavigationPlugin
   constructor(
     private _corePlugin: CorePlugin,
     private _contribServices: ContribServices,
-    private _configs: ContribPluginConfigs<NavigationPluginConfig>,
+    private _configs: ContribPluginConfigs<NavigationPluginConfig>
   ) {
     const { playerConfig } = this._configs;
     this._kalturaClient.setOptions({
@@ -104,45 +104,43 @@ export class NavigationPlugin
     this._removePlayerListeners();
     this._corePlugin.player.addEventListener(
       this._corePlugin.player.Event.TIMED_METADATA,
-        this._onTimedMetadataLoaded
+      this._onTimedMetadataLoaded
     );
   }
 
   private _removePlayerListeners() {
-      if (!this._corePlugin.player) return;
-      this._corePlugin.player.removeEventListener(
-        this._corePlugin.player.Event.TIMED_METADATA,
-          this._onTimedMetadataLoaded
-      );
+    if (!this._corePlugin.player) return;
+    this._corePlugin.player.removeEventListener(
+      this._corePlugin.player.Event.TIMED_METADATA,
+      this._onTimedMetadataLoaded
+    );
   }
 
   private _onTimedMetadataLoaded = (event: any): void => {
     const id3TagCues = event.payload.cues.filter(
-        (cue: any) => cue.value && cue.value.key === "TEXT"
+      (cue: any) => cue.value && cue.value.key === "TEXT"
     );
     if (id3TagCues.length) {
-        try {
-            this._lastId3Timestamp = JSON.parse(
-                id3TagCues[id3TagCues.length - 1].value.data
-            ).timestamp;
-            logger.debug(
-                `Calling cuepoint engine updateTime with id3 timestamp: ${
-                    this._lastId3Timestamp
-                }`,
-                {
-                    method: "_onTimedMetadataLoaded"
-                }
-            );
+      try {
+        this._lastId3Timestamp = JSON.parse(
+          id3TagCues[id3TagCues.length - 1].value.data
+        ).timestamp;
+        logger.debug(
+          `Calling cuepoint engine updateTime with id3 timestamp: ${this._lastId3Timestamp}`,
+          {
+            method: "_onTimedMetadataLoaded"
+          }
+        );
             // TODO: update quepoint engine
             // console.log(">> _onTimedMetadataLoaded", this._lastId3Timestamp)
-        } catch (e) {
-            logger.debug("failed retrieving id3 tag metadata", {
-                method: "_onTimedMetadataLoaded",
-                data: e
-            });
-        }
+      } catch (e) {
+        logger.debug("failed retrieving id3 tag metadata", {
+          method: "_onTimedMetadataLoaded",
+          data: e
+        });
+      }
     }
-};
+  };
 
   onMediaLoad(): void {
     if (this._corePlugin.player.isLive()) {
@@ -155,10 +153,13 @@ export class NavigationPlugin
       const userId = this.getUserId();
       this._pushNotification.registerToPushServer(sources.id, userId);
     } else {
-      if (!this._corePlugin.player) return;
       this._corePlugin.player.addEventListener(
         this._corePlugin.player.Event.TIME_UPDATE,
         this._onTimeUpdate
+      );
+      this._corePlugin.player.addEventListener(
+        this._corePlugin.player.Event.RESIZE,
+        () => this._updateKitchenSink()
       );
       this._fetchVodData();
     }
@@ -222,7 +223,9 @@ export class NavigationPlugin
     });
   }
 
-  private _handleAoaMessages = ({ messages }: PublicNotificationsEvent): void => {
+  private _handleAoaMessages = ({
+    messages
+  }: PublicNotificationsEvent): void => {
     logger.debug("handle push notification event", {
       method: "_handleAoaMessages",
       data: messages
@@ -231,46 +234,49 @@ export class NavigationPlugin
       .filter((message: any) => {
         return "AnswerOnAir" === message.type;
       })
-      .map(
-        (qnaMessage: any): any => {
-          return {
-            id: qnaMessage.id,
-            startTime: qnaMessage.createdAt.getTime(),
-            endTime: qnaMessage.createdAt.getTime() + 60000,
-            updated: false,
-            qnaMessage
-          };
+      .map((qnaMessage: any): any => {
+        return {
+          id: qnaMessage.id,
+          startTime: qnaMessage.createdAt.getTime(),
+          endTime: qnaMessage.createdAt.getTime() + 60000,
+          updated: false,
+          qnaMessage
+        };
         }
       );
     console.log(">> aoaMessages:", aoaMessages)
     // TODO: should be added to this._listData and update KitchenSink
   };
 
-  private _handleThumbMessages = ({ thumbs }: ThumbNotificationsEvent): void => {
+  private _handleThumbMessages = ({
+    thumbs
+  }: ThumbNotificationsEvent): void => {
     logger.debug("handle push notification event", {
       method: "_handleThumbMessages",
       data: thumbs
     });
-    const thumbMessages: any[] = thumbs
-      .map(
-        (thumbMessage: any): any => {
-          return {
-              id: thumbMessage.id,
-              // startTime: thumbMessage.createdAt.getTime(),
-              startTime: thumbMessage.createdAt, // TODO: check where aoa has getTime() method
-              thumbMessage
-          };
+    const thumbMessages: any[] = thumbs.map((thumbMessage: any): any => {
+      return {
+        id: thumbMessage.id,
+        // startTime: thumbMessage.createdAt.getTime(),
+        startTime: thumbMessage.createdAt, // TODO: check where aoa has getTime() method
+        thumbMessage
+      };
         }
       );
       console.log(">> thumbMessages", thumbMessages);
-      // TODO: should be added to this._listData and update KitchenSink
+    // TODO: should be added to this._listData and update KitchenSink
   }
 
-  private _handleSlideMessages = ({ slides }: SlideNotificationsEvent): void => {
+  private _handleSlideMessages = ({
+    slides
+  }: SlideNotificationsEvent): void => {
     console.log(">> Slide RECEIVED, message", slides);
   }
 
-  private _handlePushNotificationError = ({ error }: NotificationsErrorEvent): void => {
+  private _handlePushNotificationError = ({
+    error
+  }: NotificationsErrorEvent): void => {
     console.log(">> Push notification error", error);
   }
 
@@ -434,7 +440,7 @@ ContribPluginManager.registerPlugin(
     return new NavigationPlugin(
       data.corePlugin,
       data.contribServices,
-      data.configs,
+      data.configs
     );
   },
   {
@@ -442,7 +448,7 @@ ContribPluginManager.registerPlugin(
       expandOnFirstPlay: true,
       position: KitchenSinkPositions.Left,
       forceChaptersThumb: false,
-      userRole: UserRole.anonymousRole,
+      userRole: UserRole.anonymousRole
     }
   }
 );
