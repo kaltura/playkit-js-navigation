@@ -26,6 +26,11 @@ export enum itemTypes {
   Hotspot = "Hotspot"
 }
 
+export enum cuePointTypes {
+  Annotation = "annotation.Annotation",
+  Thumb = "thumbCuePoint.Thumb",
+}
+
 // TODO check if exist in QNA and if QNA did it more elegant
 export const convertTime = (sec: number): string => {
   const hours = Math.floor(sec / 3600);
@@ -73,12 +78,12 @@ export const fillData = (
   }
   switch (item.cuePointType) {
     // TODO - support AnsweOnAir later
-    case "annotation.Annotation":
+    case cuePointTypes.Annotation:
       // hotspot
       item.displayTitle = item.text;
       item.itemType = itemTypes.Hotspot;
       break;
-    case "thumbCuePoint.Thumb": // chapters and slides
+    case cuePointTypes.Thumb: // chapters and slides
       item.displayDescription = item.description;
       item.displayTitle = item.title;
       if (item.assetId) {
@@ -263,6 +268,7 @@ export const prepareLiveData = (
   serviceUrl: string,
   forceChaptersThumb: boolean
 ): Array<ItemData> => {
+        // TODO: check if new quepoint already exist https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L334
   if (!newData || newData.length === 0) {
     // Wrong or empty data
     return currentData;
@@ -280,9 +286,9 @@ export const prepareLiveData = (
   receivedCuepoints = groupData( // TODO: group only latest
     receivedCuepoints
       .map((cuepoint: any) => {
-        fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true); // normlise time, extract description and title, find thumbnail if exist etc'
-        return cuepoint;
+        return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true); // normlise time, extract description and title, find thumbnail if exist etc'
       })
+      // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
     );
   return receivedCuepoints;
 }

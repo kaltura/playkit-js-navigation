@@ -266,8 +266,9 @@ export class NavigationPlugin
       method: "_handleSlideMessages",
       data: slides
     });
-    console.log(">> Slide RECEIVED, message", slides);
-    this._updateData(slides);
+    // TODO: integrate SLIDE_VIEW_CHANGE_CODE_CUE_POINT later
+    // console.log(">> Slide RECEIVED, message", slides);
+    // this._updateData(slides);
   }
 
   private _handlePushNotificationError = ({ error }: NotificationsErrorEvent): void => {
@@ -338,7 +339,7 @@ export class NavigationPlugin
       this._kitchenSinkItem.update();
     }
   }
-  private _onTimeUpdate = (a: any): void => {
+  private _onTimeUpdate = (): void => {
     // reduce refresh to only when the time really chanes - check UX speed
     const newTime = Math.ceil(this._corePlugin.player.currentTime);
     if (newTime !== this._currentPosition) {
