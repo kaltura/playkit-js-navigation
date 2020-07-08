@@ -33,20 +33,20 @@ export interface State {
 
 export class NavigationItem extends Component<Props, State> {
   private _itemElementRef: HTMLDivElement | null = null;
-  private _textContainer: HTMLDivElement | null = null;
+  private _textContainerRef: HTMLDivElement | null = null;
   state = { expandText: false };
 
   matchHeight() {
     if (
       !this.props.data.hasShowMore ||
-      !this._textContainer ||
+      !this._textContainerRef ||
       !this._itemElementRef
     ) {
       // no point point calculate height of there is no mechanism of show-more button
       return;
     }
     this._itemElementRef!.style.minHeight =
-      this._textContainer!.offsetHeight + "px";
+      this._textContainerRef!.offsetHeight + "px";
   }
 
   shouldComponentUpdate(
@@ -138,7 +138,7 @@ export class NavigationItem extends Component<Props, State> {
           <div
             className={styles.contentText}
             ref={node => {
-              this._textContainer = node;
+              this._textContainerRef = node;
             }}
           >
             {shorthandTitle && !this.state.expandText && (
