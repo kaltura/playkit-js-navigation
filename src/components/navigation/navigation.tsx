@@ -171,17 +171,17 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           highlightedMap: {}
         };
       }
-      const transcriptUpdate = this._engine.updateTime(currentTime);
-      if (transcriptUpdate.snapshot) {
+      const itemsUpdate = this._engine.updateTime(currentTime);
+      if (itemsUpdate.snapshot) {
         return {
           ...newState,
-          highlightedMap: this._makeHighlightedMap(transcriptUpdate.snapshot)
+          highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot)
         };
       }
-      if (!transcriptUpdate.delta) {
+      if (!itemsUpdate.delta) {
         return newState;
       }
-      const { show } = transcriptUpdate.delta;
+      const { show } = itemsUpdate.delta;
       if (show.length > 0) {
         return { highlightedMap: this._makeHighlightedMap(show) };
       }

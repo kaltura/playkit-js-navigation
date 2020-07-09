@@ -78,7 +78,6 @@ export class NavigationPlugin
   private _triggeredByKeyboard = false;
   private _isLoading = false; // TODO: handle is loading state
   private _hasError = false; // TODO: handle error state
-  private _lastId3Timestamp: number | null = null;
   private _liveStartTime: number | null = null;
 
   constructor(
@@ -126,7 +125,7 @@ export class NavigationPlugin
     } else {
       this._corePlugin.player.addEventListener(
         this._corePlugin.player.Event.TIME_UPDATE,
-        this._onTimeUpdate
+        this._onVodTimeUpdate
       );
     }
   }
@@ -144,7 +143,7 @@ export class NavigationPlugin
     } else {
       this._corePlugin.player.removeEventListener(
         this._corePlugin.player.Event.TIME_UPDATE,
-        this._onTimeUpdate
+        this._onVodTimeUpdate
       );
     }
   }
@@ -153,24 +152,27 @@ export class NavigationPlugin
     const id3TagCues = event.payload.cues.filter(
       (cue: any) => cue.value && cue.value.key === "TEXT"
     );
+    let newTime = null;
     if (id3TagCues.length) {
       try {
-        this._lastId3Timestamp = JSON.parse(
+        newTime = Math.ceil(JSON.parse(
           id3TagCues[id3TagCues.length - 1].value.data
-        ).timestamp;
+        ).timestamp / 1000);
         logger.debug(
-          `Calling cuepoint engine updateTime with id3 timestamp: ${this._lastId3Timestamp}`,
+          `Calling cuepoint engine updateTime with id3 timestamp: ${this._currentPosition}`,
           {
             method: "_onTimedMetadataLoaded"
           }
         );
-        if (this._lastId3Timestamp && !this._liveStartTime) {
+        if (this._currentPosition && !this._liveStartTime) {
           this._liveStartTime = Math.ceil(
-            (this._lastId3Timestamp / 1000) - this._corePlugin.player.currentTime
-          ) * 1000;
+            this._currentPosition - this._corePlugin.player.currentTime
+          );
         }
-            // TODO: update quepoint engine
-            // console.log(">> _onTimedMetadataLoaded", this._lastId3Timestamp)
+        if (newTime !== this._currentPosition) {
+          this._currentPosition = newTime;
+          this._updateKitchenSink();
+        }
             
       } catch (e) {
         logger.debug("failed retrieving id3 tag metadata", {
@@ -210,13 +212,10 @@ export class NavigationPlugin
   }
 
   private _seekTo = (time: number, liveType = false) => {
-    console.log(">> time,  liveType", time, liveType);
     if (liveType && this._liveStartTime) {
-      const seekTime = (time - this._liveStartTime) / 1000;
-      console.log(">> seekTime ", seekTime);
+      const seekTime = time - this._liveStartTime;
       this._corePlugin.player.currentTime = seekTime;
     } else {
-      console.log(">> seekTime ", time);
       this._corePlugin.player.currentTime = time;
     }
   };
@@ -375,7 +374,7 @@ export class NavigationPlugin
     );
   };
 
-  private _onTimeUpdate = (): void => {
+  private _onVodTimeUpdate = (): void => {
     // reduce refresh to only when the time really chanes - check UX speed
     const newTime = Math.ceil(this._corePlugin.player.currentTime);
     if (newTime !== this._currentPosition) {

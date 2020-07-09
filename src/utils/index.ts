@@ -68,7 +68,7 @@ export const fillData = (
   item.originalTime = item.startTime; // TODO - remove later if un-necessary
   item.liveType = liveType;
   if (liveType) {
-    item.startTime = item.createdAt * 1000;
+    item.startTime = item.createdAt;
   } else {
     item.startTime = Math.floor(item.startTime / 1000);
     item.displayTime = convertTime(item.startTime);
