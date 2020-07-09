@@ -27,7 +27,7 @@ export interface SearchFilter {
 
 export interface NavigationProps {
   data: Array<ItemData>;
-  onItemClicked(time: number): void;
+  onItemClicked(time: number, type?: boolean): void;
   onClose: () => void;
   isLoading: boolean;
   hasError: boolean;
@@ -251,19 +251,25 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     );
   };
 
+  private _handleSeek = (time: number, type?: boolean) => {
+    // we want to also autoscroll to the item
+    this.setState({ autoscroll: true }, () => {
+      this.props.onItemClicked(time, type);
+    });
+  };
+
+  handleScroll = () => {
+    this.setState({ autoscroll: false });
+  };
+
   private _renderNavigation = () => {
     const { searchFilter, widgetWidth } = this.state;
     return (
       <NavigationList
         widgetWidth={widgetWidth}
-        onWheel={() => this.setState({ autoscroll: false })}
+        onWheel={this.handleScroll}
         autoScroll={this.state.autoscroll}
-        onSeek={n => {
-          // we want to also autoscroll to the item
-          this.setState({ autoscroll: true }, () => {
-            this.props.onItemClicked(n);
-          });
-        }}
+        onSeek={this._handleSeek}
         data={this.state.convertedData}
         highlightedMap={this.state.highlightedMap}
         headerHeight={

@@ -79,6 +79,7 @@ export class NavigationPlugin
   private _isLoading = false; // TODO: handle is loading state
   private _hasError = false; // TODO: handle error state
   private _lastId3Timestamp: number | null = null;
+  private _liveStartTime: number | null = null;
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -163,8 +164,14 @@ export class NavigationPlugin
             method: "_onTimedMetadataLoaded"
           }
         );
+        if (this._lastId3Timestamp && !this._liveStartTime) {
+          this._liveStartTime = Math.ceil(
+            (this._lastId3Timestamp / 1000) - this._corePlugin.player.currentTime
+          ) * 1000;
+        }
             // TODO: update quepoint engine
             // console.log(">> _onTimedMetadataLoaded", this._lastId3Timestamp)
+            
       } catch (e) {
         logger.debug("failed retrieving id3 tag metadata", {
           method: "_onTimedMetadataLoaded",
@@ -202,8 +209,16 @@ export class NavigationPlugin
     }
   }
 
-  private _seekTo = (time: number) => {
-    this._corePlugin.player.currentTime = time;
+  private _seekTo = (time: number, liveType = false) => {
+    console.log(">> time,  liveType", time, liveType);
+    if (liveType && this._liveStartTime) {
+      const seekTime = (time - this._liveStartTime) / 1000;
+      console.log(">> seekTime ", seekTime);
+      this._corePlugin.player.currentTime = seekTime;
+    } else {
+      console.log(">> seekTime ", time);
+      this._corePlugin.player.currentTime = time;
+    }
   };
 
   private getUserId(): string {

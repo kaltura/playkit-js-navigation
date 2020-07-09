@@ -5,7 +5,7 @@ import { EmptyList } from "../icons/EmptyList";
 
 export interface Props {
   data: Array<ItemData>;
-  onSeek: (n: number) => void;
+  onSeek: (n: number, type?: boolean) => void;
   autoScroll: boolean;
   onWheel: () => void;
   widgetWidth: number;
@@ -68,7 +68,7 @@ export class NavigationList extends Component<Props> {
           return (
             <NavigationItem
               widgetWidth={widgetWidth}
-              onClick={n => this.props.onSeek(n)}
+              onClick={this.props.onSeek}
               selectedItem={this.props.highlightedMap[item.id]}
               key={item.id}
               data={item}
