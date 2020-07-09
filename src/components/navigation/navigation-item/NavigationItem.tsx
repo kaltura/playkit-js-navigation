@@ -8,7 +8,7 @@ export interface ItemData {
   startTime: number;
   previewImage: string;
   itemType: itemTypes;
-  displayTime: string;
+  displayTime?: string;
   groupData: groupTypes | null;
   displayTitle?: string;
   shorthandTitle?: string;
@@ -17,6 +17,7 @@ export interface ItemData {
   indexedText: string;
   originalTime: number;
   hasShowMore: boolean;
+  liveType: boolean;
 }
 
 export interface Props {
@@ -118,8 +119,11 @@ export class NavigationItem extends Component<Props, State> {
         ].join(" ")}
         onClick={this._handleClickHandler}
       >
-        <div className={styles.metadata}>
-          <span className={styles.time}>{displayTime}</span>
+        <div className={[
+          styles.metadata,
+          displayTime ? styles.withTime : null
+        ].join(" ")}>
+          {displayTime && <span className={styles.time}>{displayTime}</span>}
           <IconsFactory iconType={itemType}></IconsFactory>
         </div>
         <div

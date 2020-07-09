@@ -56,25 +56,20 @@ export const convertTime = (sec: number): string => {
   }
 };
 
+// normlise time, extract description and title, find thumbnail if exist etc'
 export const fillData = (
   originalItem: any,
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
-  useDateAsItemTime: boolean = false,
+  liveType: boolean = false,
 ) => {
   const item: any = { ...originalItem };
   item.originalTime = item.startTime; // TODO - remove later if un-necessary
-  if (useDateAsItemTime) {
-    // Live cuepoint time
+  item.liveType = liveType;
+  if (liveType) {
     item.startTime = item.createdAt * 1000;
-    const date = new Date(item.startTime)
-    item.displayTime = getDisplayTime(date);
-    if (isDateOlderThan24Hours(date)) {
-      item.displayTime = `${item.displayTime}, ${getDisplayDate(date, "dd/mm/yyyy")}`;
-    }
   } else {
-    // VOD cuepoint time
     item.startTime = Math.floor(item.startTime / 1000);
     item.displayTime = convertTime(item.startTime);
   }
@@ -201,7 +196,10 @@ export const prepareVodData = (
     receivedCuepoints
       .sort((item1: ItemData, item2: ItemData) => item1.startTime - item2.startTime)
       .map((cuepoint: ItemData) => {
-        return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb); // normlise time, extract description and title, find thumbnail if exist etc'
+        return {
+          ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
+          liveTypeCuepoint: false,
+        }
       })
     );
   return receivedCuepoints;
@@ -294,126 +292,9 @@ export const prepareLiveData = (
   receivedCuepoints = groupData( // TODO: group only latest
     receivedCuepoints
       .map((cuepoint: any) => {
-        return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true); // normlise time, extract description and title, find thumbnail if exist etc'
+        return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true)
       })
       // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
     );
   return receivedCuepoints;
-}
-
-// QNA use same method, consider move to contrib
-export const convertPhpDateFormattingToJsDateFormatting = (dateFormat: string): string => {
-  if (dateFormat.indexOf('j') === -1) {
-    return dateFormat;
-  }
-
-  // the list was taken from media-space and approved in `KMS-20129`
-  switch (dateFormat) {
-    case 'j.n.Y':
-      dateFormat = 'd.m.yyyy';
-      break;
-    case 'j/n/Y':
-      dateFormat = 'd/m/yyyy';
-      break;
-    case 'j F, Y':
-      dateFormat = 'd mmmm, yyyy';
-      break;
-    case 'm/j/Y':
-      dateFormat = 'mm/d/yyyy';
-      break;
-    case 'Y-n-j':
-      dateFormat = 'yyyy-m-d';
-      break;
-    case 'F jS, Y':
-      dateFormat = 'mmmm do, yyyy';
-      break;
-    default:
-      dateFormat = 'dd/mm/yyyy';
-  }
-
-  return dateFormat;
-}
-
-// QNA use same method, consider move to contrib
-export const getDisplayDate = (date: Date | null, dateFormat: string) => {
-  if (!date) {
-      return;
-  }
-
-  let dateString = convertPhpDateFormattingToJsDateFormatting(dateFormat);
-
-  const d = date.getDate();
-  const dd = d < 10 ? `0${d}` : d;
-
-  const m = date.getMonth() + 1;
-  const mm = m < 10 ? `0${m}` : m;
-
-  const yyyy = date.getFullYear();
-
-  if (dateString.match(/do/) != null) {
-      let value;
-
-      if (d === 1 || d === 11 || d === 21 || d === 31) value = `${d}st`;
-      else if (d === 2 || d === 12 || d === 22) value = `${d}nd`;
-      else if (d === 3 || d === 13 || d === 23) value = `${d}rd`;
-      else value = `${d}th`;
-
-      dateString = dateString.replace(/do/g, value);
-  } else if (dateString.match(/dd/)) {
-      dateString = dateString.replace(/dd/, dd.toString());
-  } else if (dateString.match(/d/)) {
-      dateString = dateString.replace(/d/, d.toString());
-  }
-
-  if (dateString.match(/mmmm/) != null) {
-      const month = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December"
-      ];
-      dateString = dateString.replace(/mmmm/, month[m - 1]);
-  } else if (dateString.match(/mm/)) {
-      dateString = dateString.replace(/mm/, mm.toString());
-  } else if (dateString.match(/m/)) {
-      dateString = dateString.replace(/m/, m.toString());
-  }
-
-  dateString = dateString.replace(/yyyy/, yyyy.toString());
-
-  return dateString;
-}
-
-// QNA use same method, consider move to contrib
-export const getDisplayTime = (date: Date | null) => {
-  if (!date) {
-      return;
-  }
-  let hours: number = date.getHours();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  let minutes: string | number = date.getMinutes();
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-
-  return `${hours}:${minutes} ${ampm}`;
-}
-
-// QNA use same const, consider move to contrib
-const ONE_DAY_IN_MS: number = 1000 * 60 * 60 * 24;
-
-// QNA use same method, consider move to contrib
-export const isDateOlderThan24Hours = (date: Date | null): boolean => {
-  if (!date) {
-      return false;
-  }
-  return Date.now() - date.valueOf() >= ONE_DAY_IN_MS;
 }

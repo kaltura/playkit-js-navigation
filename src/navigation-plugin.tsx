@@ -79,10 +79,6 @@ export class NavigationPlugin
   private _isLoading = false; // TODO: handle is loading state
   private _hasError = false; // TODO: handle error state
   private _lastId3Timestamp: number | null = null;
-  private _debouncedUpdateKitchenSink = debounce(
-    this._updateKitchenSink,
-    1000 // TODO: move to config
-  )
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -100,25 +96,56 @@ export class NavigationPlugin
     this._pushNotification = new PushNotification(this._corePlugin.player);
   }
 
+  private _updateKitchenSink = () => {
+    if (this._kitchenSinkItem) {
+      this._kitchenSinkItem.update();
+    }
+  }
+
+  private _debouncedUpdateKitchenSink = debounce(
+    this._updateKitchenSink,
+    1000 // TODO: move to config
+  )
+
   onPluginSetup(): void {
     this._initKitchensinkAndUpperBarItems();
   }
 
   private _addPlayerListeners() {
-    if (!this._corePlugin.player) return;
     this._removePlayerListeners();
     this._corePlugin.player.addEventListener(
-      this._corePlugin.player.Event.TIMED_METADATA,
-      this._onTimedMetadataLoaded
+      this._corePlugin.player.Event.RESIZE,
+      this._updateKitchenSink
     );
+    if (this._corePlugin.player.isLive()) {
+      this._corePlugin.player.addEventListener(
+        this._corePlugin.player.Event.TIMED_METADATA,
+        this._onTimedMetadataLoaded
+      );
+    } else {
+      this._corePlugin.player.addEventListener(
+        this._corePlugin.player.Event.TIME_UPDATE,
+        this._onTimeUpdate
+      );
+    }
   }
 
   private _removePlayerListeners() {
-    if (!this._corePlugin.player) return;
     this._corePlugin.player.removeEventListener(
-      this._corePlugin.player.Event.TIMED_METADATA,
-      this._onTimedMetadataLoaded
+      this._corePlugin.player.Event.RESIZE,
+      this._updateKitchenSink
     );
+    if (this._corePlugin.player.isLive()) {
+      this._corePlugin.player.removeEventListener(
+        this._corePlugin.player.Event.TIMED_METADATA,
+        this._onTimedMetadataLoaded
+      );
+    } else {
+      this._corePlugin.player.removeEventListener(
+        this._corePlugin.player.Event.TIME_UPDATE,
+        this._onTimeUpdate
+      );
+    }
   }
 
   private _onTimedMetadataLoaded = (event: any): void => {
@@ -148,29 +175,22 @@ export class NavigationPlugin
   };
 
   onMediaLoad(): void {
+    this._addPlayerListeners();
     if (this._corePlugin.player.isLive()) {
       const {
         playerConfig: { sources }
       } = this._configs;
       this._initNotification();
-      this._addPlayerListeners();
-      this._constructPluginListener();
+      this._constructPushNotificationListener();
       const userId = this.getUserId();
       this._pushNotification.registerToPushServer(sources.id, userId);
     } else {
-      this._corePlugin.player.addEventListener(
-        this._corePlugin.player.Event.TIME_UPDATE,
-        this._onTimeUpdate
-      );
-      this._corePlugin.player.addEventListener(
-        this._corePlugin.player.Event.RESIZE,
-        () => this._updateKitchenSink()
-      );
       this._fetchVodData();
     }
   }
 
   onMediaUnload(): void {
+    this._removePlayerListeners();
     if (this._corePlugin.player.isLive()) {
       this._pushNotification.reset();
     }
@@ -178,7 +198,7 @@ export class NavigationPlugin
 
   onPluginDestroy(): void {
     if (this._corePlugin.player.isLive()) {
-      this._removePluginListener();
+      this._removePushNotificationListener();
     }
   }
 
@@ -260,7 +280,6 @@ export class NavigationPlugin
       method: "_handleThumbMessages",
       data: thumbs
     });
-      console.log(">> Thumb RECEIVED, message", thumbs);
       this._updateData(thumbs);
   }
 
@@ -276,42 +295,48 @@ export class NavigationPlugin
     console.log(">> Push notification error", error);
   }
 
-  private _constructPluginListener(): void {
-    this._pushNotification.on(
-      PushNotificationEventTypes.PushNotificationsError,
-      this._handlePushNotificationError
-    );
-    this._pushNotification.on(
-      PushNotificationEventTypes.PublicNotifications,
-      this._handleAoaMessages
-    );
-    this._pushNotification.on(
-      PushNotificationEventTypes.ThumbNotification,
-      this._handleThumbMessages
-    );
-    this._pushNotification.on(
-      PushNotificationEventTypes.SlideNotification,
-      this._handleSlideMessages
-    );
+  private _constructPushNotificationListener(): void {
+      // TODO: handle push notification errors
+      // this._pushNotification.on(
+      //   PushNotificationEventTypes.PushNotificationsError,
+      //   this._handlePushNotificationError
+      // );
+
+      // TODO: handle AOA messages
+      // this._pushNotification.on(
+      //   PushNotificationEventTypes.PublicNotifications,
+      //   this._handleAoaMessages
+      // );
+
+      this._pushNotification.on(
+        PushNotificationEventTypes.ThumbNotification,
+        this._handleThumbMessages
+      );
+
+      // TODO: handle change-view-mode
+      // this._pushNotification.on(
+      //   PushNotificationEventTypes.SlideNotification,
+      //   this._handleSlideMessages
+      // );
   }
 
-  private _removePluginListener(): void {
-    this._pushNotification.off(
-      PushNotificationEventTypes.PushNotificationsError,
-      this._handlePushNotificationError
-    );
-    this._pushNotification.off(
-      PushNotificationEventTypes.PublicNotifications,
-      this._handleAoaMessages
-    );
-    this._pushNotification.off(
-      PushNotificationEventTypes.ThumbNotification,
-      this._handleThumbMessages
-    );
-    this._pushNotification.off(
-      PushNotificationEventTypes.SlideNotification,
-      this._handleSlideMessages
-    );
+  private _removePushNotificationListener(): void {
+      this._pushNotification.off(
+        PushNotificationEventTypes.PushNotificationsError,
+        this._handlePushNotificationError
+      );
+      this._pushNotification.off(
+        PushNotificationEventTypes.PublicNotifications,
+        this._handleAoaMessages
+      );
+      this._pushNotification.off(
+        PushNotificationEventTypes.ThumbNotification,
+        this._handleThumbMessages
+      );
+      this._pushNotification.off(
+        PushNotificationEventTypes.SlideNotification,
+        this._handleSlideMessages
+      );
   }
   private _initKitchensinkAndUpperBarItems(): void {
     if (!this._upperBarItem && !this._kitchenSinkItem) {
@@ -335,11 +360,6 @@ export class NavigationPlugin
     );
   };
 
-  private _updateKitchenSink() {
-    if (this._kitchenSinkItem) {
-      this._kitchenSinkItem.update();
-    }
-  }
   private _onTimeUpdate = (): void => {
     // reduce refresh to only when the time really chanes - check UX speed
     const newTime = Math.ceil(this._corePlugin.player.currentTime);
