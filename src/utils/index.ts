@@ -31,9 +31,10 @@ export enum cuePointTypes {
   Thumb = "thumbCuePoint.Thumb",
 }
 
+// TODO: move to config
 const MAX_CHARACTERS = 77;
 
-// TODO check if exist in QNA and if QNA did it more elegant
+// TODO: check if exist in QNA and if QNA did it more elegant
 export const convertTime = (sec: number): string => {
   const hours = Math.floor(sec / 3600);
   if (hours >= 1) {
@@ -65,7 +66,6 @@ export const fillData = (
   liveType: boolean = false,
 ) => {
   const item: any = { ...originalItem };
-  item.originalTime = item.startTime; // TODO - remove later if un-necessary
   item.liveType = liveType;
   if (liveType) {
     item.startTime = item.createdAt;
@@ -103,7 +103,6 @@ export const fillData = (
       }
       break;
   }
-  // TODO const this
   if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS) {
     let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
@@ -136,6 +135,7 @@ export const fillData = (
   return item;
 };
 
+// TODO: add group sort
 export const groupData = (cuepoints: Array<ItemData>) => {
   return cuepoints.reduce(
     // mark groupData:
@@ -272,9 +272,10 @@ export const prepareLiveData = (
   newData: Array<ItemData>,
   ks: string,
   serviceUrl: string,
-  forceChaptersThumb: boolean
+  forceChaptersThumb: boolean,
+  liveStartTime: number | null,
 ): Array<ItemData> => {
-        // TODO: check if new quepoint already exist https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L334
+  // TODO: check if new quepoint already exist https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L334
   if (!newData || newData.length === 0) {
     // Wrong or empty data
     return currentData;
@@ -289,12 +290,23 @@ export const prepareLiveData = (
     }
   });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = groupData( // TODO: group only latest
+  receivedCuepoints = groupData(
     receivedCuepoints
       .map((cuepoint: any) => {
         return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true)
       })
       // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
     );
+  if (liveStartTime) {
+    receivedCuepoints = convertStartTime(receivedCuepoints, liveStartTime);
+  }
   return receivedCuepoints;
-}
+};
+
+export const convertStartTime = (data: Array<ItemData>, liveStartTime: number): Array<ItemData> => {
+  return data.map((item: ItemData) => ({
+    ...item,
+    // @ts-ignore
+    startTime: item.createdAt - liveStartTime,
+  }));
+};

@@ -5,7 +5,7 @@ import { EmptyList } from "../icons/EmptyList";
 
 export interface Props {
   data: Array<ItemData>;
-  onSeek: (n: number, type?: boolean) => void;
+  onSeek: (n: number) => void;
   autoScroll: boolean;
   onWheel: () => void;
   widgetWidth: number;

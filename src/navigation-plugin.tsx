@@ -11,8 +11,7 @@ import {
 } from "@playkit-js-contrib/plugin";
 import {
   getContribLogger,
-  KalturaLiveServices,
-  debounce
+  KalturaLiveServices
 } from "@playkit-js-contrib/common";
 import {
   KitchenSinkContentRendererProps,
@@ -33,7 +32,12 @@ import {
   KalturaMultiResponse,
   KalturaRequest
 } from "kaltura-typescript-client";
-import { getConfigValue, prepareVodData, prepareLiveData } from "./utils/index";
+import {
+  getConfigValue,
+  prepareVodData,
+  prepareLiveData,
+  convertStartTime
+} from "./utils/index";
 import {
   PushNotification,
   PushNotificationEventTypes,
@@ -102,11 +106,6 @@ export class NavigationPlugin
     }
   }
 
-  private _debouncedUpdateKitchenSink = debounce(
-    this._updateKitchenSink,
-    1000 // TODO: move to config
-  )
-
   onPluginSetup(): void {
     this._initKitchensinkAndUpperBarItems();
   }
@@ -117,15 +116,14 @@ export class NavigationPlugin
       this._corePlugin.player.Event.RESIZE,
       this._updateKitchenSink
     );
+    this._corePlugin.player.addEventListener(
+      this._corePlugin.player.Event.TIME_UPDATE,
+      this._onTimeUpdate
+    );
     if (this._corePlugin.player.isLive()) {
       this._corePlugin.player.addEventListener(
         this._corePlugin.player.Event.TIMED_METADATA,
         this._onTimedMetadataLoaded
-      );
-    } else {
-      this._corePlugin.player.addEventListener(
-        this._corePlugin.player.Event.TIME_UPDATE,
-        this._onVodTimeUpdate
       );
     }
   }
@@ -135,15 +133,14 @@ export class NavigationPlugin
       this._corePlugin.player.Event.RESIZE,
       this._updateKitchenSink
     );
+    this._corePlugin.player.removeEventListener(
+      this._corePlugin.player.Event.TIME_UPDATE,
+      this._onTimeUpdate
+    );
     if (this._corePlugin.player.isLive()) {
       this._corePlugin.player.removeEventListener(
         this._corePlugin.player.Event.TIMED_METADATA,
         this._onTimedMetadataLoaded
-      );
-    } else {
-      this._corePlugin.player.removeEventListener(
-        this._corePlugin.player.Event.TIME_UPDATE,
-        this._onVodTimeUpdate
       );
     }
   }
@@ -152,28 +149,30 @@ export class NavigationPlugin
     const id3TagCues = event.payload.cues.filter(
       (cue: any) => cue.value && cue.value.key === "TEXT"
     );
-    let newTime = null;
     if (id3TagCues.length) {
       try {
-        newTime = Math.ceil(JSON.parse(
+        const id3Timestamp = Math.ceil(JSON.parse(
           id3TagCues[id3TagCues.length - 1].value.data
         ).timestamp / 1000);
         logger.debug(
-          `Calling cuepoint engine updateTime with id3 timestamp: ${this._currentPosition}`,
+          `Calling cuepoint engine updateTime with id3 timestamp: ${id3Timestamp}`,
           {
             method: "_onTimedMetadataLoaded"
           }
         );
-        if (this._currentPosition && !this._liveStartTime) {
+        if (id3Timestamp && !this._liveStartTime) {
           this._liveStartTime = Math.ceil(
-            this._currentPosition - this._corePlugin.player.currentTime
+            id3Timestamp - this._corePlugin.player.currentTime
+          );
+          this._corePlugin.player.removeEventListener(
+            this._corePlugin.player.Event.TIMED_METADATA,
+            this._onTimedMetadataLoaded
           );
         }
-        if (newTime !== this._currentPosition) {
-          this._currentPosition = newTime;
+        if (this._liveStartTime && this._listData.length) {
+          this._listData = convertStartTime(this._listData, this._liveStartTime);
           this._updateKitchenSink();
-        }
-            
+        }      
       } catch (e) {
         logger.debug("failed retrieving id3 tag metadata", {
           method: "_onTimedMetadataLoaded",
@@ -211,13 +210,8 @@ export class NavigationPlugin
     }
   }
 
-  private _seekTo = (time: number, liveType = false) => {
-    if (liveType && this._liveStartTime) {
-      const seekTime = time - this._liveStartTime;
-      this._corePlugin.player.currentTime = seekTime;
-    } else {
-      this._corePlugin.player.currentTime = time;
-    }
+  private _seekTo = (time: number) => {
+    this._corePlugin.player.currentTime = time;
   };
 
   private getUserId(): string {
@@ -263,15 +257,16 @@ export class NavigationPlugin
   }
 
   private _updateData = (cuePointData: any[]) => {
-    const data = prepareLiveData(
+    this._listData = prepareLiveData(
       this._listData,
       cuePointData,
       this._configs.playerConfig.provider.ks,
       this._configs.playerConfig.provider.env.serviceUrl,
-      this._corePlugin.config.forceChaptersThumb
+      this._corePlugin.config.forceChaptersThumb,
+      this._liveStartTime,
     );
-    this._listData = data;
-    this._debouncedUpdateKitchenSink();
+    // TODO: Debounce _updateKitchenSink
+    this._updateKitchenSink();
   }
 
   private _handleAoaMessages = ({ messages }: PublicNotificationsEvent): void => {
@@ -374,7 +369,7 @@ export class NavigationPlugin
     );
   };
 
-  private _onVodTimeUpdate = (): void => {
+  private _onTimeUpdate = (): void => {
     // reduce refresh to only when the time really chanes - check UX speed
     const newTime = Math.ceil(this._corePlugin.player.currentTime);
     if (newTime !== this._currentPosition) {
@@ -448,13 +443,12 @@ export class NavigationPlugin
     requests.push(chaptersAndSlidesRequest, hotspotsRequest);
     this._kalturaClient.multiRequest(requests).then(
       (responses: KalturaMultiResponse | null) => {
-        const sortedData = prepareVodData(
+        this._listData = prepareVodData(
           responses,
           this._configs.playerConfig.provider.ks,
           this._configs.playerConfig.provider.env.serviceUrl,
           this._corePlugin.config.forceChaptersThumb
         );
-        this._listData = sortedData;
         this._updateKitchenSink();
       },
       error => {

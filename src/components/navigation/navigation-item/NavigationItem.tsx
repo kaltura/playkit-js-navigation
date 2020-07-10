@@ -18,6 +18,7 @@ export interface ItemData {
   originalTime: number;
   hasShowMore: boolean;
   liveType: boolean;
+  createdAt?: number;
 }
 
 export interface Props {
@@ -25,7 +26,7 @@ export interface Props {
   onSelected: (a: any) => void;
   selectedItem: boolean;
   widgetWidth: number;
-  onClick: (time: number, type?: boolean) => void;
+  onClick: (time: number) => void;
 }
 
 export interface State {
@@ -84,11 +85,7 @@ export class NavigationItem extends Component<Props, State> {
   }
 
   private _handleClickHandler = () => {
-    if (this.props.data.liveType) {
-      this.props.onClick(this.props.data.startTime, true);
-    } else {
-      this.props.onClick(this.props.data.startTime);
-    }
+    this.props.onClick(this.props.data.startTime);
   };
 
   private _handleExpandChange = (event: Event) => {

@@ -27,7 +27,7 @@ export interface SearchFilter {
 
 export interface NavigationProps {
   data: Array<ItemData>;
-  onItemClicked(time: number, type?: boolean): void;
+  onItemClicked(time: number): void;
   onClose: () => void;
   isLoading: boolean;
   hasError: boolean;
@@ -151,9 +151,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _makeHighlightedMap = (cuepoints: any[]) => {
-    const maxTime = cuepoints.reduce((acc, item) => {
-      return acc > item.startTime ? acc : item.startTime;
-    }, 0);
+    const maxTime = cuepoints[cuepoints.length - 1]?.startTime || -1;
     const filtered = cuepoints.filter(item => item.startTime === maxTime);
     const highlightedMap = filtered.reduce((acc, item) => {
       return { ...acc, [item.id]: true };
@@ -251,10 +249,10 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     );
   };
 
-  private _handleSeek = (time: number, type?: boolean) => {
+  private _handleSeek = (time: number) => {
     // we want to also autoscroll to the item
     this.setState({ autoscroll: true }, () => {
-      this.props.onItemClicked(time, type);
+      this.props.onItemClicked(time);
     });
   };
 
