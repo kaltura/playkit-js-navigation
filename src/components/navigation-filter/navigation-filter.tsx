@@ -8,7 +8,6 @@ export interface FilterProps {
   activeTab: itemTypes;
   availableTabs: itemTypes[];
   totalResults: number | null;
-  all?: string;
 }
 
 export interface TabData {
