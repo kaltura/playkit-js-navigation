@@ -36,7 +36,7 @@ import {
   getConfigValue,
   prepareVodData,
   prepareLiveData,
-  convertStartTime
+  convertLiveItemsStartTime
 } from "./utils/index";
 import {
   PushNotification,
@@ -170,7 +170,7 @@ export class NavigationPlugin
           );
         }
         if (this._liveStartTime && this._listData.length) {
-          this._listData = convertStartTime(this._listData, this._liveStartTime);
+          this._listData = convertLiveItemsStartTime(this._listData, this._liveStartTime);
           this._updateKitchenSink();
         }      
       } catch (e) {

@@ -298,12 +298,12 @@ export const prepareLiveData = (
       // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
     );
   if (liveStartTime) {
-    receivedCuepoints = convertStartTime(receivedCuepoints, liveStartTime);
+    receivedCuepoints = convertLiveItemsStartTime(receivedCuepoints, liveStartTime);
   }
   return receivedCuepoints;
 };
 
-export const convertStartTime = (data: Array<ItemData>, liveStartTime: number): Array<ItemData> => {
+export const convertLiveItemsStartTime = (data: Array<ItemData>, liveStartTime: number): Array<ItemData> => {
   return data.map((item: ItemData) => ({
     ...item,
     // @ts-ignore
