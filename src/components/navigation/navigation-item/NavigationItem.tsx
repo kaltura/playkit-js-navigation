@@ -1,4 +1,4 @@
-import { h, Component } from "preact";
+import { Component, h, Fragment } from "preact";
 import * as styles from "./NavigationItem.scss";
 import { groupTypes, itemTypes } from "../../../utils";
 import { IconsFactory } from "../icons/IconsFactory";
@@ -37,16 +37,12 @@ export class NavigationItem extends Component<Props, State> {
   state = { expandText: false };
 
   matchHeight() {
-    if (
-      !this.props.data.hasShowMore ||
-      !this._textContainerRef ||
-      !this._itemElementRef
-    ) {
+    if (!this._textContainerRef || !this._itemElementRef) {
       // no point point calculate height of there is no mechanism of show-more button
       return;
     }
     this._itemElementRef.style.minHeight =
-      this._textContainerRef.offsetHeight + "px";
+      this._textContainerRef.offsetHeight + 4 + "px";
   }
 
   shouldComponentUpdate(
@@ -58,7 +54,7 @@ export class NavigationItem extends Component<Props, State> {
       selectedItem !== nextProps.selectedItem ||
       data !== nextProps.data ||
       nextState.expandText !== this.state.expandText ||
-      (data.hasShowMore && nextProps.widgetWidth !== widgetWidth)
+      nextProps.widgetWidth !== widgetWidth
     ) {
       return true;
     }
@@ -78,6 +74,7 @@ export class NavigationItem extends Component<Props, State> {
     }
     this.matchHeight();
   }
+
   componentDidMount() {
     this.matchHeight();
   }
@@ -95,6 +92,7 @@ export class NavigationItem extends Component<Props, State> {
 
   render(props: Props) {
     const {
+      id,
       previewImage,
       itemType,
       displayTime,
@@ -115,6 +113,7 @@ export class NavigationItem extends Component<Props, State> {
           styles.navigationItem,
           selectedItem ? styles.selected : null // TODO move to parent or switch to engine
         ].join(" ")}
+        data-entry-id={id}
         onClick={this._handleClickHandler}
       >
         <div className={styles.metadata}>
