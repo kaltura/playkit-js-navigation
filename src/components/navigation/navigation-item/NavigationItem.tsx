@@ -1,4 +1,4 @@
-import { Component, h, Fragment } from "preact";
+import { Component, h } from "preact";
 import * as styles from "./NavigationItem.scss";
 import { groupTypes, itemTypes } from "../../../utils";
 import { IconsFactory } from "../icons/IconsFactory";
