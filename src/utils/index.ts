@@ -227,7 +227,7 @@ export const filterDataByActiveTab = (
 
 export const getAvailableTabs = (
   data: ItemData[]
-): { availableTabs: itemTypes[]; totalResults: number } => {
+): itemTypes[] => {
   const localData = [...data];
   let totalResults = 0;
   const ret: itemTypes[] = localData.reduce(
@@ -243,5 +243,5 @@ export const getAvailableTabs = (
   if (ret.length > 1) {
     ret.unshift(itemTypes.All);
   }
-  return { availableTabs: ret, totalResults };
+  return ret;
 };
