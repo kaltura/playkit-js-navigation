@@ -240,7 +240,7 @@ export const getAvailableTabs = (
     },
     []
   );
-  if (ret.length) {
+  if (ret.length > 1) {
     ret.unshift(itemTypes.All);
   }
   return { availableTabs: ret, totalResults };

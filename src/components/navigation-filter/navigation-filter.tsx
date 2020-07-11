@@ -2,21 +2,33 @@ import { h, Component } from "preact";
 import * as styles from "./navigation-filter.scss";
 import { itemTypes } from "../../utils";
 import { IconsFactory, IconColors } from "../navigation/icons/IconsFactory";
+// const {Tooltip} = KalturaPlayer.ui.components.Tooltip;
 
 export interface FilterProps {
   onChange(value: itemTypes): void;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
   totalResults: number | null;
+  translates: Record<string, string>;
 }
 
 export interface TabData {
   type: itemTypes;
   isActive: boolean;
+  label: string;
 }
 
 export class NavigationFilter extends Component<FilterProps> {
-
+  // TODO: add locale (i18n)
+  static defaultProps = {
+    translates: {
+      [itemTypes.All]: 'All',
+      [itemTypes.AnswerOnAir]: 'Answer On Air',
+      [itemTypes.Chapter]: 'Chapters',
+      [itemTypes.Slide]: 'Slides',
+      [itemTypes.Hotspot]: 'Hotspots',
+    }
+  }
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const { activeTab, availableTabs, totalResults } = this.props;
     if (
@@ -33,35 +45,45 @@ export class NavigationFilter extends Component<FilterProps> {
     this.props.onChange(type);
   };
 
-  public _renderTab = (tab: { isActive: boolean; type: itemTypes }) => {
+  public _renderTab = (tab: { isActive: boolean; type: itemTypes, label: string }) => {
     return (
       <button
         key={tab.type}
         tabIndex={1}
-        className={[styles.tab, tab.isActive ? styles.active : ""].join(" ")}
+        className={[
+          styles.tab,
+          tab.isActive ? styles.active : ""
+        ].join(" ")}
         style={{
           borderColor: IconColors[tab.type],
         }}
         onClick={() => this._handleChange(tab.type)}
       >
         {tab.type === itemTypes.All ? (
-          <span>All</span>
+          <span>{this.props.translates[itemTypes.All]}</span>
         ) : (
-          <IconsFactory
-            iconType={tab.type}
-            color={tab.isActive ? null : IconColors.All}
-          />
+          <span>
+            {/* TODO: add tooltip */}
+            {/* <Tooltip label={tab.label}> */}
+            <IconsFactory
+              iconType={tab.type}
+              color={tab.isActive ? null : '#cccccc'}
+            />
+            {/* </Tooltip> */}
+            {tab.label && <span className={styles.label}>{tab.label}</span>}
+          </span>
         )}
       </button>
     );
   };
 
   private _getTabsData = (): TabData[] => {
-    const { availableTabs, activeTab } = this.props;
-    const tabs = availableTabs.map((tab: itemTypes) => {
+    const { availableTabs, activeTab, translates } = this.props;
+    const tabs: TabData[] = availableTabs.map((tab: itemTypes) => {
       return {
         type: tab,
         isActive: activeTab === tab,
+        label: availableTabs.length < 4 ? translates[tab] : "",
       };
     });
     return tabs;
@@ -75,11 +97,15 @@ export class NavigationFilter extends Component<FilterProps> {
 
   render() {
     const { totalResults } = this.props;
+    const tabs = this._getTabsData();
+    if (tabs.length < 2) {
+      return null;
+    }
     return (
       <div className={styles.filterRoot}>
         {totalResults !== 0 && (
         <div className={styles.tabsWrapper}>
-          {this._getTabsData().map((tab) => {
+          {tabs.map((tab) => {
             return this._renderTab(tab);
           })}
         </div>
