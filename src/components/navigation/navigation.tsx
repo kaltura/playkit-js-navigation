@@ -9,6 +9,7 @@ import * as styles from "./navigaton.scss";
 import { NavigationList } from "./navigation-list/NavigationList";
 import { NavigationSearch } from "../navigation-search/navigation-search";
 import { NavigationFilter } from "../navigation-filter";
+import { Error } from "../error";
 import {
   itemTypes,
   getAvailableTabs,
@@ -29,6 +30,7 @@ export interface NavigationProps {
   data: Array<ItemData>;
   onItemClicked(time: number): void;
   onClose: () => void;
+  retry: () => void;
   isLoading: boolean;
   hasError: boolean;
   currentTime: number;
@@ -222,10 +224,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderHeader = () => {
-    const { toggledWithEnter, kitchenSinkActive } = this.props;
+    const { toggledWithEnter, kitchenSinkActive, hasError } = this.props;
     const { searchFilter } = this.state;
     return (
       <div className={styles.header}>
+        {!hasError && (
         <div class={[styles.searchWrapper, this._getHeaderStyles()].join(" ")}>
           <NavigationSearch
             onChange={this._handleSearchFilterChange("searchQuery")}
@@ -234,25 +237,33 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             kitchenSinkActive={kitchenSinkActive}
           />
         </div>
+        )}
+        {hasError && <p className={styles.pluginName}>Navigation</p>}
         <button
           className={styles.closeButton}
           tabIndex={1}
           onClick={this.props.onClose}
         />
-        <NavigationFilter
-          onChange={this._handleSearchFilterChange("activeTab")}
-          activeTab={searchFilter.activeTab}
-          availableTabs={searchFilter.availableTabs}
-          totalResults={
-            searchFilter.searchQuery ? searchFilter.totalResults : null
-          }
-        />
+        {!hasError && (
+          <NavigationFilter
+            onChange={this._handleSearchFilterChange("activeTab")}
+            activeTab={searchFilter.activeTab}
+            availableTabs={searchFilter.availableTabs}
+            totalResults={
+              searchFilter.searchQuery ? searchFilter.totalResults : null
+            }
+          />
+        )}
       </div>
     );
   };
 
   private _renderNavigation = () => {
     const { searchFilter, widgetWidth } = this.state;
+    const { hasError, retry } = this.props;
+    if (hasError) {
+      return <Error onRetryLoad={retry} />
+    }
     return (
       <NavigationList
         widgetWidth={widgetWidth}
