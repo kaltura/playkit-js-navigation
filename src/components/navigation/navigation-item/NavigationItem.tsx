@@ -8,7 +8,7 @@ export interface ItemData {
   startTime: number;
   previewImage: string;
   itemType: itemTypes;
-  displayTime: string;
+  displayTime?: string;
   groupData: groupTypes | null;
   displayTitle?: string;
   shorthandTitle?: string;
@@ -17,14 +17,16 @@ export interface ItemData {
   indexedText: string;
   originalTime: number;
   hasShowMore: boolean;
+  liveType: boolean;
+  createdAt?: number;
 }
 
 export interface Props {
-  data?: any;
+  data: ItemData;
   onSelected: (a: any) => void;
   selectedItem: boolean;
   widgetWidth: number;
-  onClick: (a: any) => void;
+  onClick: (time: number) => void;
 }
 
 export interface State {
@@ -116,8 +118,13 @@ export class NavigationItem extends Component<Props, State> {
         data-entry-id={id}
         onClick={this._handleClickHandler}
       >
-        <div className={styles.metadata}>
-          <span className={styles.time}>{displayTime}</span>
+        <div
+          className={[
+            styles.metadata,
+            displayTime ? styles.withTime : null
+          ].join(" ")}
+        >
+          {displayTime && <span className={styles.time}>{displayTime}</span>}
           <IconsFactory iconType={itemType}></IconsFactory>
         </div>
         <div
@@ -127,11 +134,14 @@ export class NavigationItem extends Component<Props, State> {
           ].join(" ")}
         >
           {previewImage && (
-            <img
-              src={previewImage}
-              alt={"Slide Preview"}
-              className={styles.thumbnail}
-            />
+            <Fragment>
+              <img
+                src={previewImage}
+                alt={"Slide Preview"}
+                className={styles.thumbnail}
+              />
+              <div className={styles.thumbGradient}></div>
+            </Fragment>
           )}
 
           <div

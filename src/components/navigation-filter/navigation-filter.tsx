@@ -19,7 +19,7 @@ export interface TabData {
 }
 
 export class NavigationFilter extends Component<FilterProps> {
-  // TODO: add locale (i18n)
+
   static defaultProps = {
     translates: {
       [itemTypes.All]: 'All',
@@ -29,6 +29,7 @@ export class NavigationFilter extends Component<FilterProps> {
       [itemTypes.Hotspot]: 'Hotspots',
     }
   }
+
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const {
       activeTab,

@@ -26,9 +26,15 @@ export enum itemTypes {
   Hotspot = "Hotspot"
 }
 
+export enum cuePointTypes {
+  Annotation = "annotation.Annotation",
+  Thumb = "thumbCuePoint.Thumb"
+}
+
+// TODO: move to config
 const MAX_CHARACTERS = 77;
 
-// TODO check if exist in QNA and if QNA did it more elegant
+// TODO: check if exist in QNA and if QNA did it more elegant
 export const convertTime = (sec: number): string => {
   const hours = Math.floor(sec / 3600);
   if (hours >= 1) {
@@ -51,24 +57,30 @@ export const convertTime = (sec: number): string => {
   }
 };
 
+// normlise time, extract description and title, find thumbnail if exist etc'
 export const fillData = (
   originalItem: any,
   ks: string,
   serviceUrl: string,
-  forceChaptersThumb: boolean
+  forceChaptersThumb: boolean,
+  isLiveEntry: boolean = false
 ) => {
   const item: any = { ...originalItem };
-  item.originalTime = item.startTime; // TODO - remove later if un-necessary
-  item.startTime = Math.floor(item.startTime / 1000);
-  item.displayTime = convertTime(item.startTime);
+  item.liveType = isLiveEntry;
+  if (isLiveEntry) {
+    item.startTime = item.createdAt;
+  } else {
+    item.startTime = Math.floor(item.startTime / 1000);
+    item.displayTime = convertTime(item.startTime);
+  }
   switch (item.cuePointType) {
     // TODO - support AnsweOnAir later
-    case "annotation.Annotation":
+    case cuePointTypes.Annotation:
       // hotspot
       item.displayTitle = item.text;
       item.itemType = itemTypes.Hotspot;
       break;
-    case "thumbCuePoint.Thumb": // chapters and slides
+    case cuePointTypes.Thumb: // chapters and slides
       item.displayDescription = item.description;
       item.displayTitle = item.title;
       if (item.assetId) {
@@ -91,7 +103,6 @@ export const fillData = (
       }
       break;
   }
-  // TODO const this
   if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS) {
     let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
@@ -122,11 +133,38 @@ export const fillData = (
   return item;
 };
 
+// TODO: add group sort
+export const addGroupData = (cuepoints: Array<ItemData>) => {
+  return cuepoints.reduce(
+    // mark addGroupData:
+    // first item will have addGroupData=groupTypes.first
+    // mid items will have addGroupData=groupTypes.mid
+    // last items will have addGroupData=groupTypes.last
+    (prevArr: Array<any>, currentCuepoint: ItemData) => {
+      const prevItem = prevArr.length > 0 && prevArr[prevArr.length - 1];
+      const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
+      if (prevItem && currentCuepoint.startTime === prevItem.startTime) {
+        if (prevPrevItem.startTime === prevItem.startTime) {
+          prevItem.groupData = groupTypes.mid;
+        }
+        // found a previous item that has the same time value
+        if (!prevItem.groupData && !prevItem.groupData) {
+          prevItem.groupData = groupTypes.first;
+        }
+        currentCuepoint.groupData = groupTypes.last;
+      }
+      // TODO - enforce order
+      prevArr.push(currentCuepoint);
+      return prevArr;
+    },
+    []
+  );
+};
+
 // main function for data handel. This sorts the cuepoints by startTime, and enriches the items with data so that the
 // items component will not contain too much logic in it and mostly will be a
 // dumb display-component (no offence - NavigationItem...)
-
-export const perpareData = (
+export const prepareVodData = (
   multirequestData: Array<any> | null,
   ks: string,
   serviceUrl: string,
@@ -138,7 +176,7 @@ export const perpareData = (
     return [];
   }
   // extract all cuepoints from all requests
-  let receivedCuepoints: Array<any> = [];
+  let receivedCuepoints: Array<ItemData> = [];
   multirequestData.forEach(request => {
     if (
       request &&
@@ -147,40 +185,23 @@ export const perpareData = (
       request.result.objects.length
     ) {
       receivedCuepoints = receivedCuepoints.concat(
-        request.result.objects as Array<any>
+        request.result.objects as Array<ItemData>
       );
     }
   });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = receivedCuepoints
-    .sort((item1: any, item2: any) => item1.startTime - item2.startTime)
-    .map((cuepoint: any) => {
-      return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb); // normlise time, extract description and title, find thumbnail if exist etc'
-    })
-    .reduce(
-      // mark groupData:
-      // first item will have groupData=groupTypes.first
-      // mid items will have groupData=groupTypes.mid
-      // last items will have groupData=groupTypes.last
-      (prevArr: Array<any>, currentCuepoint: any, index) => {
-        const prevItem = prevArr.length > 0 && prevArr[prevArr.length - 1];
-        const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
-        if (prevItem && currentCuepoint.startTime === prevItem.startTime) {
-          if (prevPrevItem.startTime === prevItem.startTime) {
-            prevItem.groupData = groupTypes.mid;
-          }
-          // found a previous item that has the same time value
-          if (!prevItem.groupData && !prevItem.groupData) {
-            prevItem.groupData = groupTypes.first;
-          }
-          currentCuepoint.groupData = groupTypes.last;
-        }
-        // TODO - enforce order
-        prevArr.push(currentCuepoint);
-        return prevArr;
-      },
-      []
-    );
+  receivedCuepoints = addGroupData(
+    receivedCuepoints
+      .sort(
+        (item1: ItemData, item2: ItemData) => item1.startTime - item2.startTime
+      )
+      .map((cuepoint: ItemData) => {
+        return {
+          ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
+          liveTypeCuepoint: false
+        };
+      })
+  );
   return receivedCuepoints;
 };
 
@@ -225,9 +246,7 @@ export const filterDataByActiveTab = (
   return clearGroupData(filteredData);
 };
 
-export const getAvailableTabs = (
-  data: ItemData[]
-): itemTypes[] => {
+export const getAvailableTabs = (data: ItemData[]): itemTypes[] => {
   const localData = [...data];
   let totalResults = 0;
   const ret: itemTypes[] = localData.reduce(
@@ -244,4 +263,52 @@ export const getAvailableTabs = (
     ret.unshift(itemTypes.All);
   }
   return ret;
+};
+
+export const prepareLiveData = (
+  currentData: Array<ItemData>,
+  newData: Array<ItemData>,
+  ks: string,
+  serviceUrl: string,
+  forceChaptersThumb: boolean,
+  liveStartTime: number | null
+): Array<ItemData> => {
+  // TODO: check if new quepoint already exist https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L334
+  if (!newData || newData.length === 0) {
+    // Wrong or empty data
+    return currentData;
+  }
+  // extract all cuepoints from all requests
+  let receivedCuepoints: Array<ItemData> = [];
+  newData.forEach((item: ItemData) => {
+    if (item) {
+      // TODO: check mandatory item properties
+      receivedCuepoints = receivedCuepoints.concat(currentData, item);
+    }
+  });
+  // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
+  receivedCuepoints = addGroupData(
+    receivedCuepoints.map((cuepoint: any) => {
+      return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
+    })
+    // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
+  );
+  if (liveStartTime) {
+    receivedCuepoints = convertLiveItemsStartTime(
+      receivedCuepoints,
+      liveStartTime
+    );
+  }
+  return receivedCuepoints;
+};
+
+export const convertLiveItemsStartTime = (
+  data: Array<ItemData>,
+  liveStartTime: number
+): Array<ItemData> => {
+  return data.map((item: ItemData) => ({
+    ...item,
+    // @ts-ignore
+    startTime: item.createdAt - liveStartTime
+  }));
 };

@@ -33,21 +33,21 @@ export class NavigationList extends Component<Props> {
   componentDidUpdate(previousProps: Readonly<Props>) {
     if (!previousProps.autoScroll && this.props.autoScroll) {
       // this is click on resume to autoscroll button
-      this._makeScroll();
+      this._scroll();
     }
   }
 
-  private _makeScroll = () => {
+  private _scroll = () => {
     this._listElementRef?.parentElement?.scrollTo(
       0,
       this._selectedElementY - this.props.headerHeight
     );
   };
 
-  private updateSelected = (selctedItemData: any) => {
-    this._selectedElementY = selctedItemData.itemY;
+  private updateSelected = (selectedItemData: any) => {
+    this._selectedElementY = selectedItemData.itemY;
     if (this.props.autoScroll) {
-      this._makeScroll();
+      this._scroll();
     }
   };
 
@@ -68,7 +68,7 @@ export class NavigationList extends Component<Props> {
           return (
             <NavigationItem
               widgetWidth={widgetWidth}
-              onClick={n => this.props.onSeek(n)}
+              onClick={this.props.onSeek}
               selectedItem={this.props.highlightedMap[item.id]}
               key={item.id}
               data={item}

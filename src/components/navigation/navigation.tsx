@@ -152,9 +152,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _makeHighlightedMap = (cuepoints: any[]) => {
-    const maxTime = cuepoints.reduce((acc, item) => {
-      return acc > item.startTime ? acc : item.startTime;
-    }, 0);
+    const maxTime = cuepoints[cuepoints.length - 1]?.startTime || -1;
     const filtered = cuepoints.filter(item => item.startTime === maxTime);
     const highlightedMap = filtered.reduce((acc, item) => {
       return { ...acc, [item.id]: true };
@@ -172,17 +170,17 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           highlightedMap: {}
         };
       }
-      const transcriptUpdate = this._engine.updateTime(currentTime);
-      if (transcriptUpdate.snapshot) {
+      const itemsUpdate = this._engine.updateTime(currentTime);
+      if (itemsUpdate.snapshot) {
         return {
           ...newState,
-          highlightedMap: this._makeHighlightedMap(transcriptUpdate.snapshot)
+          highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot)
         };
       }
-      if (!transcriptUpdate.delta) {
+      if (!itemsUpdate.delta) {
         return newState;
       }
-      const { show } = transcriptUpdate.delta;
+      const { show } = itemsUpdate.delta;
       if (show.length > 0) {
         return { highlightedMap: this._makeHighlightedMap(show) };
       }
@@ -223,21 +221,22 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderHeader = () => {
-
     const { toggledWithEnter, kitchenSinkActive, hasError } = this.props;
     const { searchFilter, convertedData } = this.state;
 
     return (
       <div className={styles.header}>
         {!hasError && (
-        <div class={[styles.searchWrapper, this._getHeaderStyles()].join(" ")}>
-          <NavigationSearch
-            onChange={this._handleSearchFilterChange("searchQuery")}
-            searchQuery={searchFilter.searchQuery}
-            toggledWithEnter={toggledWithEnter}
-            kitchenSinkActive={kitchenSinkActive}
-          />
-        </div>
+          <div
+            class={[styles.searchWrapper, this._getHeaderStyles()].join(" ")}
+          >
+            <NavigationSearch
+              onChange={this._handleSearchFilterChange("searchQuery")}
+              searchQuery={searchFilter.searchQuery}
+              toggledWithEnter={toggledWithEnter}
+              kitchenSinkActive={kitchenSinkActive}
+            />
+          </div>
         )}
         {hasError && <p className={styles.pluginName}>Navigation</p>}
         <button
@@ -246,34 +245,43 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           onClick={this.props.onClose}
         />
         {!hasError && (
-        <NavigationFilter
-          onChange={this._handleSearchFilterChange("activeTab")}
-          activeTab={searchFilter.activeTab}
-          availableTabs={searchFilter.availableTabs}
-          totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : null}
-        />
+          <NavigationFilter
+            onChange={this._handleSearchFilterChange("activeTab")}
+            activeTab={searchFilter.activeTab}
+            availableTabs={searchFilter.availableTabs}
+            totalResults={
+              searchFilter.searchQuery.length > 0 ? convertedData.length : null
+            }
+          />
         )}
       </div>
     );
+  };
+
+  private _handleSeek = (time: number) => {
+    // we want to also autoscroll to the item
+    this.setState({ autoscroll: true }, () => {
+      this.props.onItemClicked(time);
+    });
+  };
+
+  handleScroll = () => {
+    naviga;
+    this.setState({ autoscroll: false });
   };
 
   private _renderNavigation = () => {
     const { searchFilter, widgetWidth } = this.state;
     const { hasError, retry } = this.props;
     if (hasError) {
-      return <Error onRetryLoad={retry} />
+      return <Error onRetryLoad={retry} />;
     }
     return (
       <NavigationList
         widgetWidth={widgetWidth}
-        onWheel={() => this.setState({ autoscroll: false })}
+        onWheel={this.handleScroll}
         autoScroll={this.state.autoscroll}
-        onSeek={n => {
-          // we want to also autoscroll to the item
-          this.setState({ autoscroll: true }, () => {
-            this.props.onItemClicked(n);
-          });
-        }}
+        onSeek={this._handleSeek}
         data={this.state.convertedData}
         highlightedMap={this.state.highlightedMap}
         headerHeight={
