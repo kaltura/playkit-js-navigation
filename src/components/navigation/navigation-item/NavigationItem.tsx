@@ -1,4 +1,4 @@
-import { Component, h } from "preact";
+import { Component, h, Fragment } from "preact";
 import * as styles from "./NavigationItem.scss";
 import { groupTypes, itemTypes } from "../../../utils";
 import { IconsFactory } from "../icons/IconsFactory";
@@ -118,10 +118,12 @@ export class NavigationItem extends Component<Props, State> {
         data-entry-id={id}
         onClick={this._handleClickHandler}
       >
-        <div className={[
-          styles.metadata,
-          displayTime ? styles.withTime : null
-        ].join(" ")}>
+        <div
+          className={[
+            styles.metadata,
+            displayTime ? styles.withTime : null
+          ].join(" ")}
+        >
           {displayTime && <span className={styles.time}>{displayTime}</span>}
           <IconsFactory iconType={itemType}></IconsFactory>
         </div>
@@ -132,11 +134,14 @@ export class NavigationItem extends Component<Props, State> {
           ].join(" ")}
         >
           {previewImage && (
-            <img
-              src={previewImage}
-              alt={"Slide Preview"}
-              className={styles.thumbnail}
-            />
+            <Fragment>
+              <img
+                src={previewImage}
+                alt={"Slide Preview"}
+                className={styles.thumbnail}
+              />
+              <div className={styles.thumbGradient}></div>
+            </Fragment>
           )}
 
           <div

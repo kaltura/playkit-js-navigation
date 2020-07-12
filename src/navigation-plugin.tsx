@@ -104,7 +104,7 @@ export class NavigationPlugin
     if (this._kitchenSinkItem) {
       this._kitchenSinkItem.update();
     }
-  }
+  };
 
   onPluginSetup(): void {
     this._initKitchensinkAndUpperBarItems();
@@ -151,9 +151,10 @@ export class NavigationPlugin
     );
     if (id3TagCues.length) {
       try {
-        const id3Timestamp = Math.ceil(JSON.parse(
-          id3TagCues[id3TagCues.length - 1].value.data
-        ).timestamp / 1000);
+        const id3Timestamp = Math.ceil(
+          JSON.parse(id3TagCues[id3TagCues.length - 1].value.data).timestamp /
+            1000
+        );
         logger.debug(
           `Calling cuepoint engine updateTime with id3 timestamp: ${id3Timestamp}`,
           {
@@ -170,9 +171,12 @@ export class NavigationPlugin
           );
         }
         if (this._liveStartTime && this._listData.length) {
-          this._listData = convertLiveItemsStartTime(this._listData, this._liveStartTime);
+          this._listData = convertLiveItemsStartTime(
+            this._listData,
+            this._liveStartTime
+          );
           this._updateKitchenSink();
-        }      
+        }
       } catch (e) {
         logger.debug("failed retrieving id3 tag metadata", {
           method: "_onTimedMetadataLoaded",
@@ -213,7 +217,7 @@ export class NavigationPlugin
   private _retryFetchData = () => {
     this._hasError = false;
     this._fetchVodData();
-  }
+  };
 
   private _seekTo = (time: number) => {
     this._corePlugin.player.currentTime = time;
@@ -268,22 +272,22 @@ export class NavigationPlugin
       this._configs.playerConfig.provider.ks,
       this._configs.playerConfig.provider.env.serviceUrl,
       this._corePlugin.config.forceChaptersThumb,
-      this._liveStartTime,
+      this._liveStartTime
     );
     // TODO: Debounce _updateKitchenSink
     this._updateKitchenSink();
-  }
+  };
 
-  private _handleAoaMessages = ({ messages }: PublicNotificationsEvent): void => {
+  private _handleAoaMessages = ({
+    messages
+  }: PublicNotificationsEvent): void => {
     logger.debug("handle push notification event", {
       method: "_handleAoaMessages",
       data: messages
     });
-    const aoaMessages: any[] = messages
-      .filter((message: any) => {
-        return "AnswerOnAir" === message.type;
-      })
-    console.log(">> aoa RECEIVED, message", aoaMessages)
+    const aoaMessages: any[] = messages.filter((message: any) => {
+      return "AnswerOnAir" === message.type;
+    });
     this._updateData(aoaMessages);
   };
 
@@ -294,63 +298,59 @@ export class NavigationPlugin
       method: "_handleThumbMessages",
       data: thumbs
     });
-      this._updateData(thumbs);
-  }
+    this._updateData(thumbs);
+  };
 
   private _handleSlideMessages = ({
     slides
-  }: SlideNotificationsEvent): void => {
-    console.log(">> Slide RECEIVED, message", slides);
-  }
+  }: SlideNotificationsEvent): void => {};
 
   private _handlePushNotificationError = ({
     error
-  }: NotificationsErrorEvent): void => {
-    console.log(">> Push notification error", error);
-  }
+  }: NotificationsErrorEvent): void => {};
 
   private _constructPushNotificationListener(): void {
-      // TODO: handle push notification errors
-      // this._pushNotification.on(
-      //   PushNotificationEventTypes.PushNotificationsError,
-      //   this._handlePushNotificationError
-      // );
+    // TODO: handle push notification errors
+    // this._pushNotification.on(
+    //   PushNotificationEventTypes.PushNotificationsError,
+    //   this._handlePushNotificationError
+    // );
 
-      // TODO: handle AOA messages
-      // this._pushNotification.on(
-      //   PushNotificationEventTypes.PublicNotifications,
-      //   this._handleAoaMessages
-      // );
+    // TODO: handle AOA messages
+    // this._pushNotification.on(
+    //   PushNotificationEventTypes.PublicNotifications,
+    //   this._handleAoaMessages
+    // );
 
-      this._pushNotification.on(
-        PushNotificationEventTypes.ThumbNotification,
-        this._handleThumbMessages
-      );
+    this._pushNotification.on(
+      PushNotificationEventTypes.ThumbNotification,
+      this._handleThumbMessages
+    );
 
-      // TODO: handle change-view-mode
-      // this._pushNotification.on(
-      //   PushNotificationEventTypes.SlideNotification,
-      //   this._handleSlideMessages
-      // );
+    // TODO: handle change-view-mode
+    // this._pushNotification.on(
+    //   PushNotificationEventTypes.SlideNotification,
+    //   this._handleSlideMessages
+    // );
   }
 
   private _removePushNotificationListener(): void {
-      this._pushNotification.off(
-        PushNotificationEventTypes.PushNotificationsError,
-        this._handlePushNotificationError
-      );
-      this._pushNotification.off(
-        PushNotificationEventTypes.PublicNotifications,
-        this._handleAoaMessages
-      );
-      this._pushNotification.off(
-        PushNotificationEventTypes.ThumbNotification,
-        this._handleThumbMessages
-      );
-      this._pushNotification.off(
-        PushNotificationEventTypes.SlideNotification,
-        this._handleSlideMessages
-      );
+    this._pushNotification.off(
+      PushNotificationEventTypes.PushNotificationsError,
+      this._handlePushNotificationError
+    );
+    this._pushNotification.off(
+      PushNotificationEventTypes.PublicNotifications,
+      this._handleAoaMessages
+    );
+    this._pushNotification.off(
+      PushNotificationEventTypes.ThumbNotification,
+      this._handleThumbMessages
+    );
+    this._pushNotification.off(
+      PushNotificationEventTypes.SlideNotification,
+      this._handleSlideMessages
+    );
   }
   private _initKitchensinkAndUpperBarItems(): void {
     if (!this._upperBarItem && !this._kitchenSinkItem) {
@@ -457,15 +457,15 @@ export class NavigationPlugin
         );
         this._updateKitchenSink();
       },
-      (error) => {
+      error => {
         this._hasError = true;
         logger.error("failed retrieving navigation data", {
           method: "_fetchVodData",
           data: error
-        })
+        });
         this._updateKitchenSink();
       }
-    )
+    );
   };
 }
 

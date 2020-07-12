@@ -221,21 +221,22 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderHeader = () => {
-
     const { toggledWithEnter, kitchenSinkActive, hasError } = this.props;
     const { searchFilter, convertedData } = this.state;
 
     return (
       <div className={styles.header}>
         {!hasError && (
-        <div class={[styles.searchWrapper, this._getHeaderStyles()].join(" ")}>
-          <NavigationSearch
-            onChange={this._handleSearchFilterChange("searchQuery")}
-            searchQuery={searchFilter.searchQuery}
-            toggledWithEnter={toggledWithEnter}
-            kitchenSinkActive={kitchenSinkActive}
-          />
-        </div>
+          <div
+            class={[styles.searchWrapper, this._getHeaderStyles()].join(" ")}
+          >
+            <NavigationSearch
+              onChange={this._handleSearchFilterChange("searchQuery")}
+              searchQuery={searchFilter.searchQuery}
+              toggledWithEnter={toggledWithEnter}
+              kitchenSinkActive={kitchenSinkActive}
+            />
+          </div>
         )}
         {hasError && <p className={styles.pluginName}>Navigation</p>}
         <button
@@ -244,12 +245,14 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           onClick={this.props.onClose}
         />
         {!hasError && (
-        <NavigationFilter
-          onChange={this._handleSearchFilterChange("activeTab")}
-          activeTab={searchFilter.activeTab}
-          availableTabs={searchFilter.availableTabs}
-          totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : null}
-        />
+          <NavigationFilter
+            onChange={this._handleSearchFilterChange("activeTab")}
+            activeTab={searchFilter.activeTab}
+            availableTabs={searchFilter.availableTabs}
+            totalResults={
+              searchFilter.searchQuery.length > 0 ? convertedData.length : null
+            }
+          />
         )}
       </div>
     );
@@ -263,6 +266,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   handleScroll = () => {
+    naviga;
     this.setState({ autoscroll: false });
   };
 
@@ -270,7 +274,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     const { searchFilter, widgetWidth } = this.state;
     const { hasError, retry } = this.props;
     if (hasError) {
-      return <Error onRetryLoad={retry} />
+      return <Error onRetryLoad={retry} />;
     }
     return (
       <NavigationList

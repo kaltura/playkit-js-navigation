@@ -28,7 +28,7 @@ export enum itemTypes {
 
 export enum cuePointTypes {
   Annotation = "annotation.Annotation",
-  Thumb = "thumbCuePoint.Thumb",
+  Thumb = "thumbCuePoint.Thumb"
 }
 
 // TODO: move to config
@@ -63,11 +63,11 @@ export const fillData = (
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
-  liveType: boolean = false,
+  isLiveEntry: boolean = false
 ) => {
   const item: any = { ...originalItem };
-  item.liveType = liveType;
-  if (liveType) {
+  item.liveType = isLiveEntry;
+  if (isLiveEntry) {
     item.startTime = item.createdAt;
   } else {
     item.startTime = Math.floor(item.startTime / 1000);
@@ -126,9 +126,7 @@ export const fillData = (
   if (item.title) {
     indexedText += " " + item.title;
   }
-  if (item.itemType) {
-    indexedText += " " + item.itemType;
-  }
+  indexedText += " " + item.itemType;
   indexedText += " " + item.displayTime;
   item.indexedText = indexedText.toLowerCase();
   item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
@@ -136,12 +134,12 @@ export const fillData = (
 };
 
 // TODO: add group sort
-export const groupData = (cuepoints: Array<ItemData>) => {
+export const addGroupData = (cuepoints: Array<ItemData>) => {
   return cuepoints.reduce(
-    // mark groupData:
-    // first item will have groupData=groupTypes.first
-    // mid items will have groupData=groupTypes.mid
-    // last items will have groupData=groupTypes.last
+    // mark addGroupData:
+    // first item will have addGroupData=groupTypes.first
+    // mid items will have addGroupData=groupTypes.mid
+    // last items will have addGroupData=groupTypes.last
     (prevArr: Array<any>, currentCuepoint: ItemData) => {
       const prevItem = prevArr.length > 0 && prevArr[prevArr.length - 1];
       const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
@@ -161,7 +159,7 @@ export const groupData = (cuepoints: Array<ItemData>) => {
     },
     []
   );
-}
+};
 
 // main function for data handel. This sorts the cuepoints by startTime, and enriches the items with data so that the
 // items component will not contain too much logic in it and mostly will be a
@@ -192,16 +190,18 @@ export const prepareVodData = (
     }
   });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = groupData(
+  receivedCuepoints = addGroupData(
     receivedCuepoints
-      .sort((item1: ItemData, item2: ItemData) => item1.startTime - item2.startTime)
+      .sort(
+        (item1: ItemData, item2: ItemData) => item1.startTime - item2.startTime
+      )
       .map((cuepoint: ItemData) => {
         return {
           ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
-          liveTypeCuepoint: false,
-        }
+          liveTypeCuepoint: false
+        };
       })
-    );
+  );
   return receivedCuepoints;
 };
 
@@ -246,9 +246,7 @@ export const filterDataByActiveTab = (
   return clearGroupData(filteredData);
 };
 
-export const getAvailableTabs = (
-  data: ItemData[]
-): itemTypes[] => {
+export const getAvailableTabs = (data: ItemData[]): itemTypes[] => {
   const localData = [...data];
   let totalResults = 0;
   const ret: itemTypes[] = localData.reduce(
@@ -273,7 +271,7 @@ export const prepareLiveData = (
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
-  liveStartTime: number | null,
+  liveStartTime: number | null
 ): Array<ItemData> => {
   // TODO: check if new quepoint already exist https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L334
   if (!newData || newData.length === 0) {
@@ -283,30 +281,34 @@ export const prepareLiveData = (
   // extract all cuepoints from all requests
   let receivedCuepoints: Array<ItemData> = [];
   newData.forEach((item: ItemData) => {
-    if (item) { // TODO: check mandatory item properties
-      receivedCuepoints = receivedCuepoints.concat(
-        currentData, item
-      );
+    if (item) {
+      // TODO: check mandatory item properties
+      receivedCuepoints = receivedCuepoints.concat(currentData, item);
     }
   });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = groupData(
-    receivedCuepoints
-      .map((cuepoint: any) => {
-        return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true)
-      })
-      // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
-    );
+  receivedCuepoints = addGroupData(
+    receivedCuepoints.map((cuepoint: any) => {
+      return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
+    })
+    // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
+  );
   if (liveStartTime) {
-    receivedCuepoints = convertLiveItemsStartTime(receivedCuepoints, liveStartTime);
+    receivedCuepoints = convertLiveItemsStartTime(
+      receivedCuepoints,
+      liveStartTime
+    );
   }
   return receivedCuepoints;
 };
 
-export const convertLiveItemsStartTime = (data: Array<ItemData>, liveStartTime: number): Array<ItemData> => {
+export const convertLiveItemsStartTime = (
+  data: Array<ItemData>,
+  liveStartTime: number
+): Array<ItemData> => {
   return data.map((item: ItemData) => ({
     ...item,
     // @ts-ignore
-    startTime: item.createdAt - liveStartTime,
+    startTime: item.createdAt - liveStartTime
   }));
 };
