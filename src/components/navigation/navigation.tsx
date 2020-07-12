@@ -131,11 +131,10 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     data: ItemData[],
     searchFilter: SearchFilter
   ): SearchFilter => {
-    const { availableTabs, totalResults } = getAvailableTabs(data);
+    const availableTabs = getAvailableTabs(data);
     return {
       ...searchFilter,
-      availableTabs,
-      totalResults
+      availableTabs
     };
   };
 
@@ -223,7 +222,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _renderHeader = () => {
     const { toggledWithEnter, kitchenSinkActive } = this.props;
-    const { searchFilter } = this.state;
+    const { searchFilter, convertedData } = this.state;
     return (
       <div className={styles.header}>
         <div class={[styles.searchWrapper, this._getHeaderStyles()].join(" ")}>
@@ -243,9 +242,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           onChange={this._handleSearchFilterChange("activeTab")}
           activeTab={searchFilter.activeTab}
           availableTabs={searchFilter.availableTabs}
-          totalResults={
-            searchFilter.searchQuery ? searchFilter.totalResults : null
-          }
+          totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : null}
         />
       </div>
     );

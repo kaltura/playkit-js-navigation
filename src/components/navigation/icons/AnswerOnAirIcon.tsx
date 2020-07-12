@@ -1,13 +1,12 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 
 export interface props {
-  color: any;
+  color?: string;
 }
 
 export const AnswerOnAirIcon = (props: props) => {
   return (
     <svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1">
-      <title>Icons/12/Slide</title>
       <g
         id="Icons/12/Slide"
         stroke="none"
