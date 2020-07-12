@@ -12,7 +12,7 @@ export interface props {
 }
 
 export enum IconColors {
-  All = "#cccccc",
+  All = "#01accd",
   Hotspot = "#1687ff",
   AnswerOnAir = "#b2d238",
   Chapter = "#01accd",

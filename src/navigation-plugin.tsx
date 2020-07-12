@@ -210,6 +210,11 @@ export class NavigationPlugin
     }
   }
 
+  private _retryFetchData = () => {
+    this._hasError = false;
+    this._fetchVodData();
+  }
+
   private _seekTo = (time: number) => {
     this._corePlugin.player.currentTime = time;
   };
@@ -362,6 +367,7 @@ export class NavigationPlugin
         onItemClicked={this._seekTo}
         isLoading={this._isLoading}
         hasError={this._hasError}
+        retry={this._retryFetchData}
         currentTime={this._currentPosition}
         kitchenSinkActive={!!this._kitchenSinkItem?.isActive()}
         toggledWithEnter={this._triggeredByKeyboard}
@@ -451,10 +457,15 @@ export class NavigationPlugin
         );
         this._updateKitchenSink();
       },
-      error => {
-        console.log("error", error);
+      (error) => {
+        this._hasError = true;
+        logger.error("failed retrieving navigation data", {
+          method: "_fetchVodData",
+          data: error
+        })
+        this._updateKitchenSink();
       }
-    );
+    )
   };
 }
 
