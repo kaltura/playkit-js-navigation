@@ -9,17 +9,34 @@
     width: 100%;
     .tab {
       display: flex;
-      flex-grow: 1;
+      flex: 1 1 0px;
       justify-content: center;
       align-items: center;
+      padding-bottom: 2px;
       background-color: transparent;
       background-position: center;
       background-repeat: no-repeat;
       color: white;
       border: none;
       cursor: pointer;
+      &:hover {
+        border-radius: 4px;
+        background-color: #01accd33;
+      }
       &.active {
+        padding-bottom: 0;
         border-bottom: 2px solid;
+        border-bottom-left-radius: 1px;
+        border-bottom-right-radius: 1px;
+      }
+      .label {
+        margin-left: 5px;
+        font-size: 13px;
+        line-height: 1.15;
+        color: #cccccc;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
