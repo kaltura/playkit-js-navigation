@@ -51,6 +51,9 @@ export class NavigationFilter extends Component<FilterProps> {
   };
 
   public _renderTab = (tab: { isActive: boolean; type: itemTypes, label: string }) => {
+    const style = {
+      borderColor: IconColors[tab.type],
+    }
     return (
       <button
         key={tab.type}
@@ -59,9 +62,7 @@ export class NavigationFilter extends Component<FilterProps> {
           styles.tab,
           tab.isActive ? styles.active : ""
         ].join(" ")}
-        style={{
-          borderColor: IconColors[tab.type],
-        }}
+        style={style}
         onClick={() => this._handleChange(tab.type)}
       >
         {tab.type === itemTypes.All ? (

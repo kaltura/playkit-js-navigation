@@ -265,8 +265,10 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     });
   };
 
-  handleScroll = () => {
-    this.setState({ autoscroll: false });
+  private _handleScroll = () => {
+    if (this.state.autoscroll) {
+      this.setState({ autoscroll: false });
+    }
   };
 
   private _renderNavigation = () => {
@@ -278,7 +280,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return (
       <NavigationList
         widgetWidth={widgetWidth}
-        onWheel={this.handleScroll}
+        onWheel={this._handleScroll}
         autoScroll={this.state.autoscroll}
         onSeek={this._handleSeek}
         data={this.state.convertedData}
