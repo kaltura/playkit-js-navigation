@@ -266,7 +266,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   handleScroll = () => {
-    naviga;
     this.setState({ autoscroll: false });
   };
 
