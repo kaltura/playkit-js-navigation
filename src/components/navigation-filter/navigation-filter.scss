@@ -21,7 +21,9 @@
       cursor: pointer;
       &:hover {
         border-radius: 4px;
-        background-color: #01accd33;
+      }
+      &:not(:hover) {
+        background-color: transparent !important; // overwride inline styles
       }
       &.active {
         padding-bottom: 0;
