@@ -15,7 +15,7 @@ export function getConfigValue( // TODO: consider move to contrib
 export enum groupTypes {
   mid = "mid",
   first = "first",
-  last = "last"
+  last = "last",
 }
 
 export enum itemTypes {
@@ -23,12 +23,12 @@ export enum itemTypes {
   AnswerOnAir = "AnswerOnAir",
   Chapter = "Chapter",
   Slide = "Slide",
-  Hotspot = "Hotspot"
+  Hotspot = "Hotspot",
 }
 
 export enum cuePointTypes {
   Annotation = "annotation.Annotation",
-  Thumb = "thumbCuePoint.Thumb"
+  Thumb = "thumbCuePoint.Thumb",
 }
 
 // TODO: move to config
@@ -177,7 +177,7 @@ export const prepareVodData = (
   }
   // extract all cuepoints from all requests
   let receivedCuepoints: Array<ItemData> = [];
-  multirequestData.forEach(request => {
+  multirequestData.forEach((request) => {
     if (
       request &&
       request.result &&
@@ -190,25 +190,23 @@ export const prepareVodData = (
     }
   });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = addGroupData(
-    receivedCuepoints
-      .sort(
-        (item1: ItemData, item2: ItemData) => item1.startTime - item2.startTime
-      )
-      .map((cuepoint: ItemData) => {
-        return {
-          ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
-          liveTypeCuepoint: false
-        };
-      })
-  );
+  receivedCuepoints = receivedCuepoints
+    .sort(
+      (item1: ItemData, item2: ItemData) => item1.startTime - item2.startTime
+    )
+    .map((cuepoint: ItemData) => {
+      return {
+        ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
+        liveTypeCuepoint: false,
+      };
+    });
   return receivedCuepoints;
 };
 
 const clearGroupData = (data: Array<ItemData>) => {
   return data.map((item: ItemData) => ({
     ...item,
-    groupData: null
+    groupData: null,
   }));
 };
 
@@ -287,12 +285,10 @@ export const prepareLiveData = (
     }
   });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = addGroupData(
-    receivedCuepoints.map((cuepoint: any) => {
-      return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
-    })
-    // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
-  );
+  // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
+  receivedCuepoints = receivedCuepoints.map((cuepoint: any) => {
+    return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
+  });
   if (liveStartTime) {
     receivedCuepoints = convertLiveItemsStartTime(
       receivedCuepoints,
@@ -309,6 +305,6 @@ export const convertLiveItemsStartTime = (
   return data.map((item: ItemData) => ({
     ...item,
     // @ts-ignore
-    startTime: item.createdAt - liveStartTime
+    startTime: item.createdAt - liveStartTime,
   }));
 };

@@ -1,13 +1,14 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 
 export const EmptyList = () => {
+  const style = {
+    "text-align": "center",
+    "margin-top": "50%",
+    "margin-bottom": "auto"
+  }
   return (
     <div
-      style={{
-        "text-align": "center",
-        "margin-top": "50%",
-        "margin-bottom": "auto"
-      }}
+      style={style}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

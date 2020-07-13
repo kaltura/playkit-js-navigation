@@ -1,7 +1,7 @@
 import { h, Component, Fragment } from "preact";
 import * as styles from "./navigation-filter.scss";
 import { itemTypes } from "../../utils";
-import { IconsFactory, IconColors } from "../navigation/icons/IconsFactory";
+import { IconsFactory, IconColors, BackgroundColors } from "../navigation/icons/IconsFactory";
 const { Tooltip } = KalturaPlayer.ui.components.Tooltip;
 
 export interface FilterProps {
@@ -51,6 +51,10 @@ export class NavigationFilter extends Component<FilterProps> {
   };
 
   public _renderTab = (tab: { isActive: boolean; type: itemTypes, label: string }) => {
+    const style = {
+      borderColor: IconColors[tab.type],
+      backgroundColor: BackgroundColors[tab.type],
+    }
     return (
       <button
         key={tab.type}
@@ -59,9 +63,7 @@ export class NavigationFilter extends Component<FilterProps> {
           styles.tab,
           tab.isActive ? styles.active : ""
         ].join(" ")}
-        style={{
-          borderColor: IconColors[tab.type],
-        }}
+        style={style}
         onClick={() => this._handleChange(tab.type)}
       >
         {tab.type === itemTypes.All ? (

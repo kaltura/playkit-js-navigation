@@ -27,6 +27,7 @@ export interface Props {
   selectedItem: boolean;
   widgetWidth: number;
   onClick: (time: number) => void;
+  showIcon: boolean;
 }
 
 export interface State {
@@ -93,6 +94,7 @@ export class NavigationItem extends Component<Props, State> {
   };
 
   render(props: Props) {
+    const { selectedItem, showIcon, data } = this.props;
     const {
       id,
       previewImage,
@@ -103,8 +105,7 @@ export class NavigationItem extends Component<Props, State> {
       shorthandTitle,
       hasShowMore,
       displayDescription
-    } = props.data;
-    const { selectedItem } = this.props;
+    } = data;
     return (
       <div
         ref={node => {
@@ -113,7 +114,7 @@ export class NavigationItem extends Component<Props, State> {
         className={[
           styles[groupData ? groupData : "single"],
           styles.navigationItem,
-          selectedItem ? styles.selected : null // TODO move to parent or switch to engine
+          selectedItem ? styles.selected : null
         ].join(" ")}
         data-entry-id={id}
         onClick={this._handleClickHandler}
@@ -124,8 +125,12 @@ export class NavigationItem extends Component<Props, State> {
             displayTime ? styles.withTime : null
           ].join(" ")}
         >
-          {displayTime && <span className={styles.time}>{displayTime}</span>}
-          <IconsFactory iconType={itemType}></IconsFactory>
+          {displayTime && <span>{displayTime}</span>}
+          {showIcon && (
+          <div className={styles.iconWrapper}>
+            <IconsFactory iconType={itemType}></IconsFactory>
+          </div>
+          )}
         </div>
         <div
           className={[
