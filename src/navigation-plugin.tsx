@@ -80,8 +80,8 @@ export class NavigationPlugin
   private _currentPosition = 0;
   private _listData: Array<ItemData> = [];
   private _triggeredByKeyboard = false;
-  private _isLoading = false; // TODO: handle is loading state
-  private _hasError = false; // TODO: handle error state
+  private _isLoading = false;
+  private _hasError = false;
   private _liveStartTime: number | null = null;
 
   constructor(
@@ -215,7 +215,6 @@ export class NavigationPlugin
   }
 
   private _retryFetchData = () => {
-    this._hasError = false;
     this._fetchVodData();
   };
 
@@ -424,6 +423,8 @@ export class NavigationPlugin
   }
 
   private _fetchVodData = () => {
+    this._hasError = false;
+    this._isLoading = true;
     const requests: KalturaRequest<any>[] = [];
     const chaptersAndSlidesRequest = new CuePointListAction({
       filter: new KalturaThumbCuePointFilter({
@@ -447,6 +448,7 @@ export class NavigationPlugin
     });
 
     requests.push(chaptersAndSlidesRequest, hotspotsRequest);
+    this._updateKitchenSink();
     this._kalturaClient.multiRequest(requests).then(
       (responses: KalturaMultiResponse | null) => {
         this._listData = prepareVodData(
@@ -455,10 +457,12 @@ export class NavigationPlugin
           this._configs.playerConfig.provider.env.serviceUrl,
           this._corePlugin.config.forceChaptersThumb
         );
+        this._isLoading = false;
         this._updateKitchenSink();
       },
       error => {
         this._hasError = true;
+        this._isLoading = false;
         logger.error("failed retrieving navigation data", {
           method: "_fetchVodData",
           data: error
