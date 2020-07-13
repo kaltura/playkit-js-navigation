@@ -19,6 +19,7 @@ export enum IconColors {
   Slide = "#7fd9e8",
 }
 
+// TODO: make all colors replacable later
 export enum BackgroundColors {
   All = "#151414",
   Hotspot = "#061527",

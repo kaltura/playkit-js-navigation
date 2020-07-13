@@ -14,7 +14,8 @@ import {
   itemTypes,
   getAvailableTabs,
   filterDataBySearchQuery,
-  filterDataByActiveTab
+  filterDataByActiveTab,
+  addGroupData
 } from "../../utils";
 import { AutoscrollIcon } from "./icons/AutoscrollIcon";
 import { ItemData } from "./navigation-item/NavigationItem";
@@ -120,7 +121,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     );
     const stateData: NavigationState = {
       ...this.state,
-      convertedData: filterDataByActiveTab(filteredBySearchQuery, activeTab),
+      convertedData: addGroupData(filterDataByActiveTab(filteredBySearchQuery, activeTab)),
       searchFilter: this._prepareSearchFilter(
         filteredBySearchQuery,
         searchFilter
@@ -288,7 +289,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         headerHeight={
           searchFilter.searchQuery ? HEADER_HEIGHT_WITH_AMOUNT : HEADER_HEIGHT
         }
-        showItemIcons={searchFilter.activeTab === itemTypes.All}
+        showItemsIcons={searchFilter.activeTab === itemTypes.All}
       />
     );
   };

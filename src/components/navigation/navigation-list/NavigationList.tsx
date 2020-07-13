@@ -11,7 +11,7 @@ export interface Props {
   widgetWidth: number;
   highlightedMap: Record<string, true>;
   headerHeight: number;
-  showItemIcons: boolean;
+  showItemsIcons: boolean;
 }
 
 export class NavigationList extends Component<Props> {
@@ -53,7 +53,7 @@ export class NavigationList extends Component<Props> {
   };
 
   render(props: Props) {
-    const { data, widgetWidth, showItemIcons } = this.props;
+    const { data, widgetWidth, showItemsIcons } = this.props;
     if (!data.length) {
       return <EmptyList />;
     }
@@ -74,7 +74,7 @@ export class NavigationList extends Component<Props> {
               key={item.id}
               data={item}
               onSelected={this.updateSelected}
-              showIcon={showItemIcons}
+              showIcon={showItemsIcons}
             />
           );
         })}
