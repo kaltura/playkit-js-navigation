@@ -114,7 +114,7 @@ export class NavigationItem extends Component<Props, State> {
         className={[
           styles[groupData ? groupData : "single"],
           styles.navigationItem,
-          selectedItem ? styles.selected : null // TODO move to parent or switch to engine
+          selectedItem ? styles.selected : null
         ].join(" ")}
         data-entry-id={id}
         onClick={this._handleClickHandler}
