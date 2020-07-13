@@ -286,6 +286,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         headerHeight={
           searchFilter.searchQuery ? HEADER_HEIGHT_WITH_AMOUNT : HEADER_HEIGHT
         }
+        showItemIcons={searchFilter.activeTab === itemTypes.All}
       />
     );
   };
