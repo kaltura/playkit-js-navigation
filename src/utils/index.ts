@@ -26,6 +26,13 @@ export enum itemTypes {
   Hotspot = "Hotspot",
 }
 
+export const itemTypesOrder: Record<string, number> = {
+  [itemTypes.Chapter]: 1,
+  [itemTypes.Slide]: 2,
+  [itemTypes.Hotspot]: 3,
+  [itemTypes.AnswerOnAir]: 4,
+}
+
 export enum cuePointTypes {
   Annotation = "annotation.Annotation",
   Thumb = "thumbCuePoint.Thumb",
@@ -133,8 +140,17 @@ export const fillData = (
   return item;
 };
 
-// TODO: add group sort
-export const addGroupData = (cuepoints: Array<ItemData>) => {
+export const sortItems = (cuepoints: Array<ItemData>): Array<ItemData> => {
+  return cuepoints.sort(
+    (item1: ItemData, item2: ItemData) => {
+      if (item1.startTime === item2.startTime) {
+        return itemTypesOrder[item1.itemType] - itemTypesOrder[item2.itemType];
+      }
+      return item1.startTime - item2.startTime;
+    });
+};
+
+export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
   return cuepoints.reduce(
     // mark addGroupData:
     // first item will have addGroupData=groupTypes.first
@@ -191,16 +207,13 @@ export const prepareVodData = (
   });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
   receivedCuepoints = receivedCuepoints
-    .sort(
-      (item1: ItemData, item2: ItemData) => item1.startTime - item2.startTime
-    )
     .map((cuepoint: ItemData) => {
       return {
         ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
         liveTypeCuepoint: false,
       };
     });
-  return receivedCuepoints;
+  return sortItems(receivedCuepoints);
 };
 
 const clearGroupData = (data: Array<ItemData>) => {
@@ -271,21 +284,24 @@ export const prepareLiveData = (
   forceChaptersThumb: boolean,
   liveStartTime: number | null
 ): Array<ItemData> => {
-  // TODO: check if new quepoint already exist https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L334
   if (!newData || newData.length === 0) {
     // Wrong or empty data
     return currentData;
   }
   // extract all cuepoints from all requests
   let receivedCuepoints: Array<ItemData> = [];
-  newData.forEach((item: ItemData) => {
-    if (item) {
-      // TODO: check mandatory item properties
-      receivedCuepoints = receivedCuepoints.concat(currentData, item);
-    }
-  });
+  newData
+    // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
+    .filter((newDataItem: ItemData) => {
+      return !currentData.some((item: ItemData) => (item.id === newDataItem.id));
+    })
+    .forEach((item: ItemData) => {
+      if (item) {
+        // TODO: check mandatory item properties
+        receivedCuepoints = receivedCuepoints.concat(currentData, item);
+      }
+    });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  // TODO: sort data (V2 makes it https://github.com/kaltura/mwEmbed/blob/6e187bd6d7a103389d08316999327aff413796be/modules/KalturaSupport/resources/mw.KCuePoints.js#L220)
   receivedCuepoints = receivedCuepoints.map((cuepoint: any) => {
     return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
   });
@@ -295,7 +311,7 @@ export const prepareLiveData = (
       liveStartTime
     );
   }
-  return receivedCuepoints;
+  return sortItems(receivedCuepoints);
 };
 
 export const convertLiveItemsStartTime = (
