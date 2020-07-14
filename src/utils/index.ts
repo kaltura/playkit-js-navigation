@@ -295,7 +295,7 @@ export const prepareLiveData = (
   newData
     // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
     .filter((newDataItem: ItemData) => {
-      return currentData.some((item: ItemData) => (item.id === newDataItem.id));
+      return !currentData.some((item: ItemData) => (item.id === newDataItem.id));
     })
     .forEach((item: ItemData) => {
       if (item) {
