@@ -3,19 +3,20 @@ import { KeyboardKeys } from "@playkit-js-contrib/ui";
 import {
   getContribLogger,
   CuepointEngine,
-  Cuepoint
+  Cuepoint,
 } from "@playkit-js-contrib/common";
 import * as styles from "./navigaton.scss";
 import { NavigationList } from "./navigation-list/NavigationList";
 import { NavigationSearch } from "../navigation-search/navigation-search";
 import { NavigationFilter } from "../navigation-filter";
 import { Error } from "../error";
+import { Loading } from "../loading";
 import {
   itemTypes,
   getAvailableTabs,
   filterDataBySearchQuery,
   filterDataByActiveTab,
-  addGroupData
+  addGroupData,
 } from "../../utils";
 import { AutoscrollIcon } from "./icons/AutoscrollIcon";
 import { ItemData } from "./navigation-item/NavigationItem";
@@ -52,7 +53,7 @@ const HEADER_HEIGHT_WITH_AMOUNT = 120;
 
 const logger = getContribLogger({
   class: "Navigation",
-  module: "navigation-plugin"
+  module: "navigation-plugin",
 });
 
 const initialSearchFilter = {
@@ -63,9 +64,9 @@ const initialSearchFilter = {
     itemTypes.Chapter,
     itemTypes.Slide,
     itemTypes.Hotspot,
-    itemTypes.AnswerOnAir
+    itemTypes.AnswerOnAir,
   ],
-  totalResults: 0
+  totalResults: 0,
 };
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
@@ -74,7 +75,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _log = (msg: string, method: string) => {
     logger.trace(msg, {
-      method: method || "Method not defined"
+      method: method || "Method not defined",
     });
   };
 
@@ -85,7 +86,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       widgetWidth: 0,
       highlightedMap: {},
       searchFilter: { ...initialSearchFilter },
-      convertedData: []
+      convertedData: [],
     };
   }
 
@@ -121,11 +122,13 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     );
     const stateData: NavigationState = {
       ...this.state,
-      convertedData: addGroupData(filterDataByActiveTab(filteredBySearchQuery, activeTab)),
+      convertedData: addGroupData(
+        filterDataByActiveTab(filteredBySearchQuery, activeTab)
+      ),
       searchFilter: this._prepareSearchFilter(
         filteredBySearchQuery,
         searchFilter
-      )
+      ),
     };
     this._updateEngine(stateData);
   };
@@ -137,7 +140,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     const availableTabs = getAvailableTabs(data);
     return {
       ...searchFilter,
-      availableTabs
+      availableTabs,
     };
   };
 
@@ -154,7 +157,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _makeHighlightedMap = (cuepoints: any[]) => {
     const maxTime = cuepoints[cuepoints.length - 1]?.startTime || -1;
-    const filtered = cuepoints.filter(item => item.startTime === maxTime);
+    const filtered = cuepoints.filter((item) => item.startTime === maxTime);
     const highlightedMap = filtered.reduce((acc, item) => {
       return { ...acc, [item.id]: true };
     }, {});
@@ -168,14 +171,14 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       if (!this._engine) {
         return {
           ...newState,
-          highlightedMap: {}
+          highlightedMap: {},
         };
       }
       const itemsUpdate = this._engine.updateTime(currentTime);
       if (itemsUpdate.snapshot) {
         return {
           ...newState,
-          highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot)
+          highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot),
         };
       }
       if (!itemsUpdate.delta) {
@@ -194,7 +197,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       const { width } = this._widgetRootRef.getBoundingClientRect();
       if (this.state.widgetWidth !== width) {
         this.setState({
-          widgetWidth: width
+          widgetWidth: width,
         });
       }
     }
@@ -216,7 +219,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   ) => {
     const searchFilter: SearchFilter = {
       ...this.state.searchFilter,
-      [property]: data
+      [property]: data,
     };
     this._prepareNavigationData(searchFilter);
   };
@@ -295,11 +298,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderLoading = () => {
-    return (
-      <div className={styles.loadingWrapper}>
-        <h1>Spinner placeholder</h1>
-      </div>
-    );
+    return <Loading />;
   };
 
   private _handleClose = (event: KeyboardEvent) => {
@@ -314,27 +313,31 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return (
       <div
         className={`${styles.root} ${kitchenSinkActive ? "" : styles.hidden}`}
-        ref={node => {
+        ref={(node) => {
           this._widgetRootRef = node;
         }}
         onKeyUp={this._handleClose}
       >
-        <div className={styles.globalContainer}>
-          {this._renderHeader()}
-          <div className={styles.body}>
-            {isLoading ? this._renderLoading() : this._renderNavigation()}
-            {!autoscroll && (
-              <button
-                className={styles.skipButton}
-                onClick={() => {
-                  this.setState({ autoscroll: true });
-                }}
-              >
-                <AutoscrollIcon />
-              </button>
-            )}
+        {isLoading ? (
+          this._renderLoading()
+        ) : (
+          <div className={styles.globalContainer}>
+            {this._renderHeader()}
+            <div className={styles.body}>
+              {this._renderNavigation()}
+              {!autoscroll && (
+                <button
+                  className={styles.skipButton}
+                  onClick={() => {
+                    this.setState({ autoscroll: true });
+                  }}
+                >
+                  <AutoscrollIcon />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
