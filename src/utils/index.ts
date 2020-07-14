@@ -15,7 +15,7 @@ export function getConfigValue( // TODO: consider move to contrib
 export enum groupTypes {
   mid = "mid",
   first = "first",
-  last = "last",
+  last = "last"
 }
 
 export enum itemTypes {
@@ -23,12 +23,12 @@ export enum itemTypes {
   AnswerOnAir = "AnswerOnAir",
   Chapter = "Chapter",
   Slide = "Slide",
-  Hotspot = "Hotspot",
+  Hotspot = "Hotspot"
 }
 
 export enum cuePointTypes {
   Annotation = "annotation.Annotation",
-  Thumb = "thumbCuePoint.Thumb",
+  Thumb = "thumbCuePoint.Thumb"
 }
 
 // TODO: move to config
@@ -177,7 +177,7 @@ export const prepareVodData = (
   }
   // extract all cuepoints from all requests
   let receivedCuepoints: Array<ItemData> = [];
-  multirequestData.forEach((request) => {
+  multirequestData.forEach(request => {
     if (
       request &&
       request.result &&
@@ -197,7 +197,7 @@ export const prepareVodData = (
     .map((cuepoint: ItemData) => {
       return {
         ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
-        liveTypeCuepoint: false,
+        liveTypeCuepoint: false
       };
     });
   return receivedCuepoints;
@@ -206,7 +206,7 @@ export const prepareVodData = (
 const clearGroupData = (data: Array<ItemData>) => {
   return data.map((item: ItemData) => ({
     ...item,
-    groupData: null,
+    groupData: null
   }));
 };
 
@@ -305,6 +305,6 @@ export const convertLiveItemsStartTime = (
   return data.map((item: ItemData) => ({
     ...item,
     // @ts-ignore
-    startTime: item.createdAt - liveStartTime,
+    startTime: item.createdAt - liveStartTime
   }));
 };

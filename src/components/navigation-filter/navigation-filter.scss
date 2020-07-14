@@ -27,9 +27,9 @@
       }
       &.active {
         padding-bottom: 0;
-        border-bottom: 2px solid;
-        border-bottom-left-radius: 1px;
-        border-bottom-right-radius: 1px;
+        border-bottom: none;
+        //border-bottom-left-radius: 1px;
+        //border-bottom-right-radius: 1px;
       }
       .label {
         margin-left: 5px;
@@ -48,4 +48,8 @@
     font-size: 14px;
     line-height: 1.29;
   }
+}
+.animation-marker {
+  width: 100%;
+  min-height: 4px;
 }

@@ -1,7 +1,12 @@
 import { h, Component, Fragment } from "preact";
 import * as styles from "./navigation-filter.scss";
 import { itemTypes } from "../../utils";
-import { IconsFactory, IconColors, BackgroundColors } from "../navigation/icons/IconsFactory";
+import {
+  IconsFactory,
+  IconColors,
+  BackgroundColors
+} from "../navigation/icons/IconsFactory";
+import { AnimationMarker } from "./animated-marker";
 const { Tooltip } = KalturaPlayer.ui.components.Tooltip;
 
 export interface FilterProps {
@@ -19,29 +24,26 @@ export interface TabData {
 }
 
 export class NavigationFilter extends Component<FilterProps> {
-
   static defaultProps = {
     translates: {
-      [itemTypes.All]: 'All',
-      [itemTypes.AnswerOnAir]: 'Answer On Air',
-      [itemTypes.Chapter]: 'Chapters',
-      [itemTypes.Slide]: 'Slides',
-      [itemTypes.Hotspot]: 'Hotspots',
+      [itemTypes.All]: "All",
+      [itemTypes.AnswerOnAir]: "Answer On Air",
+      [itemTypes.Chapter]: "Chapters",
+      [itemTypes.Slide]: "Slides",
+      [itemTypes.Hotspot]: "Hotspots"
     }
-  }
+  };
+
+  private _tabsContainer: null | HTMLDivElement = null;
 
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
-    const {
-      activeTab,
-      availableTabs,
-      totalResults
-    } = this.props;
+    const { activeTab, availableTabs, totalResults } = this.props;
     if (
       activeTab !== nextProps.activeTab ||
       availableTabs !== nextProps.availableTabs ||
       totalResults !== nextProps.totalResults
     ) {
-        return true;
+      return true;
     }
     return false;
   }
@@ -50,18 +52,23 @@ export class NavigationFilter extends Component<FilterProps> {
     this.props.onChange(type);
   };
 
-  public _renderTab = (tab: { isActive: boolean; type: itemTypes, label: string }) => {
+  public _renderTab = (tab: {
+    isActive: boolean;
+    type: itemTypes;
+    label: string;
+  }) => {
     const style = {
       borderColor: IconColors[tab.type],
-      backgroundColor: BackgroundColors[tab.type],
-    }
+      backgroundColor: BackgroundColors[tab.type]
+    };
     return (
       <button
+        data-tab-name={tab.type}
         key={tab.type}
         tabIndex={1}
         className={[
           styles.tab,
-          tab.isActive ? styles.active : ""
+          tab.isActive ? [styles.active, "active-filter-tab"].join(" ") : ""
         ].join(" ")}
         style={style}
         onClick={() => this._handleChange(tab.type)}
@@ -73,10 +80,12 @@ export class NavigationFilter extends Component<FilterProps> {
             <Tooltip label={tab.label}>
               <IconsFactory
                 iconType={tab.type}
-                color={tab.isActive ? null : '#cccccc'}
+                color={tab.isActive ? null : "#cccccc"}
               />
             </Tooltip>
-            {this.props.availableTabs.length < 4 && <span className={styles.label}>{tab.label}</span>}
+            {this.props.availableTabs.length < 4 && (
+              <span className={styles.label}>{tab.label}</span>
+            )}
           </Fragment>
         )}
       </button>
@@ -89,40 +98,73 @@ export class NavigationFilter extends Component<FilterProps> {
       return {
         type: tab,
         isActive: activeTab === tab,
-        label: translates[tab],
+        label: translates[tab]
       };
     });
     return tabs;
   };
+  private _getAnimationMarkerData = () => {
+    const tabs = this._getTabsData();
 
+    if (!this._tabsContainer || !tabs.length) {
+      return { width: 0, offset: 0, color: "" };
+    }
+    const currentTab = this._tabsContainer.querySelectorAll(
+      `[data-tab-name='${this.props.activeTab}']`
+    )[0] as HTMLElement;
+
+    if (!currentTab || !tabs.length) {
+      return { width: 0, offset: 0, color: "" };
+    }
+
+    return {
+      width: currentTab.clientWidth,
+      offset: currentTab.offsetLeft - 16,
+      color: IconColors[this.props.activeTab]
+    };
+  };
   private _getResultLabel = (): string => {
     const { activeTab, translates, totalResults } = this.props;
     // TODO: add locale (i18n)
     // TODO: look how player translates plural and single
     // @ts-ignore
-    return `${totalResults} result${totalResults > 1 ? 's' : ''} in ${activeTab === itemTypes.All ?
-      'all content' :
-      translates[activeTab].toLowerCase()}`
-  }
-
+    return `${totalResults} result${totalResults > 1 ? "s" : ""} in ${
+      activeTab === itemTypes.All
+        ? "all content"
+        : translates[activeTab].toLowerCase()
+    }`;
+  };
   render() {
     const { totalResults } = this.props;
     const tabs = this._getTabsData();
+    const { width, color, offset } = this._getAnimationMarkerData();
     if (tabs.length < 2) {
       return null;
     }
     return (
       <div className={styles.filterRoot}>
         {totalResults !== 0 && (
-        <div className={styles.tabsWrapper}>
-          {tabs.map((tab) => {
-            return this._renderTab(tab);
-          })}
-        </div>
+          <Fragment>
+            <div
+              className={styles.tabsWrapper}
+              ref={node => {
+                this._tabsContainer = node;
+              }}
+            >
+              {tabs.map(tab => {
+                return this._renderTab(tab);
+              })}
+            </div>
+            <AnimationMarker
+              color={color}
+              offset={offset}
+              width={width}
+            ></AnimationMarker>
+          </Fragment>
         )}
-        {!!totalResults &&
+        {!!totalResults && (
           <div className={styles.totalResults}>{this._getResultLabel()}</div>
-        }
+        )}
       </div>
     );
   }
