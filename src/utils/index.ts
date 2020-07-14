@@ -144,9 +144,7 @@ export const sortItems = (cuepoints: Array<ItemData>): Array<ItemData> => {
   return cuepoints.sort(
     (item1: ItemData, item2: ItemData) => {
       if (item1.startTime === item2.startTime) {
-        const item1Type: number = itemTypesOrder[item1.itemType] || 0;
-        const item2Type: number = itemTypesOrder[item2.itemType] || 0;
-        return item1Type - item2Type;
+        return itemTypesOrder[item1.itemType] - itemTypesOrder[item2.itemType];
       }
       return item1.startTime - item2.startTime;
     });
