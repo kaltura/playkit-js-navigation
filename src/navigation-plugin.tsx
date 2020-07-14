@@ -36,8 +36,9 @@ import {
   getConfigValue,
   prepareVodData,
   prepareLiveData,
-  convertLiveItemsStartTime
-} from "./utils/index";
+  convertLiveItemsStartTime,
+  cuePointTags,
+} from "./utils";
 import {
   PushNotification,
   PushNotificationEventTypes,
@@ -285,7 +286,7 @@ export class NavigationPlugin
       data: messages
     });
     const aoaMessages: any[] = messages.filter((message: any) => {
-      return "AnswerOnAir" === message.type;
+      return message.tags === cuePointTags.AnswerOnAir;
     });
     this._updateData(aoaMessages);
   };
@@ -300,13 +301,13 @@ export class NavigationPlugin
     this._updateData(thumbs);
   };
 
-  private _handleSlideMessages = ({
-    slides
-  }: SlideNotificationsEvent): void => {};
+  // private _handleSlideMessages = ({
+  //   slides
+  // }: SlideNotificationsEvent): void => {};
 
-  private _handlePushNotificationError = ({
-    error
-  }: NotificationsErrorEvent): void => {};
+  // private _handlePushNotificationError = ({
+  //   error
+  // }: NotificationsErrorEvent): void => {};
 
   private _constructPushNotificationListener(): void {
     // TODO: handle push notification errors
@@ -315,11 +316,10 @@ export class NavigationPlugin
     //   this._handlePushNotificationError
     // );
 
-    // TODO: handle AOA messages
-    // this._pushNotification.on(
-    //   PushNotificationEventTypes.PublicNotifications,
-    //   this._handleAoaMessages
-    // );
+    this._pushNotification.on(
+      PushNotificationEventTypes.PublicNotifications,
+      this._handleAoaMessages
+    );
 
     this._pushNotification.on(
       PushNotificationEventTypes.ThumbNotification,
@@ -334,10 +334,10 @@ export class NavigationPlugin
   }
 
   private _removePushNotificationListener(): void {
-    this._pushNotification.off(
-      PushNotificationEventTypes.PushNotificationsError,
-      this._handlePushNotificationError
-    );
+    // this._pushNotification.off(
+    //   PushNotificationEventTypes.PushNotificationsError,
+    //   this._handlePushNotificationError
+    // );
     this._pushNotification.off(
       PushNotificationEventTypes.PublicNotifications,
       this._handleAoaMessages
@@ -346,10 +346,10 @@ export class NavigationPlugin
       PushNotificationEventTypes.ThumbNotification,
       this._handleThumbMessages
     );
-    this._pushNotification.off(
-      PushNotificationEventTypes.SlideNotification,
-      this._handleSlideMessages
-    );
+    // this._pushNotification.off(
+    //   PushNotificationEventTypes.SlideNotification,
+    //   this._handleSlideMessages
+    // );
   }
   private _initKitchensinkAndUpperBarItems(): void {
     if (!this._upperBarItem && !this._kitchenSinkItem) {
