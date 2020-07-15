@@ -104,11 +104,12 @@ export class PushNotification {
       return;
     }
 
+    // notifications objects
     let registrationConfigs = [
-      this._createPublicRegistration(entryId), // notifications objects
+      this._createPublicRegistration(entryId),
       this._createThumbRegistration(entryId),
       this._createSlideRegistration(entryId),
-    ]; // user related objects
+    ];
 
     this._pushServerInstance
       .registerNotifications({
@@ -150,7 +151,7 @@ export class PushNotification {
       onMessage: (response: any[]) => {
         this._events.emit({
           type: PushNotificationEventTypes.ThumbNotification,
-          thumbs: response, // TODO: prepare thumbs
+          thumbs: response,
         });
       },
     };
@@ -192,7 +193,7 @@ export class PushNotification {
       onMessage: (response: any[]) => {
         this._events.emit({
           type: PushNotificationEventTypes.PublicNotifications,
-          messages: response, // TODO: prepare public notification
+          messages: response,
         });
       },
     };

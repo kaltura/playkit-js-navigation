@@ -38,6 +38,11 @@ export enum cuePointTypes {
   Thumb = "thumbCuePoint.Thumb",
 }
 
+export enum cuePointTags {
+  AnswerOnAir = "qna",
+  Hotspot = "hotspots",
+}
+
 // TODO: move to config
 const MAX_CHARACTERS = 77;
 
@@ -81,11 +86,16 @@ export const fillData = (
     item.displayTime = convertTime(item.startTime);
   }
   switch (item.cuePointType) {
-    // TODO - support AnsweOnAir later
-    case cuePointTypes.Annotation:
-      // hotspot
+    case cuePointTypes.Annotation: // hotspot and AoA
       item.displayTitle = item.text;
-      item.itemType = itemTypes.Hotspot;
+      switch (item.tags) {
+        case cuePointTags.Hotspot:
+          item.itemType = itemTypes.Hotspot;
+          break;
+        case cuePointTags.AnswerOnAir:
+          item.itemType = itemTypes.AnswerOnAir;
+          break;
+      }
       break;
     case cuePointTypes.Thumb: // chapters and slides
       item.displayDescription = item.description;
@@ -130,11 +140,13 @@ export const fillData = (
   if (item.displayDescription) {
     indexedText = item.displayDescription;
   }
-  if (item.title) {
-    indexedText += " " + item.title;
+  if (item.displayTitle) {
+    indexedText += " " + item.displayTitle;
+  }
+  if (item.displayTime) {
+    indexedText += " " + item.displayTime;
   }
   indexedText += " " + item.itemType;
-  indexedText += " " + item.displayTime;
   item.indexedText = indexedText.toLowerCase();
   item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
   return item;
@@ -288,21 +300,12 @@ export const prepareLiveData = (
     // Wrong or empty data
     return currentData;
   }
-  // extract all cuepoints from all requests
-  let receivedCuepoints: Array<ItemData> = [];
-  newData
-    // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
-    .filter((newDataItem: ItemData) => {
-      return !currentData.some((item: ItemData) => (item.id === newDataItem.id));
-    })
-    .forEach((item: ItemData) => {
-      if (item) {
-        // TODO: check mandatory item properties
-        receivedCuepoints = receivedCuepoints.concat(currentData, item);
-      }
-    });
+  // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
+  let receivedCuepoints: Array<ItemData> = newData.filter((newDataItem: ItemData) => {
+    return !currentData.some((item: ItemData) => (item.id === newDataItem.id));
+  })
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = receivedCuepoints.map((cuepoint: any) => {
+  receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
     return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
   });
   if (liveStartTime) {
@@ -311,7 +314,8 @@ export const prepareLiveData = (
       liveStartTime
     );
   }
-  return sortItems(receivedCuepoints);
+  const result: Array<ItemData> = currentData.concat(receivedCuepoints);
+  return sortItems(result);
 };
 
 export const convertLiveItemsStartTime = (
