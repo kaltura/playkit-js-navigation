@@ -7,6 +7,7 @@ import {
   BackgroundColors
 } from "../navigation/icons/IconsFactory";
 import { AnimationMarker } from "./animated-marker";
+import { Props } from "../navigation/navigation-list/NavigationList";
 const { Tooltip } = KalturaPlayer.ui.components.Tooltip;
 
 export interface FilterProps {
@@ -15,6 +16,7 @@ export interface FilterProps {
   availableTabs: itemTypes[];
   totalResults: number | null;
   translates: Record<string, string>;
+  widgetWidth: number;
 }
 
 export interface TabData {
@@ -36,12 +38,21 @@ export class NavigationFilter extends Component<FilterProps> {
 
   private _tabsContainer: null | HTMLDivElement = null;
 
+  componentDidMount() {
+    setTimeout(() => {
+      // todo - find better way - consult Omri/Eran
+      this.forceUpdate();
+    }, 500);
+  }
+
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const { activeTab, availableTabs, totalResults } = this.props;
     if (
       activeTab !== nextProps.activeTab ||
       availableTabs !== nextProps.availableTabs ||
-      totalResults !== nextProps.totalResults
+      totalResults !== nextProps.totalResults ||
+      (nextProps.widgetWidth &&
+        nextProps.widgetWidth !== this.props.widgetWidth)
     ) {
       return true;
     }
@@ -103,6 +114,7 @@ export class NavigationFilter extends Component<FilterProps> {
     });
     return tabs;
   };
+
   private _getAnimationMarkerData = () => {
     const tabs = this._getTabsData();
 

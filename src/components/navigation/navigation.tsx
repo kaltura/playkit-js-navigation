@@ -121,7 +121,9 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     );
     const stateData: NavigationState = {
       ...this.state,
-      convertedData: addGroupData(filterDataByActiveTab(filteredBySearchQuery, activeTab)),
+      convertedData: addGroupData(
+        filterDataByActiveTab(filteredBySearchQuery, activeTab)
+      ),
       searchFilter: this._prepareSearchFilter(
         filteredBySearchQuery,
         searchFilter
@@ -223,7 +225,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _renderHeader = () => {
     const { toggledWithEnter, kitchenSinkActive, hasError } = this.props;
-    const { searchFilter, convertedData } = this.state;
+    const { searchFilter, convertedData, widgetWidth } = this.state;
 
     return (
       <div className={styles.header}>
@@ -247,6 +249,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         />
         {!hasError && (
           <NavigationFilter
+            widgetWidth={widgetWidth}
             onChange={this._handleSearchFilterChange("activeTab")}
             activeTab={searchFilter.activeTab}
             availableTabs={searchFilter.availableTabs}
