@@ -190,13 +190,7 @@ export class NavigationPlugin
   onMediaLoad(): void {
     this._addPlayerListeners();
     if (this._corePlugin.player.isLive()) {
-      const {
-        playerConfig: { sources }
-      } = this._configs;
-      this._initNotification();
-      this._constructPushNotificationListener();
-      const userId = this.getUserId();
-      this._pushNotification.registerToPushServer(sources.id, userId);
+      this._registerToPushServer();
     } else {
       this._fetchVodData();
     }
@@ -215,8 +209,33 @@ export class NavigationPlugin
     }
   }
 
+  private _registerToPushServer = () => {
+    const {
+      playerConfig: { sources }
+    } = this._configs;
+    this._initNotification();
+    this._constructPushNotificationListener();
+    const userId = this.getUserId();
+    this._pushNotification.registerToPushServer(
+      sources.id,
+      userId,
+      this._updateKitchenSink,
+      this._handlePushNotificationRegistrationError,
+    );
+  }
+
+  private _handlePushNotificationRegistrationError = () => {
+    this._hasError = true;
+    this._updateKitchenSink();
+  }
+
   private _retryFetchData = () => {
-    this._fetchVodData();
+    this._hasError = false;
+    if (this._corePlugin.player.isLive()) {
+      this._registerToPushServer();
+    } else {
+      this._fetchVodData();
+    }
   };
 
   private _seekTo = (time: number) => {
@@ -423,7 +442,6 @@ export class NavigationPlugin
   }
 
   private _fetchVodData = () => {
-    this._hasError = false;
     this._isLoading = true;
     const requests: KalturaRequest<any>[] = [];
     const chaptersAndSlidesRequest = new CuePointListAction({
