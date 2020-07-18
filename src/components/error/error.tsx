@@ -1,5 +1,5 @@
-import { h } from "preact";
-import * as styles from "./error.scss";
+import {h} from 'preact';
+import * as styles from './error.scss';
 
 export interface ErrorProps {
   onRetryLoad: () => void;
@@ -27,8 +27,8 @@ export const Error = (props: ErrorProps) => {
 Error.defaultProps = {
   // TODO: add locale (i18n)
   translates: {
-    whoops: "Whoops!",
-    errorMessage: "We couldn’t retrieve your Data.",
-    retry: "Retry",
+    whoops: 'Whoops!',
+    errorMessage: 'We couldn’t retrieve your Data.',
+    retry: 'Retry',
   },
 };

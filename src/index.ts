@@ -1,1 +1,1 @@
-import "./navigation-plugin";
+import './navigation-plugin';

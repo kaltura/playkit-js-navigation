@@ -1,21 +1,18 @@
-import { h } from "preact";
+import {h} from 'preact';
 
 export const EmptyList = () => {
   const style = {
-    "text-align": "center",
-    "margin-top": "50%",
-    "margin-bottom": "auto"
-  }
+    'text-align': 'center',
+    'margin-top': '50%',
+    'margin-bottom': 'auto',
+  };
   return (
-    <div
-      style={style}
-    >
+    <div style={style}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="184"
         height="184"
-        viewBox="0 0 184 184"
-      >
+        viewBox="0 0 184 184">
         <g fill="none" fill-rule="evenodd">
           <circle cx="92" cy="92" r="92" fill="#333" />
           <g transform="translate(99 5)">

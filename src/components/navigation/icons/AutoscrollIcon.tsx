@@ -1,4 +1,4 @@
-import { h, Component } from "preact";
+import {h, Component} from 'preact';
 
 export interface props {
   color: any;
@@ -10,8 +10,7 @@ export const AutoscrollIcon = (props: props) => {
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"
-      viewBox="0 0 16 16"
-    >
+      viewBox="0 0 16 16">
       <path
         fill={props.color}
         fill-rule="evenodd"
@@ -22,5 +21,5 @@ export const AutoscrollIcon = (props: props) => {
 };
 
 AutoscrollIcon.defaultProps = {
-  color: "#FFFFFF"
+  color: '#FFFFFF',
 };

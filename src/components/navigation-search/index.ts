@@ -1,1 +1,1 @@
-export * from "./navigation-search";
+export * from './navigation-search';

@@ -1,5 +1,5 @@
-import { h } from "preact";
-import * as styles from "./loading.scss";
+import {h} from 'preact';
+import * as styles from './loading.scss';
 
 export const Loading = () => {
   return (
