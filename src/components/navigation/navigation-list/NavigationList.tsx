@@ -1,7 +1,7 @@
-import { Component, h } from "preact";
-import * as styles from "./NavigationList.scss";
-import { NavigationItem, ItemData } from "../navigation-item/NavigationItem";
-import { EmptyList } from "../icons/EmptyList";
+import {Component, h} from 'preact';
+import * as styles from './NavigationList.scss';
+import {NavigationItem, ItemData} from '../navigation-item/NavigationItem';
+import {EmptyList} from '../icons/EmptyList';
 
 export interface Props {
   data: Array<ItemData>;
@@ -53,7 +53,7 @@ export class NavigationList extends Component<Props> {
   };
 
   render(props: Props) {
-    const { data, widgetWidth, showItemsIcons } = this.props;
+    const {data, widgetWidth, showItemsIcons} = this.props;
     if (!data.length) {
       return <EmptyList />;
     }
@@ -63,8 +63,7 @@ export class NavigationList extends Component<Props> {
           this._listElementRef = node;
         }}
         className={styles.navigationList}
-        onWheel={this.props.onWheel}
-      >
+        onWheel={this.props.onWheel}>
         {data.map((item: ItemData) => {
           return (
             <NavigationItem

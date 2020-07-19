@@ -1,4 +1,4 @@
-import { h } from "preact";
+import {h} from 'preact';
 import {
   ContribPluginConfigs,
   ContribPluginData,
@@ -7,55 +7,55 @@ import {
   CorePlugin,
   OnMediaLoad,
   OnMediaUnload,
-  OnPluginSetup
-} from "@playkit-js-contrib/plugin";
+  OnPluginSetup,
+} from '@playkit-js-contrib/plugin';
 import {
   getContribLogger,
-  KalturaLiveServices
-} from "@playkit-js-contrib/common";
+  KalturaLiveServices,
+} from '@playkit-js-contrib/common';
 import {
   KitchenSinkContentRendererProps,
   KitchenSinkExpandModes,
   KitchenSinkItem,
   KitchenSinkPositions,
-  UpperBarItem
-} from "@playkit-js-contrib/ui";
-import { KalturaThumbCuePoint } from "kaltura-typescript-client/api/types";
-import { KalturaAnnotation } from "kaltura-typescript-client/api/types";
-import { CuePointListAction } from "kaltura-typescript-client/api/types/CuePointListAction";
-import { KalturaCuePointFilter } from "kaltura-typescript-client/api/types/KalturaCuePointFilter";
-import { KalturaCuePointType } from "kaltura-typescript-client/api/types/KalturaCuePointType";
-import { KalturaThumbCuePointSubType } from "kaltura-typescript-client/api/types/KalturaThumbCuePointSubType";
-import { KalturaThumbCuePointFilter } from "kaltura-typescript-client/api/types/KalturaThumbCuePointFilter";
+  UpperBarItem,
+} from '@playkit-js-contrib/ui';
+import {KalturaThumbCuePoint} from 'kaltura-typescript-client/api/types';
+import {KalturaAnnotation} from 'kaltura-typescript-client/api/types';
+import {CuePointListAction} from 'kaltura-typescript-client/api/types/CuePointListAction';
+import {KalturaCuePointFilter} from 'kaltura-typescript-client/api/types/KalturaCuePointFilter';
+import {KalturaCuePointType} from 'kaltura-typescript-client/api/types/KalturaCuePointType';
+import {KalturaThumbCuePointSubType} from 'kaltura-typescript-client/api/types/KalturaThumbCuePointSubType';
+import {KalturaThumbCuePointFilter} from 'kaltura-typescript-client/api/types/KalturaThumbCuePointFilter';
 import {
   KalturaClient,
   KalturaMultiResponse,
-  KalturaRequest
-} from "kaltura-typescript-client";
+  KalturaRequest,
+} from 'kaltura-typescript-client';
 import {
   getConfigValue,
   prepareVodData,
   prepareLiveData,
   convertLiveItemsStartTime,
   cuePointTags,
-} from "./utils";
+} from './utils';
 import {
   PushNotification,
   PushNotificationEventTypes,
   PublicNotificationsEvent,
   ThumbNotificationsEvent,
   SlideNotificationsEvent,
-  NotificationsErrorEvent
-} from "./pushNotification";
-import * as styles from "./navigation-plugin.scss";
-import { Navigation } from "./components/navigation";
-import { ItemData } from "./components/navigation/navigation-item/NavigationItem";
+  NotificationsErrorEvent,
+} from './pushNotification';
+import * as styles from './navigation-plugin.scss';
+import {Navigation} from './components/navigation';
+import {ItemData} from './components/navigation/navigation-item/NavigationItem';
 
 const pluginName = `navigation`;
 
 const logger = getContribLogger({
-  class: "NavigationPlugin",
-  module: "navigation-plugin"
+  class: 'NavigationPlugin',
+  module: 'navigation-plugin',
 });
 
 interface NavigationPluginConfig {
@@ -65,11 +65,11 @@ interface NavigationPluginConfig {
   userRole: string;
 }
 
-const DefaultAnonymousPrefix = "Guest";
+const DefaultAnonymousPrefix = 'Guest';
 
 enum UserRole {
-  anonymousRole = "anonymousRole",
-  unmoderatedAdminRole = "unmoderatedAdminRole"
+  anonymousRole = 'anonymousRole',
+  unmoderatedAdminRole = 'unmoderatedAdminRole',
 }
 
 export class NavigationPlugin
@@ -90,13 +90,13 @@ export class NavigationPlugin
     private _contribServices: ContribServices,
     private _configs: ContribPluginConfigs<NavigationPluginConfig>
   ) {
-    const { playerConfig } = this._configs;
+    const {playerConfig} = this._configs;
     this._kalturaClient.setOptions({
-      clientTag: "playkit-js-navigation",
-      endpointUrl: playerConfig.provider.env.serviceUrl
+      clientTag: 'playkit-js-navigation',
+      endpointUrl: playerConfig.provider.env.serviceUrl,
     });
     this._kalturaClient.setDefaultRequestOptions({
-      ks: playerConfig.provider.ks
+      ks: playerConfig.provider.ks,
     });
     this._pushNotification = new PushNotification(this._corePlugin.player);
   }
@@ -148,7 +148,7 @@ export class NavigationPlugin
 
   private _onTimedMetadataLoaded = (event: any): void => {
     const id3TagCues = event.payload.cues.filter(
-      (cue: any) => cue.value && cue.value.key === "TEXT"
+      (cue: any) => cue.value && cue.value.key === 'TEXT'
     );
     if (id3TagCues.length) {
       try {
@@ -159,7 +159,7 @@ export class NavigationPlugin
         logger.debug(
           `Calling cuepoint engine updateTime with id3 timestamp: ${id3Timestamp}`,
           {
-            method: "_onTimedMetadataLoaded"
+            method: '_onTimedMetadataLoaded',
           }
         );
         if (id3Timestamp && !this._liveStartTime) {
@@ -179,9 +179,9 @@ export class NavigationPlugin
           this._updateKitchenSink();
         }
       } catch (e) {
-        logger.debug("failed retrieving id3 tag metadata", {
-          method: "_onTimedMetadataLoaded",
-          data: e
+        logger.debug('failed retrieving id3 tag metadata', {
+          method: '_onTimedMetadataLoaded',
+          data: e,
         });
       }
     }
@@ -244,7 +244,7 @@ export class NavigationPlugin
 
   private getUserId(): string {
     // TODO: consider move to contrib
-    const { session } = this._configs.playerConfig;
+    const {session} = this._configs.playerConfig;
 
     if (
       this._corePlugin.config.userRole === UserRole.anonymousRole ||
@@ -262,25 +262,25 @@ export class NavigationPlugin
     const ks = this._contribServices.getPlayerKS();
     if (!ks) {
       logger.warn(
-        "Warn: Failed to initialize." +
-          "Failed to retrieve ks from configuration " +
-          "(both providers and session objects returned with an undefined KS)," +
-          " please check your configuration file.",
+        'Warn: Failed to initialize.' +
+          'Failed to retrieve ks from configuration ' +
+          '(both providers and session objects returned with an undefined KS),' +
+          ' please check your configuration file.',
         {
-          method: "_initPluginManagers"
+          method: '_initPluginManagers',
         }
       );
       return;
     }
     const {
-      playerConfig: { provider }
+      playerConfig: {provider},
     } = this._configs;
     // should be created once on pluginSetup (entryId/userId registration will be called onMediaLoad)
     this._pushNotification.init({
       ks: ks,
       serviceUrl: provider.env.serviceUrl,
-      clientTag: "playkit-js-navigation",
-      kalturaPlayer: this._corePlugin.player
+      clientTag: 'playkit-js-navigation',
+      kalturaPlayer: this._corePlugin.player,
     });
   }
 
@@ -297,12 +297,10 @@ export class NavigationPlugin
     this._updateKitchenSink();
   };
 
-  private _handleAoaMessages = ({
-    messages
-  }: PublicNotificationsEvent): void => {
-    logger.debug("handle push notification event", {
-      method: "_handleAoaMessages",
-      data: messages
+  private _handleAoaMessages = ({messages}: PublicNotificationsEvent): void => {
+    logger.debug('handle push notification event', {
+      method: '_handleAoaMessages',
+      data: messages,
     });
     const aoaMessages: any[] = messages.filter((message: any) => {
       return message.tags === cuePointTags.AnswerOnAir;
@@ -310,12 +308,10 @@ export class NavigationPlugin
     this._updateData(aoaMessages);
   };
 
-  private _handleThumbMessages = ({
-    thumbs
-  }: ThumbNotificationsEvent): void => {
-    logger.debug("handle push notification event", {
-      method: "_handleThumbMessages",
-      data: thumbs
+  private _handleThumbMessages = ({thumbs}: ThumbNotificationsEvent): void => {
+    logger.debug('handle push notification event', {
+      method: '_handleThumbMessages',
+      data: thumbs,
     });
     this._updateData(thumbs);
   };
@@ -411,29 +407,28 @@ export class NavigationPlugin
   };
 
   private _addKitchenSinkItem(): void {
-    const { position, expandOnFirstPlay } = this._configs.pluginConfig;
+    const {position, expandOnFirstPlay} = this._configs.pluginConfig;
     this._kitchenSinkItem = this._contribServices.kitchenSinkManager.add({
-      label: "Navigation",
+      label: 'Navigation',
       expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       renderIcon: () => (
         // TODO - resolve tabIndex race with the core.
         <button
           className={styles.pluginButton}
           tabIndex={1}
-          onClick={this._handleIconClick}
-        >
+          onClick={this._handleIconClick}>
           <div className={styles.pluginIcon} />
         </button>
       ),
       position: getConfigValue(
         position,
         (position: KitchenSinkPositions) =>
-          typeof position === "string" &&
+          typeof position === 'string' &&
           (position === KitchenSinkPositions.Bottom ||
             position === KitchenSinkPositions.Right),
         KitchenSinkPositions.Right
       ),
-      renderContent: this._renderKitchenSinkContent
+      renderContent: this._renderKitchenSinkContent,
     });
 
     if (expandOnFirstPlay) {
@@ -448,21 +443,21 @@ export class NavigationPlugin
       filter: new KalturaThumbCuePointFilter({
         entryIdEqual: this._corePlugin.player.config.sources.id,
         cuePointTypeEqual: KalturaCuePointType.thumb,
-        subTypeIn: `${KalturaThumbCuePointSubType.slide},${KalturaThumbCuePointSubType.chapter}`
-      })
+        subTypeIn: `${KalturaThumbCuePointSubType.slide},${KalturaThumbCuePointSubType.chapter}`,
+      }),
     });
     const hotspotsRequest = new CuePointListAction({
       filter: new KalturaCuePointFilter({
         entryIdEqual: this._corePlugin.player.config.sources.id,
-        cuePointTypeEqual: KalturaCuePointType.annotation
-      })
+        cuePointTypeEqual: KalturaCuePointType.annotation,
+      }),
     });
 
     chaptersAndSlidesRequest.setRequestOptions({
-      acceptedTypes: [KalturaThumbCuePoint]
+      acceptedTypes: [KalturaThumbCuePoint],
     });
     hotspotsRequest.setRequestOptions({
-      acceptedTypes: [KalturaAnnotation]
+      acceptedTypes: [KalturaAnnotation],
     });
 
     requests.push(chaptersAndSlidesRequest, hotspotsRequest);
@@ -481,9 +476,9 @@ export class NavigationPlugin
       error => {
         this._hasError = true;
         this._isLoading = false;
-        logger.error("failed retrieving navigation data", {
-          method: "_fetchVodData",
-          data: error
+        logger.error('failed retrieving navigation data', {
+          method: '_fetchVodData',
+          data: error,
         });
         this._updateKitchenSink();
       }
@@ -505,7 +500,7 @@ ContribPluginManager.registerPlugin(
       expandOnFirstPlay: true,
       position: KitchenSinkPositions.Left,
       forceChaptersThumb: false,
-      userRole: UserRole.anonymousRole
-    }
+      userRole: UserRole.anonymousRole,
+    },
   }
 );

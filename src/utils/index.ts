@@ -1,4 +1,4 @@
-import { ItemData } from "../components/navigation/navigation-item/NavigationItem";
+import {ItemData} from '../components/navigation/navigation-item/NavigationItem';
 
 export function getConfigValue( // TODO: consider move to contrib
   value: any,
@@ -6,24 +6,24 @@ export function getConfigValue( // TODO: consider move to contrib
   defaultValue: any
 ) {
   let result = defaultValue;
-  if (typeof condition === "function" && condition(value)) {
+  if (typeof condition === 'function' && condition(value)) {
     result = value;
   }
   return result;
 }
 
 export enum groupTypes {
-  mid = "mid",
-  first = "first",
-  last = "last",
+  mid = 'mid',
+  first = 'first',
+  last = 'last',
 }
 
 export enum itemTypes {
-  All = "All",
-  AnswerOnAir = "AnswerOnAir",
-  Chapter = "Chapter",
-  Slide = "Slide",
-  Hotspot = "Hotspot",
+  All = 'All',
+  AnswerOnAir = 'AnswerOnAir',
+  Chapter = 'Chapter',
+  Slide = 'Slide',
+  Hotspot = 'Hotspot',
 }
 
 export const itemTypesOrder: Record<string, number> = {
@@ -31,16 +31,16 @@ export const itemTypesOrder: Record<string, number> = {
   [itemTypes.Slide]: 2,
   [itemTypes.Hotspot]: 3,
   [itemTypes.AnswerOnAir]: 4,
-}
+};
 
 export enum cuePointTypes {
-  Annotation = "annotation.Annotation",
-  Thumb = "thumbCuePoint.Thumb",
+  Annotation = 'annotation.Annotation',
+  Thumb = 'thumbCuePoint.Thumb',
 }
 
 export enum cuePointTags {
-  AnswerOnAir = "qna",
-  Hotspot = "hotspots",
+  AnswerOnAir = 'qna',
+  Hotspot = 'hotspots',
 }
 
 // TODO: move to config
@@ -58,14 +58,14 @@ export const convertTime = (sec: number): string => {
   }
   if (hours) {
     return (
-      (hours < 10 ? "0" + hours : hours) +
-      ":" +
-      (min < 10 ? "0" + min : min) +
-      ":" +
-      (sec < 10 ? "0" + sec : sec)
+      (hours < 10 ? '0' + hours : hours) +
+      ':' +
+      (min < 10 ? '0' + min : min) +
+      ':' +
+      (sec < 10 ? '0' + sec : sec)
     );
   } else {
-    return (min < 10 ? "0" + min : min) + ":" + (sec < 10 ? "0" + sec : sec);
+    return (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
   }
 };
 
@@ -77,7 +77,7 @@ export const fillData = (
   forceChaptersThumb: boolean,
   isLiveEntry: boolean = false
 ) => {
-  const item: any = { ...originalItem };
+  const item: any = {...originalItem};
   item.liveType = isLiveEntry;
   if (isLiveEntry) {
     item.startTime = item.createdAt;
@@ -110,7 +110,7 @@ export const fillData = (
         case 2:
           item.itemType = itemTypes.Chapter;
           if (!item.previewImage && forceChaptersThumb) {
-            item.previewImage = `${serviceUrl.split("api_v3")[0]}/p/${
+            item.previewImage = `${serviceUrl.split('api_v3')[0]}/p/${
               item.partnerId
             }/sp/${item.partnerId}00/thumbnail/entry_id/${
               item.entryId
@@ -123,7 +123,7 @@ export const fillData = (
   if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS) {
     let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
-    item.shorthandTitle = elipsisString + "... ";
+    item.shorthandTitle = elipsisString + '... ';
   }
   if (
     !item.displayTitle &&
@@ -132,34 +132,33 @@ export const fillData = (
   ) {
     let elipsisDescription = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisDescription = elipsisDescription.trim();
-    item.shorthandDescription = elipsisDescription + "... ";
+    item.shorthandDescription = elipsisDescription + '... ';
   }
 
   // indexed text to save calculation at runtime + filter
-  let indexedText = "";
+  let indexedText = '';
   if (item.displayDescription) {
     indexedText = item.displayDescription;
   }
   if (item.displayTitle) {
-    indexedText += " " + item.displayTitle;
+    indexedText += ' ' + item.displayTitle;
   }
   if (item.displayTime) {
-    indexedText += " " + item.displayTime;
+    indexedText += ' ' + item.displayTime;
   }
-  indexedText += " " + item.itemType;
+  indexedText += ' ' + item.itemType;
   item.indexedText = indexedText.toLowerCase();
   item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
   return item;
 };
 
 export const sortItems = (cuepoints: Array<ItemData>): Array<ItemData> => {
-  return cuepoints.sort(
-    (item1: ItemData, item2: ItemData) => {
-      if (item1.startTime === item2.startTime) {
-        return itemTypesOrder[item1.itemType] - itemTypesOrder[item2.itemType];
-      }
-      return item1.startTime - item2.startTime;
-    });
+  return cuepoints.sort((item1: ItemData, item2: ItemData) => {
+    if (item1.startTime === item2.startTime) {
+      return itemTypesOrder[item1.itemType] - itemTypesOrder[item2.itemType];
+    }
+    return item1.startTime - item2.startTime;
+  });
 };
 
 export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
@@ -200,12 +199,12 @@ export const prepareVodData = (
 ): Array<ItemData> => {
   if (!multirequestData || multirequestData.length === 0) {
     // Wrong or empty data
-    throw new Error("ERROR ! multirequestData");
+    throw new Error('ERROR ! multirequestData');
     return [];
   }
   // extract all cuepoints from all requests
   let receivedCuepoints: Array<ItemData> = [];
-  multirequestData.forEach((request) => {
+  multirequestData.forEach(request => {
     if (
       request &&
       request.result &&
@@ -218,13 +217,12 @@ export const prepareVodData = (
     }
   });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = receivedCuepoints
-    .map((cuepoint: ItemData) => {
-      return {
-        ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
-        liveTypeCuepoint: false,
-      };
-    });
+  receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
+    return {
+      ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
+      liveTypeCuepoint: false,
+    };
+  });
   return sortItems(receivedCuepoints);
 };
 
@@ -301,9 +299,11 @@ export const prepareLiveData = (
     return currentData;
   }
   // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
-  let receivedCuepoints: Array<ItemData> = newData.filter((newDataItem: ItemData) => {
-    return !currentData.some((item: ItemData) => (item.id === newDataItem.id));
-  })
+  let receivedCuepoints: Array<ItemData> = newData.filter(
+    (newDataItem: ItemData) => {
+      return !currentData.some((item: ItemData) => item.id === newDataItem.id);
+    }
+  );
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
   receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
     return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);

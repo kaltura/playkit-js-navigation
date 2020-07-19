@@ -1,7 +1,7 @@
-import { Component, h, Fragment } from "preact";
-import * as styles from "./NavigationItem.scss";
-import { groupTypes, itemTypes } from "../../../utils";
-import { IconsFactory } from "../icons/IconsFactory";
+import {Component, h, Fragment} from 'preact';
+import * as styles from './NavigationItem.scss';
+import {groupTypes, itemTypes} from '../../../utils';
+import {IconsFactory} from '../icons/IconsFactory';
 
 export interface ItemData {
   id: string;
@@ -37,7 +37,7 @@ export interface State {
 export class NavigationItem extends Component<Props, State> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
-  state = { expandText: false };
+  state = {expandText: false};
 
   matchHeight() {
     if (!this._textContainerRef || !this._itemElementRef) {
@@ -45,14 +45,14 @@ export class NavigationItem extends Component<Props, State> {
       return;
     }
     this._itemElementRef.style.minHeight =
-      this._textContainerRef.offsetHeight + 4 + "px";
+      this._textContainerRef.offsetHeight + 4 + 'px';
   }
 
   shouldComponentUpdate(
     nextProps: Readonly<Props>,
     nextState: Readonly<State>
   ) {
-    const { selectedItem, data, widgetWidth } = this.props;
+    const {selectedItem, data, widgetWidth} = this.props;
     if (
       selectedItem !== nextProps.selectedItem ||
       data !== nextProps.data ||
@@ -72,7 +72,7 @@ export class NavigationItem extends Component<Props, State> {
     ) {
       this.props.onSelected({
         time: this.props.data.startTime,
-        itemY: this._itemElementRef?.offsetTop
+        itemY: this._itemElementRef?.offsetTop,
       });
     }
     this.matchHeight();
@@ -89,12 +89,12 @@ export class NavigationItem extends Component<Props, State> {
   private _handleExpandChange = (event: Event) => {
     event.stopImmediatePropagation();
     this.setState({
-      expandText: !this.state.expandText
+      expandText: !this.state.expandText,
     });
   };
 
   render(props: Props) {
-    const { selectedItem, showIcon, data } = this.props;
+    const {selectedItem, showIcon, data} = this.props;
     const {
       id,
       previewImage,
@@ -104,7 +104,7 @@ export class NavigationItem extends Component<Props, State> {
       displayTitle,
       shorthandTitle,
       hasShowMore,
-      displayDescription
+      displayDescription,
     } = data;
     return (
       <div
@@ -112,37 +112,34 @@ export class NavigationItem extends Component<Props, State> {
           this._itemElementRef = node;
         }}
         className={[
-          styles[groupData ? groupData : "single"],
+          styles[groupData ? groupData : 'single'],
           styles.navigationItem,
-          selectedItem ? styles.selected : null
-        ].join(" ")}
+          selectedItem ? styles.selected : null,
+        ].join(' ')}
         data-entry-id={id}
-        onClick={this._handleClickHandler}
-      >
+        onClick={this._handleClickHandler}>
         <div
           className={[
             styles.metadata,
-            displayTime ? styles.withTime : null
-          ].join(" ")}
-        >
+            displayTime ? styles.withTime : null,
+          ].join(' ')}>
           {displayTime && <span>{displayTime}</span>}
           {showIcon && (
-          <div className={styles.iconWrapper}>
-            <IconsFactory iconType={itemType}></IconsFactory>
-          </div>
+            <div className={styles.iconWrapper}>
+              <IconsFactory iconType={itemType}></IconsFactory>
+            </div>
           )}
         </div>
         <div
           className={[
             styles.content,
-            previewImage ? styles.hasImage : null
-          ].join(" ")}
-        >
+            previewImage ? styles.hasImage : null,
+          ].join(' ')}>
           {previewImage && (
             <Fragment>
               <img
                 src={previewImage}
-                alt={"Slide Preview"}
+                alt={'Slide Preview'}
                 className={styles.thumbnail}
               />
               <div className={styles.thumbGradient}></div>
@@ -153,8 +150,7 @@ export class NavigationItem extends Component<Props, State> {
             className={styles.contentText}
             ref={node => {
               this._textContainerRef = node;
-            }}
-          >
+            }}>
             {shorthandTitle && !this.state.expandText && (
               <span className={styles.title}>{shorthandTitle}</span>
             )}
@@ -169,10 +165,9 @@ export class NavigationItem extends Component<Props, State> {
             {hasShowMore && (
               <button
                 className={styles.showMoreButton}
-                onClick={this._handleExpandChange}
-              >
+                onClick={this._handleExpandChange}>
                 {/* TODO - locale */}
-                {this.state.expandText ? "Read Less" : "Read More"}
+                {this.state.expandText ? 'Read Less' : 'Read More'}
               </button>
             )}
           </div>
