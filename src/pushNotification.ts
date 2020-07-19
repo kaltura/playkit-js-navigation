@@ -75,7 +75,12 @@ export class PushNotification {
     this._registeredToMessages = false;
   }
 
-  public registerToPushServer(entryId: string, userId: string) {
+  public registerToPushServer(
+    entryId: string,
+    userId: string,
+    onSuccess: () => void,
+    onError: () => void
+  ) {
     if (this._registeredToMessages) {
       logger.error('Multiple registration error', {
         method: 'registerToPushServer',
@@ -100,7 +105,6 @@ export class PushNotification {
         error:
           "Can't register to notifications as _pushServerInstance doesn't exists",
       });
-
       return;
     }
 
@@ -122,12 +126,14 @@ export class PushNotification {
             method: 'registerToPushServer',
           });
           this._registeredToMessages = true;
+          onSuccess();
         },
         (err: any) => {
           logger.error('Registration for push notification error', {
             method: 'registerToPushServer',
             data: err,
           });
+          onError();
           this._events.emit({
             type: PushNotificationEventTypes.PushNotificationsError,
             error: err,
