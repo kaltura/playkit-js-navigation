@@ -42,7 +42,7 @@ export class NavigationFilter extends Component<FilterProps> {
     setTimeout(() => {
       // todo - find better way - consult Omri/Eran
       this.forceUpdate();
-    }, 500);
+    }, 700);
   }
 
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {

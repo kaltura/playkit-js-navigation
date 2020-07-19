@@ -18,7 +18,7 @@ export class AnimationMarker extends Component<Props, State> {
     this._barRef.style.background = this.props.color;
     this._barRef.style.minWidth = this.props.width + "px";
     this._barRef.style.maxWidth = this.props.width + "px";
-    this._barRef.style.left = this.props.offset + "px";
+    this._barRef.style.left = this.props.offset + 8 + "px";
     this._barRef.style.position = "relative";
   }
 
@@ -33,7 +33,7 @@ export class AnimationMarker extends Component<Props, State> {
     this._barRef.style.background = nextProps.color;
     this._barRef.style.minWidth = nextProps.width + "px";
     this._barRef.style.maxWidth = nextProps.width + "px";
-    this._barRef.style.left = nextProps.offset + "px";
+    this._barRef.style.left = nextProps.offset + 8 + "px";
     return false;
   }
 
