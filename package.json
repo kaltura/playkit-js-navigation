@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/navigation-plugin",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": false,
   "bugs": {
     "url": "https://github.com/kaltura/playkit-js-navigation/issues"

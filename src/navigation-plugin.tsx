@@ -20,8 +20,8 @@ import {
   KitchenSinkPositions,
   UpperBarItem,
 } from '@playkit-js-contrib/ui';
-import {KalturaThumbCuePoint} from 'kaltura-typescript-client/api/types';
-import {KalturaAnnotation} from 'kaltura-typescript-client/api/types';
+import {KalturaThumbCuePoint} from 'kaltura-typescript-client/api/types/KalturaThumbCuePoint';
+import {KalturaAnnotation} from 'kaltura-typescript-client/api/types/KalturaAnnotation';
 import {CuePointListAction} from 'kaltura-typescript-client/api/types/CuePointListAction';
 import {KalturaCuePointFilter} from 'kaltura-typescript-client/api/types/KalturaCuePointFilter';
 import {KalturaCuePointType} from 'kaltura-typescript-client/api/types/KalturaCuePointType';
@@ -211,7 +211,7 @@ export class NavigationPlugin
 
   private _registerToPushServer = () => {
     const {
-      playerConfig: { sources }
+      playerConfig: {sources},
     } = this._configs;
     this._initNotification();
     this._constructPushNotificationListener();
@@ -220,14 +220,14 @@ export class NavigationPlugin
       sources.id,
       userId,
       this._updateKitchenSink,
-      this._handlePushNotificationRegistrationError,
+      this._handlePushNotificationRegistrationError
     );
-  }
+  };
 
   private _handlePushNotificationRegistrationError = () => {
     this._hasError = true;
     this._updateKitchenSink();
-  }
+  };
 
   private _retryFetchData = () => {
     this._hasError = false;
