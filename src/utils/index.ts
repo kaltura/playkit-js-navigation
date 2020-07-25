@@ -283,7 +283,9 @@ export const getAvailableTabs = (data: ItemData[]): itemTypes[] => {
   if (ret.length > 1) {
     ret.unshift(itemTypes.All);
   }
-  return ret;
+  return ret.sort((itemType1: itemTypes, itemType2: itemTypes) => {
+    return itemTypesOrder[itemType1] - itemTypesOrder[itemType2];
+  });
 };
 
 export const prepareLiveData = (
