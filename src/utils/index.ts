@@ -70,7 +70,10 @@ export const convertTime = (sec: number): string => {
 };
 
 // TODO: consider move to contrib
-export const decodeString = (content: string): string => {
+export const decodeString = (content: any): string => {
+  if (typeof content !== 'string') {
+    return content;
+  }
   return content
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
