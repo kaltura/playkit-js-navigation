@@ -1,3 +1,4 @@
+import {KitchenSinkExpandModes} from '@playkit-js-contrib/ui';
 import {ItemData} from '../components/navigation/navigation-item/NavigationItem';
 
 export function getConfigValue( // TODO: consider move to contrib
@@ -328,3 +329,13 @@ export const convertLiveItemsStartTime = (
     startTime: item.createdAt - liveStartTime,
   }));
 };
+
+// TODO: consider move to contrib
+export const parseExpandMode = (value: string): KitchenSinkExpandModes => {
+  switch (value) {
+    case "AlongSideTheVideo":
+      return KitchenSinkExpandModes.AlongSideTheVideo;
+    default:
+      return KitchenSinkExpandModes.OverTheVideo;
+  }
+}

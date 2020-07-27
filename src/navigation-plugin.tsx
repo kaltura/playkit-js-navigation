@@ -38,6 +38,7 @@ import {
   prepareLiveData,
   convertLiveItemsStartTime,
   cuePointTags,
+  parseExpandMode
 } from './utils';
 import {
   PushNotification,
@@ -63,6 +64,7 @@ interface NavigationPluginConfig {
   position: KitchenSinkPositions;
   forceChaptersThumb: boolean;
   userRole: string;
+  expandMode: KitchenSinkExpandModes;
 }
 
 const DefaultAnonymousPrefix = 'Guest';
@@ -407,10 +409,10 @@ export class NavigationPlugin
   };
 
   private _addKitchenSinkItem(): void {
-    const {position, expandOnFirstPlay} = this._configs.pluginConfig;
+    const {expandMode, position, expandOnFirstPlay} = this._configs.pluginConfig;
     this._kitchenSinkItem = this._contribServices.kitchenSinkManager.add({
       label: 'Navigation',
-      expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
+      expandMode: parseExpandMode(expandMode),
       renderIcon: () => (
         // TODO - resolve tabIndex race with the core.
         <button
@@ -500,6 +502,7 @@ ContribPluginManager.registerPlugin(
       expandOnFirstPlay: true,
       position: KitchenSinkPositions.Left,
       forceChaptersThumb: false,
+      expandMode: KitchenSinkExpandModes.OverTheVideo,
       userRole: UserRole.anonymousRole,
     },
   }
