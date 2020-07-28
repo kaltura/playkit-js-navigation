@@ -1,3 +1,4 @@
+import {KitchenSinkExpandModes} from '@playkit-js-contrib/ui';
 import {ItemData} from '../components/navigation/navigation-item/NavigationItem';
 
 export function getConfigValue( // TODO: consider move to contrib
@@ -69,6 +70,19 @@ export const convertTime = (sec: number): string => {
   }
 };
 
+// TODO: consider move to contrib
+export const decodeString = (content: any): string => {
+  if (typeof content !== 'string') {
+    return content;
+  }
+  return content
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"');
+};
+
 // normlise time, extract description and title, find thumbnail if exist etc'
 export const fillData = (
   originalItem: any,
@@ -87,7 +101,7 @@ export const fillData = (
   }
   switch (item.cuePointType) {
     case cuePointTypes.Annotation: // hotspot and AoA
-      item.displayTitle = item.text;
+      item.displayTitle = decodeString(item.text);
       switch (item.tags) {
         case cuePointTags.Hotspot:
           item.itemType = itemTypes.Hotspot;
@@ -98,8 +112,8 @@ export const fillData = (
       }
       break;
     case cuePointTypes.Thumb: // chapters and slides
-      item.displayDescription = item.description;
-      item.displayTitle = item.title;
+      item.displayDescription = decodeString(item.description);
+      item.displayTitle = decodeString(item.title);
       if (item.assetId) {
         item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
       }
@@ -330,3 +344,13 @@ export const convertLiveItemsStartTime = (
     startTime: item.createdAt - liveStartTime,
   }));
 };
+
+// TODO: consider move to contrib
+export const parseExpandMode = (value: string): KitchenSinkExpandModes => {
+  switch (value) {
+    case "AlongSideTheVideo":
+      return KitchenSinkExpandModes.AlongSideTheVideo;
+    default:
+      return KitchenSinkExpandModes.OverTheVideo;
+  }
+}

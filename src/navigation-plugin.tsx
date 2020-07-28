@@ -38,6 +38,7 @@ import {
   prepareLiveData,
   convertLiveItemsStartTime,
   cuePointTags,
+  parseExpandMode,
 } from './utils';
 import {
   PushNotification,
@@ -63,6 +64,7 @@ interface NavigationPluginConfig {
   position: KitchenSinkPositions;
   forceChaptersThumb: boolean;
   userRole: string;
+  expandMode: KitchenSinkExpandModes;
 }
 
 const DefaultAnonymousPrefix = 'Guest';
@@ -73,9 +75,8 @@ enum UserRole {
 }
 
 export class NavigationPlugin
-  implements OnMediaLoad, OnMediaUnload, OnPluginSetup, OnMediaUnload {
+  implements OnMediaLoad, OnMediaUnload, OnMediaUnload {
   private _kitchenSinkItem: KitchenSinkItem | null = null;
-  private _upperBarItem: UpperBarItem | null = null;
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
   private _currentPosition = 0;
@@ -106,10 +107,6 @@ export class NavigationPlugin
       this._kitchenSinkItem.update();
     }
   };
-
-  onPluginSetup(): void {
-    this._initKitchensinkAndUpperBarItems();
-  }
 
   private _addPlayerListeners() {
     this._removePlayerListeners();
@@ -189,6 +186,7 @@ export class NavigationPlugin
 
   onMediaLoad(): void {
     this._addPlayerListeners();
+    this._addKitchenSinkItem();
     if (this._corePlugin.player.isLive()) {
       this._registerToPushServer();
     } else {
@@ -366,11 +364,7 @@ export class NavigationPlugin
     //   this._handleSlideMessages
     // );
   }
-  private _initKitchensinkAndUpperBarItems(): void {
-    if (!this._upperBarItem && !this._kitchenSinkItem) {
-      this._addKitchenSinkItem();
-    }
-  }
+
   private _renderKitchenSinkContent = (
     props: KitchenSinkContentRendererProps
   ) => {
@@ -407,10 +401,14 @@ export class NavigationPlugin
   };
 
   private _addKitchenSinkItem(): void {
-    const {position, expandOnFirstPlay} = this._configs.pluginConfig;
+    const {
+      expandMode,
+      position,
+      expandOnFirstPlay,
+    } = this._configs.pluginConfig;
     this._kitchenSinkItem = this._contribServices.kitchenSinkManager.add({
       label: 'Navigation',
-      expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
+      expandMode: parseExpandMode(expandMode),
       renderIcon: () => (
         // TODO - resolve tabIndex race with the core.
         <button
@@ -500,6 +498,7 @@ ContribPluginManager.registerPlugin(
       expandOnFirstPlay: true,
       position: KitchenSinkPositions.Left,
       forceChaptersThumb: false,
+      expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       userRole: UserRole.anonymousRole,
     },
   }
