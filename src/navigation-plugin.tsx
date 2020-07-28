@@ -502,7 +502,7 @@ ContribPluginManager.registerPlugin(
       expandOnFirstPlay: true,
       position: KitchenSinkPositions.Left,
       forceChaptersThumb: false,
-      expandMode: KitchenSinkExpandModes.OverTheVideo,
+      expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       userRole: UserRole.anonymousRole,
     },
   }
