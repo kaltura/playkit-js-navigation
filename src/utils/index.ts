@@ -28,6 +28,7 @@ export enum itemTypes {
 }
 
 export const itemTypesOrder: Record<string, number> = {
+  [itemTypes.All]: 0,
   [itemTypes.Chapter]: 1,
   [itemTypes.Slide]: 2,
   [itemTypes.Hotspot]: 3,
@@ -166,10 +167,13 @@ export const fillData = (
   return item;
 };
 
-export const sortItems = (cuepoints: Array<ItemData>): Array<ItemData> => {
+export const sortItems = (
+  cuepoints: Array<ItemData>,
+  itemOrder: typeof itemTypesOrder
+): Array<ItemData> => {
   return cuepoints.sort((item1: ItemData, item2: ItemData) => {
     if (item1.startTime === item2.startTime) {
-      return itemTypesOrder[item1.itemType] - itemTypesOrder[item2.itemType];
+      return itemOrder[item1.itemType] - itemOrder[item2.itemType];
     }
     return item1.startTime - item2.startTime;
   });
@@ -209,7 +213,8 @@ export const prepareVodData = (
   multirequestData: Array<any> | null,
   ks: string,
   serviceUrl: string,
-  forceChaptersThumb: boolean
+  forceChaptersThumb: boolean,
+  itemOrder: typeof itemTypesOrder
 ): Array<ItemData> => {
   if (!multirequestData || multirequestData.length === 0) {
     // Wrong or empty data
@@ -237,7 +242,7 @@ export const prepareVodData = (
       liveTypeCuepoint: false,
     };
   });
-  return sortItems(receivedCuepoints);
+  return sortItems(receivedCuepoints, itemOrder);
 };
 
 const clearGroupData = (data: Array<ItemData>) => {
@@ -281,7 +286,10 @@ export const filterDataByActiveTab = (
   return clearGroupData(filteredData);
 };
 
-export const getAvailableTabs = (data: ItemData[]): itemTypes[] => {
+export const getAvailableTabs = (
+  data: ItemData[],
+  itemOrder: typeof itemTypesOrder
+): itemTypes[] => {
   const localData = [...data];
   let totalResults = 0;
   const ret: itemTypes[] = localData.reduce(
@@ -298,7 +306,7 @@ export const getAvailableTabs = (data: ItemData[]): itemTypes[] => {
     ret.unshift(itemTypes.All);
   }
   return ret.sort((itemType1: itemTypes, itemType2: itemTypes) => {
-    return itemTypesOrder[itemType1] - itemTypesOrder[itemType2];
+    return itemOrder[itemType1] - itemOrder[itemType2];
   });
 };
 
@@ -308,7 +316,8 @@ export const prepareLiveData = (
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
-  liveStartTime: number | null
+  liveStartTime: number | null,
+  itemOrder: typeof itemTypesOrder
 ): Array<ItemData> => {
   if (!newData || newData.length === 0) {
     // Wrong or empty data
@@ -331,7 +340,7 @@ export const prepareLiveData = (
     );
   }
   const result: Array<ItemData> = currentData.concat(receivedCuepoints);
-  return sortItems(result);
+  return sortItems(result, itemOrder);
 };
 
 export const convertLiveItemsStartTime = (
@@ -348,9 +357,18 @@ export const convertLiveItemsStartTime = (
 // TODO: consider move to contrib
 export const parseExpandMode = (value: string): KitchenSinkExpandModes => {
   switch (value) {
-    case "AlongSideTheVideo":
+    case 'AlongSideTheVideo':
       return KitchenSinkExpandModes.AlongSideTheVideo;
     default:
       return KitchenSinkExpandModes.OverTheVideo;
   }
-}
+};
+
+export const prepareItemTypesOrder = (
+  itemsOrder: any
+): Record<string, number> => {
+  if (itemsOrder && typeof itemsOrder === 'object') {
+    return {...itemTypesOrder, ...itemsOrder};
+  }
+  return itemTypesOrder;
+};
