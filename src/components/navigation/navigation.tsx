@@ -17,6 +17,7 @@ import {
   filterDataBySearchQuery,
   filterDataByActiveTab,
   addGroupData,
+  itemTypesOrder,
 } from '../../utils';
 import {AutoscrollIcon} from './icons/AutoscrollIcon';
 import {ItemData} from './navigation-item/NavigationItem';
@@ -38,6 +39,7 @@ export interface NavigationProps {
   currentTime: number;
   kitchenSinkActive: boolean;
   toggledWithEnter: boolean;
+  itemsOrder: typeof itemTypesOrder;
 }
 
 interface NavigationState {
@@ -145,7 +147,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     data: ItemData[],
     searchFilter: SearchFilter
   ): SearchFilter => {
-    const availableTabs = getAvailableTabs(data);
+    const availableTabs = getAvailableTabs(data, this.props.itemsOrder);
     return {
       ...searchFilter,
       availableTabs,

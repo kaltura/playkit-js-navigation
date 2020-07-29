@@ -39,6 +39,8 @@ import {
   convertLiveItemsStartTime,
   cuePointTags,
   parseExpandMode,
+  itemTypesOrder,
+  prepareItemTypesOrder,
 } from './utils';
 import {
   PushNotification,
@@ -65,6 +67,7 @@ interface NavigationPluginConfig {
   forceChaptersThumb: boolean;
   userRole: string;
   expandMode: KitchenSinkExpandModes;
+  itemsOrder: typeof itemTypesOrder;
 }
 
 const DefaultAnonymousPrefix = 'Guest';
@@ -85,13 +88,14 @@ export class NavigationPlugin
   private _isLoading = false;
   private _hasError = false;
   private _liveStartTime: number | null = null;
+  private _itemsOrder = itemTypesOrder;
 
   constructor(
     private _corePlugin: CorePlugin,
     private _contribServices: ContribServices,
     private _configs: ContribPluginConfigs<NavigationPluginConfig>
   ) {
-    const {playerConfig} = this._configs;
+    const {playerConfig, pluginConfig} = this._configs;
     this._kalturaClient.setOptions({
       clientTag: 'playkit-js-navigation',
       endpointUrl: playerConfig.provider.env.serviceUrl,
@@ -100,6 +104,7 @@ export class NavigationPlugin
       ks: playerConfig.provider.ks,
     });
     this._pushNotification = new PushNotification(this._corePlugin.player);
+    this._itemsOrder = prepareItemTypesOrder(pluginConfig.itemsOrder);
   }
 
   private _updateKitchenSink = () => {
@@ -289,7 +294,8 @@ export class NavigationPlugin
       this._configs.playerConfig.provider.ks,
       this._configs.playerConfig.provider.env.serviceUrl,
       this._corePlugin.config.forceChaptersThumb,
-      this._liveStartTime
+      this._liveStartTime,
+      this._itemsOrder
     );
     // TODO: Debounce _updateKitchenSink
     this._updateKitchenSink();
@@ -379,6 +385,7 @@ export class NavigationPlugin
         currentTime={this._currentPosition}
         kitchenSinkActive={!!this._kitchenSinkItem?.isActive()}
         toggledWithEnter={this._triggeredByKeyboard}
+        itemsOrder={this._itemsOrder}
       />
     );
   };
@@ -466,7 +473,8 @@ export class NavigationPlugin
           responses,
           this._configs.playerConfig.provider.ks,
           this._configs.playerConfig.provider.env.serviceUrl,
-          this._corePlugin.config.forceChaptersThumb
+          this._corePlugin.config.forceChaptersThumb,
+          this._itemsOrder
         );
         this._isLoading = false;
         this._updateKitchenSink();
@@ -500,6 +508,7 @@ ContribPluginManager.registerPlugin(
       forceChaptersThumb: false,
       expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       userRole: UserRole.anonymousRole,
+      itemsOrder: itemTypesOrder,
     },
   }
 );
