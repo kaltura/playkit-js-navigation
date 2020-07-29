@@ -14,7 +14,6 @@
 ## Configuration
 Plugin configuration:
     expandOnFirstPlay: boolean - if plugin should automatically opens on first play (default true);
-    position: string - position of plugin (left|bottom, default "left");
     forceChaptersThumb: boolean - force to use chapters thumbnails (default false);
     expandMode: string - expand mode of kitchensink (AlongSideTheVideo|OverTheVideo, default "AlongSideTheVideo");
     userRole: string - use session userId as identificator of user (anonymousRole|unmoderatedAdminRole, default "anonymousRole");

@@ -357,7 +357,7 @@ export const convertLiveItemsStartTime = (
 // TODO: consider move to contrib
 export const parseExpandMode = (value: string): KitchenSinkExpandModes => {
   switch (value) {
-    case 'AlongSideTheVideo':
+    case KitchenSinkExpandModes.AlongSideTheVideo:
       return KitchenSinkExpandModes.AlongSideTheVideo;
     default:
       return KitchenSinkExpandModes.OverTheVideo;
