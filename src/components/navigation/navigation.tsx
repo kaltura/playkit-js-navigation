@@ -130,6 +130,14 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         searchFilter
       ),
     };
+    if (this.state.searchFilter.searchQuery !== searchQuery) {
+      // Any search interaction should stop autoscroll
+      stateData.autoscroll = false;
+    }
+    if (!searchQuery) {
+      // if the user erases all the chars in the input field, the auto-scroll functionality will be kept
+      stateData.autoscroll = true;
+    }
     this._updateEngine(stateData);
   };
 
@@ -308,7 +316,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   render(props: NavigationProps, state: NavigationState) {
     const {isLoading, kitchenSinkActive} = props;
-    const {autoscroll} = state;
+    const {autoscroll, searchFilter} = state;
     return (
       <div
         className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
@@ -323,7 +331,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             {this._renderHeader()}
             <div className={styles.body}>
               {this._renderNavigation()}
-              {!autoscroll && (
+              {(!autoscroll && !searchFilter.searchQuery) && (
                 <button
                   className={styles.skipButton}
                   onClick={() => {
