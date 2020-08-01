@@ -288,7 +288,8 @@ export const filterDataByActiveTab = (
 
 export const getAvailableTabs = (
   data: ItemData[],
-  itemOrder: typeof itemTypesOrder
+  itemOrder: typeof itemTypesOrder,
+  visibleLiveItemsMap: Record<string, boolean> | null = null
 ): itemTypes[] => {
   const localData = [...data];
   let totalResults = 0;
@@ -296,7 +297,12 @@ export const getAvailableTabs = (
     (acc: itemTypes[], item: ItemData) => {
       totalResults = totalResults + 1;
       if (item.itemType && acc.indexOf(item.itemType) === -1) {
-        acc.push(item.itemType);
+        if (visibleLiveItemsMap && visibleLiveItemsMap[item.id]) {
+          acc.push(item.itemType);
+        }
+        if (!visibleLiveItemsMap) {
+          acc.push(item.itemType);
+        }
       }
       return acc;
     },

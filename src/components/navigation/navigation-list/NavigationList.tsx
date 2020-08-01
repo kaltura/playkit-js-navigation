@@ -10,6 +10,7 @@ export interface Props {
   onWheel: () => void;
   widgetWidth: number;
   highlightedMap: Record<string, true>;
+  visibleLiveItemsMap: Record<string, true> | null;
   headerHeight: number;
   showItemsIcons: boolean;
 }
@@ -20,6 +21,7 @@ export class NavigationList extends Component<Props> {
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
       nextProps.highlightedMap !== this.props.highlightedMap ||
+      nextProps.visibleLiveItemsMap !== this.props.visibleLiveItemsMap ||
       nextProps.data !== this.props.data ||
       nextProps.autoScroll !== this.props.autoScroll ||
       nextProps.headerHeight !== this.props.headerHeight ||
@@ -53,10 +55,13 @@ export class NavigationList extends Component<Props> {
   };
 
   render(props: Props) {
-    const {data, widgetWidth, showItemsIcons} = this.props;
+    const {data, widgetWidth, showItemsIcons, visibleLiveItemsMap} = this.props;
     if (!data.length) {
       return <EmptyList />;
     }
+    const navigationData = visibleLiveItemsMap
+      ? data.filter((item: ItemData) => visibleLiveItemsMap[item.id])
+      : data;
     return (
       <div
         ref={node => {
@@ -64,7 +69,7 @@ export class NavigationList extends Component<Props> {
         }}
         className={styles.navigationList}
         onWheel={this.props.onWheel}>
-        {data.map((item: ItemData) => {
+        {navigationData.map((item: ItemData) => {
           return (
             <NavigationItem
               widgetWidth={widgetWidth}

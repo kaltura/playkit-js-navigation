@@ -386,6 +386,7 @@ export class NavigationPlugin
         kitchenSinkActive={!!this._kitchenSinkItem?.isActive()}
         toggledWithEnter={this._triggeredByKeyboard}
         itemsOrder={this._itemsOrder}
+        liveEntry={this._corePlugin.player.isLive()}
       />
     );
   };

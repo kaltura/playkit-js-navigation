@@ -39,6 +39,7 @@ export interface NavigationProps {
   currentTime: number;
   kitchenSinkActive: boolean;
   toggledWithEnter: boolean;
+  liveEntry: boolean;
   itemsOrder: typeof itemTypesOrder;
 }
 
@@ -46,8 +47,10 @@ interface NavigationState {
   widgetWidth: number;
   searchFilter: SearchFilter;
   autoscroll: boolean;
-  highlightedMap: Record<number, true>;
+  highlightedMap: Record<string, true>;
   convertedData: ItemData[];
+  filteredBySearchQueryData: ItemData[];
+  visibleLiveItemsMap: Record<string, true>;
 }
 
 const HEADER_HEIGHT = 94; // TODO: calculate Header height in runtime (only once);
@@ -89,6 +92,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       highlightedMap: {},
       searchFilter: {...initialSearchFilter},
       convertedData: [],
+      filteredBySearchQueryData: [],
+      visibleLiveItemsMap: {},
     };
   }
 
@@ -118,19 +123,17 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _prepareNavigationData = (searchFilter: SearchFilter) => {
     const {searchQuery, activeTab} = searchFilter;
-    const filteredBySearchQuery = filterDataBySearchQuery(
-      this.props.data,
-      searchQuery
-    );
+    const {data, liveEntry} = this.props;
+    const filteredBySearchQuery = filterDataBySearchQuery(data, searchQuery);
     const stateData: NavigationState = {
       ...this.state,
       convertedData: addGroupData(
         filterDataByActiveTab(filteredBySearchQuery, activeTab)
       ),
-      searchFilter: this._prepareSearchFilter(
-        filteredBySearchQuery,
-        searchFilter
-      ),
+      filteredBySearchQueryData: filteredBySearchQuery,
+      searchFilter: liveEntry
+        ? searchFilter
+        : this._prepareSearchFilter(filteredBySearchQuery, searchFilter),
     };
     if (this.state.searchFilter.searchQuery !== searchQuery) {
       // Any search interaction should stop autoscroll
@@ -145,9 +148,16 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _prepareSearchFilter = (
     data: ItemData[],
-    searchFilter: SearchFilter
+    searchFilter: SearchFilter,
+    visibleLiveItemsMap = this.state.visibleLiveItemsMap
   ): SearchFilter => {
-    const availableTabs = getAvailableTabs(data, this.props.itemsOrder);
+    const {itemsOrder, liveEntry} = this.props;
+    // TODO: add memoization to getAvailableTabs method
+    const availableTabs = getAvailableTabs(
+      data,
+      itemsOrder,
+      liveEntry ? visibleLiveItemsMap : null
+    );
     return {
       ...searchFilter,
       availableTabs,
@@ -165,7 +175,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     this._syncVisibleData(stateData);
   };
 
-  private _makeHighlightedMap = (cuepoints: any[]) => {
+  private _makeHighlightedMap = (cuepoints: any[]): Record<number, true> => {
     const maxTime = cuepoints[cuepoints.length - 1]?.startTime || -1;
     const filtered = cuepoints.filter(item => item.startTime === maxTime);
     const highlightedMap = filtered.reduce((acc, item) => {
@@ -174,8 +184,19 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return highlightedMap;
   };
 
+  private _makeVisibleLiveItemsMap = (
+    cuepoints: any[]
+  ): Record<string, true> => {
+    return cuepoints.reduce(
+      (acc, item) => {
+        return {...acc, [item.id]: true};
+      },
+      {...this.state.visibleLiveItemsMap}
+    );
+  };
+
   private _syncVisibleData = (stateData: NavigationState = this.state) => {
-    const {currentTime} = this.props;
+    const {currentTime, liveEntry} = this.props;
     this.setState((state: NavigationState) => {
       const newState = {...state, ...stateData};
       if (!this._engine) {
@@ -186,6 +207,21 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       }
       const itemsUpdate = this._engine.updateTime(currentTime);
       if (itemsUpdate.snapshot) {
+        if (liveEntry) {
+          const visibleLiveItemsMap = this._makeVisibleLiveItemsMap(
+            itemsUpdate.snapshot
+          );
+          return {
+            ...newState,
+            highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot),
+            visibleLiveItemsMap,
+            searchFilter: this._prepareSearchFilter(
+              newState.filteredBySearchQueryData,
+              newState.searchFilter,
+              visibleLiveItemsMap
+            ),
+          };
+        }
         return {
           ...newState,
           highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot),
@@ -196,7 +232,23 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       }
       const {show} = itemsUpdate.delta;
       if (show.length > 0) {
-        return {highlightedMap: this._makeHighlightedMap(show)};
+        if (liveEntry) {
+          const visibleLiveItemsMap = this._makeVisibleLiveItemsMap(show);
+          return {
+            ...newState,
+            highlightedMap: this._makeHighlightedMap(show),
+            visibleLiveItemsMap,
+            searchFilter: this._prepareSearchFilter(
+              newState.filteredBySearchQueryData,
+              newState.searchFilter,
+              visibleLiveItemsMap
+            ),
+          };
+        }
+        return {
+          ...newState,
+          highlightedMap: this._makeHighlightedMap(show),
+        };
       }
       return newState;
     });
@@ -285,8 +337,13 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderNavigation = () => {
-    const {searchFilter, widgetWidth} = this.state;
-    const {hasError, retry} = this.props;
+    const {
+      searchFilter,
+      widgetWidth,
+      visibleLiveItemsMap,
+      convertedData,
+    } = this.state;
+    const {hasError, retry, liveEntry} = this.props;
     if (hasError) {
       return <Error onRetryLoad={retry} />;
     }
@@ -296,12 +353,13 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         onWheel={this._handleScroll}
         autoScroll={this.state.autoscroll}
         onSeek={this._handleSeek}
-        data={this.state.convertedData}
+        data={convertedData}
         highlightedMap={this.state.highlightedMap}
         headerHeight={
           searchFilter.searchQuery ? HEADER_HEIGHT_WITH_AMOUNT : HEADER_HEIGHT
         }
         showItemsIcons={searchFilter.activeTab === itemTypes.All}
+        visibleLiveItemsMap={liveEntry ? visibleLiveItemsMap : null}
       />
     );
   };
@@ -333,7 +391,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             {this._renderHeader()}
             <div className={styles.body}>
               {this._renderNavigation()}
-              {(!autoscroll && !searchFilter.searchQuery) && (
+              {!autoscroll && !searchFilter.searchQuery && (
                 <button
                   className={styles.skipButton}
                   onClick={() => {
