@@ -370,6 +370,7 @@ export const prepareLiveData = (
     liveStartTime ? currentPosition : 0
   ); // set all live cuepoints as pending untill we get entry liveStartTime
   result.listData = sortItems(currentData.concat(result.listData), itemOrder);
+  result.pendingData = pendingData.concat(result.pendingData);
   return result;
 };
 
