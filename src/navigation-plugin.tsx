@@ -12,6 +12,7 @@ import {
 import {
   getContribLogger,
   KalturaLiveServices,
+  debounce,
 } from '@playkit-js-contrib/common';
 import {
   KitchenSinkContentRendererProps,
@@ -73,6 +74,7 @@ interface NavigationPluginConfig {
 }
 
 const DefaultAnonymousPrefix = 'Guest';
+const DEBOUNCE_TIMEOUT = 1000;
 
 enum UserRole {
   anonymousRole = 'anonymousRole',
@@ -115,6 +117,8 @@ export class NavigationPlugin
       this._kitchenSinkItem.update();
     }
   };
+
+  private _debouncedUpdateKitchenSink = debounce(this._updateKitchenSink, DEBOUNCE_TIMEOUT);
 
   private _addPlayerListeners() {
     this._removePlayerListeners();
@@ -304,8 +308,7 @@ export class NavigationPlugin
     );
     this._listData = listData;
     this._pendingData = pendingData;
-    // TODO: Debounce _updateKitchenSink
-    this._updateKitchenSink();
+    this._debouncedUpdateKitchenSink();
   };
 
   private _handleAoaMessages = ({messages}: PublicNotificationsEvent): void => {
@@ -409,9 +412,11 @@ export class NavigationPlugin
         );
         this._pendingData = pendingData;
         if (listData.length) {
-          this._listData = sortItems(this._listData.concat(listData), this._itemsOrder);
+          this._listData = sortItems(
+            this._listData.concat(listData),
+            this._itemsOrder
+          );
         }
-        // TODO: Debounce _updateKitchenSink
       }
       this._updateKitchenSink();
     }
