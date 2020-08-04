@@ -41,6 +41,8 @@ import {
   parseExpandMode,
   itemTypesOrder,
   prepareItemTypesOrder,
+  preparePendingCuepoints,
+  sortItems,
 } from './utils';
 import {
   PushNotification,
@@ -84,6 +86,7 @@ export class NavigationPlugin
   private _kalturaClient = new KalturaClient();
   private _currentPosition = 0;
   private _listData: Array<ItemData> = [];
+  private _pendingData: Array<ItemData> = []; //_pendingData keeps live quepionts till player currentTime reach quepoint start-time
   private _triggeredByKeyboard = false;
   private _isLoading = false;
   private _hasError = false;
@@ -288,15 +291,19 @@ export class NavigationPlugin
   }
 
   private _updateData = (cuePointData: any[]) => {
-    this._listData = prepareLiveData(
+    const {listData, pendingData} = prepareLiveData(
       this._listData,
+      this._pendingData,
       cuePointData,
       this._configs.playerConfig.provider.ks,
       this._configs.playerConfig.provider.env.serviceUrl,
       this._corePlugin.config.forceChaptersThumb,
       this._liveStartTime,
-      this._itemsOrder
+      this._itemsOrder,
+      this._currentPosition
     );
+    this._listData = listData;
+    this._pendingData = pendingData;
     // TODO: Debounce _updateKitchenSink
     this._updateKitchenSink();
   };
@@ -395,6 +402,17 @@ export class NavigationPlugin
     const newTime = Math.ceil(this._corePlugin.player.currentTime);
     if (newTime !== this._currentPosition) {
       this._currentPosition = newTime;
+      if (this._corePlugin.player.isLive() && this._pendingData.length) {
+        const {listData, pendingData} = preparePendingCuepoints(
+          this._pendingData,
+          this._currentPosition
+        );
+        this._pendingData = pendingData;
+        if (listData.length) {
+          this._listData = sortItems(this._listData.concat(listData), this._itemsOrder);
+        }
+        // TODO: Debounce _updateKitchenSink
+      }
       this._updateKitchenSink();
     }
   };

@@ -101,14 +101,15 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     previousProps: Readonly<NavigationProps>,
     previousState: Readonly<NavigationState>
   ): void {
+    this._setWidgetSize();
     if (previousProps.data !== this.props.data) {
       this._log('Prepare navigation data', 'componentDidUpdate');
       this._prepareNavigationData(this.state.searchFilter);
+      return;
     }
     if (previousProps.currentTime !== this.props.currentTime) {
       this._syncVisibleData();
     }
-    this._setWidgetSize();
   }
 
   componentWillUnmount(): void {

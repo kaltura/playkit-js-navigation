@@ -310,18 +310,41 @@ export const getAvailableTabs = (
   });
 };
 
+export const preparePendingCuepoints = (
+  currentData: Array<ItemData>,
+  currentPosition: number
+): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
+  return currentData.reduce(
+    (
+      acc: {listData: Array<ItemData>; pendingData: Array<ItemData>},
+      item: ItemData
+    ) => {
+      if (currentPosition < item.startTime) {
+        return {
+          listData: acc.listData,
+          pendingData: [...acc.pendingData, item],
+        };
+      }
+      return {listData: [...acc.listData, item], pendingData: acc.pendingData};
+    },
+    {listData: [], pendingData: []}
+  );
+};
+
 export const prepareLiveData = (
   currentData: Array<ItemData>,
+  pendingData: Array<ItemData>,
   newData: Array<ItemData>,
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
   liveStartTime: number | null,
-  itemOrder: typeof itemTypesOrder
-): Array<ItemData> => {
+  itemOrder: typeof itemTypesOrder,
+  currentPosition: number
+): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
   if (!newData || newData.length === 0) {
     // Wrong or empty data
-    return currentData;
+    return {listData: currentData, pendingData};
   }
   // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
   let receivedCuepoints: Array<ItemData> = newData.filter(
@@ -339,8 +362,16 @@ export const prepareLiveData = (
       liveStartTime
     );
   }
-  const result: Array<ItemData> = currentData.concat(receivedCuepoints);
-  return sortItems(result, itemOrder);
+  const result: {
+    listData: Array<ItemData>;
+    pendingData: Array<ItemData>;
+  } = preparePendingCuepoints(
+    receivedCuepoints,
+    liveStartTime ? currentPosition : 0
+  ); // set all live cuepoints as pending untill we get entry liveStartTime
+  result.listData = sortItems(currentData.concat(result.listData), itemOrder);
+  result.pendingData = pendingData.concat(result.pendingData);
+  return result;
 };
 
 export const convertLiveItemsStartTime = (
