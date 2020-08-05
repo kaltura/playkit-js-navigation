@@ -7,34 +7,26 @@ import {
   BackgroundColors,
 } from '../navigation/icons/IconsFactory';
 const {Tooltip} = KalturaPlayer.ui.components.Tooltip;
-const {Text} = KalturaPlayer.ui.preacti18n;
+const {withText, Text} = KalturaPlayer.ui.preacti18n;
 
 export interface FilterProps {
   onChange(value: itemTypes): void;
   activeTab: itemTypes;
   availableTabs: itemTypes[];
   totalResults: number | null;
-  defaultTranslates: Record<string, string>;
 }
 
 export interface TabData {
   type: itemTypes;
   isActive: boolean;
   label: string;
-  i18nLabel: string;
 }
 
-export class NavigationFilter extends Component<FilterProps> {
-  static defaultProps = {
-    defaultTranslates: {
-      [itemTypes.All]: 'All',
-      [itemTypes.AnswerOnAir]: 'Answer On Air',
-      [itemTypes.Chapter]: 'Chapters',
-      [itemTypes.Slide]: 'Slides',
-      [itemTypes.Hotspot]: 'Hotspots',
-    },
-  };
+const AllText = withText('navigation.AnswerOnAir')((props: any) =>
+  <h1>{props.AnswerOnAir}</h1>
+)
 
+export class NavigationFilter extends Component<FilterProps> {
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const {activeTab, availableTabs, totalResults} = this.props;
     if (
@@ -65,9 +57,7 @@ export class NavigationFilter extends Component<FilterProps> {
         onClick={() => this._handleChange(tab.type)}>
         {tab.type === itemTypes.All ? (
           <span>
-            <Text id={'navigation.All'}>
-              {this.props.defaultTranslates[itemTypes.All]}
-            </Text>
+            <Text id={'navigation.All'} />
           </span>
         ) : (
           <Fragment>
@@ -79,7 +69,7 @@ export class NavigationFilter extends Component<FilterProps> {
             </Tooltip>
             {this.props.availableTabs.length < 4 && (
               <span className={styles.label}>
-                <Text id={tab.i18nLabel}>{tab.label}</Text>
+                <Text id={tab.label} />
               </span>
             )}
           </Fragment>
@@ -89,31 +79,22 @@ export class NavigationFilter extends Component<FilterProps> {
   };
 
   private _getTabsData = (): TabData[] => {
-    const {availableTabs, activeTab, defaultTranslates} = this.props;
+    const {availableTabs, activeTab} = this.props;
     const tabs: TabData[] = availableTabs.map((tab: itemTypes) => {
       return {
         type: tab,
         isActive: activeTab === tab,
-        label: defaultTranslates[tab],
-        i18nLabel: `navigation.${tab}`,
+        label: `navigation.${tab}`,
       };
     });
     return tabs;
   };
 
-  private _getResultLabel = (
-    activeTab: itemTypes,
-    defaultTranslates: Record<string, string>,
-    totalResults: number
-  ) => {
+  private _getResultLabel = (activeTab: itemTypes, totalResults: number) => {
     const defaultTranslate = `${totalResults} result${
       // @ts-ignore
       totalResults > 1 ? 's' : ''
-    } in ${
-      activeTab === itemTypes.All
-        ? 'all content'
-        : defaultTranslates[activeTab].toLowerCase()
-    }`;
+    } in ${activeTab === itemTypes.All ? 'all content' : 'specific tab'}`;
     return (
       // @ts-ignore
       <Text
@@ -124,18 +105,19 @@ export class NavigationFilter extends Component<FilterProps> {
           count: totalResults,
           tabName:
             activeTab === itemTypes.All
-              ? 'all content'
-              : defaultTranslates[activeTab].toLowerCase(),
-        }}>
-        {defaultTranslate}
-      </Text>
+              ? 'localized string ALL'
+              : 'specific tab',
+        }}
+      />
     );
   };
 
-  render({activeTab, defaultTranslates, totalResults}: FilterProps) {
+  render({activeTab, totalResults}: FilterProps) {
+    console.log('>>> all props', this.props);
     const tabs = this._getTabsData();
     return (
       <div className={styles.filterRoot}>
+        <AllText />
         {totalResults !== 0 && tabs.length > 1 && (
           <div className={styles.tabsWrapper}>
             {tabs.map(tab => {
@@ -145,7 +127,7 @@ export class NavigationFilter extends Component<FilterProps> {
         )}
         {!!totalResults && (
           <div className={styles.totalResults}>
-            {this._getResultLabel(activeTab, defaultTranslates, totalResults)}
+            {this._getResultLabel(activeTab, totalResults)}
           </div>
         )}
       </div>
