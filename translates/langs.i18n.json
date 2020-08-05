@@ -1,6 +1,16 @@
 {
     "en": {
         "navigation": {
+            "All": "All",
+            "Chapter": "Chapters",
+            "Slide": "Slides",
+            "AnswerOnAir": "Answer On Air",
+            "Hotspot": "Hotspots",
+            "result": {
+                "singular": "1 result in {{tabName}}",
+                "plural": "{{count}} results in {{tabName}}"
+            },
+            "allContent": "all content"
         }
     }
 }
