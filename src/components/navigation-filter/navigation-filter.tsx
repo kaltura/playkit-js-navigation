@@ -7,7 +7,7 @@ import {
   BackgroundColors,
 } from '../navigation/icons/IconsFactory';
 const {Tooltip} = KalturaPlayer.ui.components.Tooltip;
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {Text} = KalturaPlayer.ui.preacti18n;
 
 export interface FilterProps {
   onChange(value: itemTypes): void;
@@ -22,21 +22,14 @@ export interface TabData {
   label: string;
 }
 
-const AllText = withText('navigation.AnswerOnAir')((props: any) =>
-  <h1>{props.AnswerOnAir}</h1>
-)
-
 export class NavigationFilter extends Component<FilterProps> {
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const {activeTab, availableTabs, totalResults} = this.props;
-    if (
+    return (
       activeTab !== nextProps.activeTab ||
       availableTabs !== nextProps.availableTabs ||
       totalResults !== nextProps.totalResults
-    ) {
-      return true;
-    }
-    return false;
+    );
   }
 
   public _handleChange = (type: itemTypes) => {
@@ -80,47 +73,35 @@ export class NavigationFilter extends Component<FilterProps> {
 
   private _getTabsData = (): TabData[] => {
     const {availableTabs, activeTab} = this.props;
-    const tabs: TabData[] = availableTabs.map((tab: itemTypes) => {
+    return availableTabs.map((tab: itemTypes) => {
       return {
         type: tab,
         isActive: activeTab === tab,
         label: `navigation.${tab}`,
       };
     });
-    return tabs;
   };
 
   private _getResultLabel = (activeTab: itemTypes, totalResults: number) => {
-    const defaultTranslate = `${totalResults} result${
-      // @ts-ignore
-      totalResults > 1 ? 's' : ''
-    } in ${activeTab === itemTypes.All ? 'all content' : 'specific tab'}`;
     return (
-      // @ts-ignore
       <Text
         key={`result_${totalResults}`}
-        id="navigation.result"
+        id={`navigation.results.${activeTab}`}
         plural={totalResults}
         fields={{
           count: totalResults,
-          tabName:
-            activeTab === itemTypes.All
-              ? 'localized string ALL'
-              : 'specific tab',
         }}
       />
     );
   };
 
   render({activeTab, totalResults}: FilterProps) {
-    console.log('>>> all props', this.props);
     const tabs = this._getTabsData();
     return (
       <div className={styles.filterRoot}>
-        <AllText />
         {totalResults !== 0 && tabs.length > 1 && (
           <div className={styles.tabsWrapper}>
-            {tabs.map(tab => {
+            {tabs.map((tab) => {
               return this._renderTab(tab);
             })}
           </div>

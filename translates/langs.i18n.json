@@ -4,13 +4,30 @@
             "All": "All",
             "Chapter": "Chapters",
             "Slide": "Slides",
-            "AnswerOnAir": "Answer On Air",
+            "AnswerOnAir": "Answers On Air",
             "Hotspot": "Hotspots",
-            "result": {
-                "singular": "1 result in {{tabName}}",
-                "plural": "{{count}} results in {{tabName}}"
-            },
-            "allContent": "all content"
+            "results": {
+                "All" : {
+                  "singular": "1 result found",
+                  "plural": "{{count}} results found"
+                },
+                "Chapter" : {
+                  "singular": "1 result in Chapters",
+                  "plural": "{{count}} results in Chapters"
+                },
+                "Slide" : {
+                  "singular": "1 result in Slides",
+                  "plural": "{{count}} results in Slides"
+                },
+                "AnswerOnAir" : {
+                  "singular": "1 result in Answers On Air",
+                  "plural": "{{count}} results in Answers On Air"
+                },
+                "Hotspot" : {
+                  "singular": "1 result in Hotspots",
+                  "plural": "{{count}} results Hotspots"
+                }
+            }
         }
     }
 }
