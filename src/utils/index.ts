@@ -349,7 +349,9 @@ export const prepareLiveData = (
   // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
   let receivedCuepoints: Array<ItemData> = newData.filter(
     (newDataItem: ItemData) => {
-      return !currentData.some((item: ItemData) => item.id === newDataItem.id);
+      return ![...currentData, ...pendingData].find(
+        (item: ItemData) => item.id === newDataItem.id
+      );
     }
   );
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
@@ -369,8 +371,11 @@ export const prepareLiveData = (
     receivedCuepoints,
     liveStartTime ? currentPosition : 0
   ); // set all live cuepoints as pending untill we get entry liveStartTime
+  const filteredPendingData = pendingData.filter((cuepoint: ItemData) => {
+    return !result.listData.find((item: ItemData) => item.id === cuepoint.id);
+  });
   result.listData = sortItems(currentData.concat(result.listData), itemOrder);
-  result.pendingData = pendingData.concat(result.pendingData);
+  result.pendingData = filteredPendingData.concat(result.pendingData);
   return result;
 };
 
@@ -402,4 +407,40 @@ export const prepareItemTypesOrder = (
     return {...itemTypesOrder, ...itemsOrder};
   }
   return itemTypesOrder;
+};
+
+// TODO: consider move to contrib
+export const isDataEqual = (
+  prevData: ItemData[],
+  nextData: ItemData[]
+): boolean => {
+  if (prevData.length !== nextData.length) {
+    return false;
+  }
+  if (
+    prevData.length &&
+    nextData.length &&
+    (prevData[0].id !== nextData[0].id ||
+      prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id)
+  ) {
+    return false;
+  }
+  return true;
+};
+
+// TODO: consider move to contrib
+export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
+  const prevMapKeys = Object.keys(prevMap);
+  const nextMapaKeys = Object.keys(nextMap);
+  if (prevMapKeys.length !== nextMapaKeys.length) {
+    return false;
+  }
+  if (
+    prevMapKeys[0] !== nextMapaKeys[0] ||
+    prevMapKeys[prevMapKeys.length - 1] !==
+      nextMapaKeys[nextMapaKeys.length - 1]
+  ) {
+    return false;
+  }
+  return true;
 };
