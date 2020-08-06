@@ -32,12 +32,13 @@ export interface Props {
 
 export interface State {
   expandText: boolean;
+  imageLoaded: boolean;
 }
 
 export class NavigationItem extends Component<Props, State> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
-  state = {expandText: false};
+  state = {expandText: false, imageLoaded: false};
 
   matchHeight() {
     if (!this._textContainerRef || !this._itemElementRef) {
@@ -57,6 +58,7 @@ export class NavigationItem extends Component<Props, State> {
       selectedItem !== nextProps.selectedItem ||
       data !== nextProps.data ||
       nextState.expandText !== this.state.expandText ||
+      (selectedItem && nextState.imageLoaded && !this.state.imageLoaded) ||
       nextProps.widgetWidth !== widgetWidth
     ) {
       return true;
@@ -65,23 +67,36 @@ export class NavigationItem extends Component<Props, State> {
   }
 
   componentDidUpdate(previousProps: Readonly<Props>) {
-    if (
-      this._itemElementRef &&
-      this.props.selectedItem &&
-        (!this.props.data.groupData ||
-          this.props.data.groupData === groupTypes.first)
-    ) {
-      this.props.onSelected({
-        time: this.props.data.startTime,
-        itemY: this._itemElementRef.offsetTop,
-      });
-    }
+    this._getSelected();
     this.matchHeight();
   }
 
   componentDidMount() {
+    this._getSelected();
     this.matchHeight();
   }
+
+  private _getSelected = () => {
+    const {selectedItem, data} = this.props;
+    const {groupData, startTime, previewImage} = data;
+    if (
+      this._itemElementRef &&
+      selectedItem &&
+      (!groupData || groupData === groupTypes.first)
+    ) {
+      if (previewImage && this.state.imageLoaded) {
+        this.props.onSelected({
+          time: startTime,
+          itemY: this._itemElementRef.offsetTop,
+        });
+      } else if (!previewImage) {
+        this.props.onSelected({
+          time: startTime,
+          itemY: this._itemElementRef.offsetTop,
+        });
+      }
+    }
+  };
 
   private _handleClickHandler = () => {
     this.props.onClick(this.props.data.startTime);
@@ -139,6 +154,10 @@ export class NavigationItem extends Component<Props, State> {
           {previewImage && (
             <Fragment>
               <img
+                // TODO: hanndle onError state
+                onLoad={() => {
+                  this.setState({imageLoaded: true});
+                }}
                 src={previewImage}
                 alt={'Slide Preview'}
                 className={styles.thumbnail}
