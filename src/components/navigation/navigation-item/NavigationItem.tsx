@@ -23,7 +23,7 @@ export interface ItemData {
 
 export interface Props {
   data: ItemData;
-  onSelected: (a: any) => void;
+  onSelected: (params: {time: number; itemY: number}) => void;
   selectedItem: boolean;
   widgetWidth: number;
   onClick: (time: number) => void;
@@ -66,13 +66,14 @@ export class NavigationItem extends Component<Props, State> {
 
   componentDidUpdate(previousProps: Readonly<Props>) {
     if (
+      this._itemElementRef &&
       this.props.selectedItem &&
-      (!this.props.data.groupData ||
-        this.props.data.groupData === groupTypes.first)
+        (!this.props.data.groupData ||
+          this.props.data.groupData === groupTypes.first)
     ) {
       this.props.onSelected({
         time: this.props.data.startTime,
-        itemY: this._itemElementRef?.offsetTop,
+        itemY: this._itemElementRef.offsetTop,
       });
     }
     this.matchHeight();

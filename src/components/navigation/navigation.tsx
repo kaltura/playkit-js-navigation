@@ -74,6 +74,8 @@ const initialSearchFilter = {
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
   private _engine: CuepointEngine<Cuepoint> | null = null;
+  private _preventScrollEvent: boolean = false;
+  private _listElementRef: HTMLDivElement | null = null;
 
   private _log = (msg: string, method: string) => {
     logger.trace(msg, {
@@ -274,12 +276,17 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _handleSeek = (time: number) => {
     // we want to also autoscroll to the item
+    this._preventScrollEvent = true;
     this.setState({autoscroll: true}, () => {
       this.props.onItemClicked(time);
     });
   };
 
   private _handleScroll = () => {
+    if (this._preventScrollEvent) {
+      this._preventScrollEvent = false;
+      return;
+    }
     if (this.state.autoscroll) {
       this.setState({autoscroll: false});
     }
@@ -294,14 +301,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return (
       <NavigationList
         widgetWidth={widgetWidth}
-        onWheel={this._handleScroll}
         autoScroll={this.state.autoscroll}
         onSeek={this._handleSeek}
+        scroll={this._scroll}
         data={this.state.convertedData}
         highlightedMap={this.state.highlightedMap}
-        headerHeight={
-          searchFilter.searchQuery ? HEADER_HEIGHT_WITH_AMOUNT : HEADER_HEIGHT
-        }
         showItemsIcons={searchFilter.activeTab === itemTypes.All}
       />
     );
@@ -314,6 +318,28 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _handleClose = (event: KeyboardEvent) => {
     if (event.keyCode === KeyboardKeys.Esc) {
       this.props.onClose();
+    }
+  };
+
+  private _enableAutoScroll = (event: any) => {
+    event.preventDefault();
+    if (this.state.autoscroll) {
+      return;
+    }
+    this._preventScrollEvent = true;
+    this.setState({
+      autoscroll: true,
+    });
+  };
+
+  private _scroll = (selectedElementY: number) => {
+    this._preventScrollEvent = true;
+    if (this._listElementRef) {
+      this._listElementRef.scrollTop =
+        selectedElementY -
+        (this.state.searchFilter.searchQuery
+          ? HEADER_HEIGHT_WITH_AMOUNT
+          : HEADER_HEIGHT);
     }
   };
 
@@ -332,14 +358,17 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         ) : (
           <div className={styles.globalContainer}>
             {this._renderHeader()}
-            <div className={styles.body}>
+            <div
+              className={styles.body}
+              onScroll={this._handleScroll}
+              ref={node => {
+                this._listElementRef = node;
+              }}>
               {this._renderNavigation()}
-              {(!autoscroll && !searchFilter.searchQuery) && (
+              {!autoscroll && !searchFilter.searchQuery && (
                 <button
                   className={styles.skipButton}
-                  onClick={() => {
-                    this.setState({autoscroll: true});
-                  }}>
+                  onClick={this._enableAutoScroll}>
                   <AutoscrollIcon />
                 </button>
               )}

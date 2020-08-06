@@ -7,22 +7,19 @@ export interface Props {
   data: Array<ItemData>;
   onSeek: (n: number) => void;
   autoScroll: boolean;
-  onWheel: () => void;
+  scroll: (n: number) => void;
   widgetWidth: number;
   highlightedMap: Record<string, true>;
-  headerHeight: number;
   showItemsIcons: boolean;
 }
 
 export class NavigationList extends Component<Props> {
-  private _listElementRef: HTMLDivElement | null = null;
   private _selectedElementY: number = 0;
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
       nextProps.highlightedMap !== this.props.highlightedMap ||
       nextProps.data !== this.props.data ||
       nextProps.autoScroll !== this.props.autoScroll ||
-      nextProps.headerHeight !== this.props.headerHeight ||
       (nextProps.widgetWidth &&
         nextProps.widgetWidth !== this.props.widgetWidth)
     ) {
@@ -34,42 +31,29 @@ export class NavigationList extends Component<Props> {
   componentDidUpdate(previousProps: Readonly<Props>) {
     if (!previousProps.autoScroll && this.props.autoScroll) {
       // this is click on resume to autoscroll button
-      this._scroll();
+      this.props.scroll(this._selectedElementY);
     }
   }
 
-  private _scroll = () => {
-    this._listElementRef?.parentElement?.scrollTo(
-      0,
-      this._selectedElementY - this.props.headerHeight
-    );
-  };
-
-  private updateSelected = (selectedItemData: any) => {
-    this._selectedElementY = selectedItemData.itemY;
+  private updateSelected = ({itemY}: {itemY: number}) => {
+    this._selectedElementY = itemY;
     if (this.props.autoScroll) {
-      this._scroll();
+      this.props.scroll(this._selectedElementY);
     }
   };
 
-  render(props: Props) {
-    const {data, widgetWidth, showItemsIcons} = this.props;
+  render({data, widgetWidth, showItemsIcons, onSeek, highlightedMap}: Props) {
     if (!data.length) {
       return <EmptyList />;
     }
     return (
-      <div
-        ref={node => {
-          this._listElementRef = node;
-        }}
-        className={styles.navigationList}
-        onWheel={this.props.onWheel}>
+      <div className={styles.navigationList}>
         {data.map((item: ItemData) => {
           return (
             <NavigationItem
               widgetWidth={widgetWidth}
-              onClick={this.props.onSeek}
-              selectedItem={this.props.highlightedMap[item.id]}
+              onClick={onSeek}
+              selectedItem={highlightedMap[item.id]}
               key={item.id}
               data={item}
               onSelected={this.updateSelected}
