@@ -469,51 +469,66 @@ export class NavigationPlugin
   private _fetchVodData = () => {
     this._isLoading = true;
     const requests: KalturaRequest<any>[] = [];
-    const chaptersAndSlidesRequest = new CuePointListAction({
-      filter: new KalturaThumbCuePointFilter({
-        entryIdEqual: this._corePlugin.player.config.sources.id,
-        cuePointTypeEqual: KalturaCuePointType.thumb,
-        subTypeIn: `${KalturaThumbCuePointSubType.slide},${KalturaThumbCuePointSubType.chapter}`,
-      }),
-    });
-    const hotspotsRequest = new CuePointListAction({
-      filter: new KalturaCuePointFilter({
-        entryIdEqual: this._corePlugin.player.config.sources.id,
-        cuePointTypeEqual: KalturaCuePointType.annotation,
-      }),
-    });
-
-    chaptersAndSlidesRequest.setRequestOptions({
-      acceptedTypes: [KalturaThumbCuePoint],
-    });
-    hotspotsRequest.setRequestOptions({
-      acceptedTypes: [KalturaAnnotation],
-    });
-
-    requests.push(chaptersAndSlidesRequest, hotspotsRequest);
-    this._updateKitchenSink();
-    this._kalturaClient.multiRequest(requests).then(
-      (responses: KalturaMultiResponse | null) => {
-        this._listData = prepareVodData(
-          responses,
-          this._configs.playerConfig.provider.ks,
-          this._configs.playerConfig.provider.env.serviceUrl,
-          this._corePlugin.config.forceChaptersThumb,
-          this._itemsOrder
-        );
-        this._isLoading = false;
-        this._updateKitchenSink();
-      },
-      error => {
-        this._hasError = true;
-        this._isLoading = false;
-        logger.error('failed retrieving navigation data', {
-          method: '_fetchVodData',
-          data: error,
-        });
-        this._updateKitchenSink();
-      }
-    );
+    const { allowedTabs } = this._configs.pluginConfig;
+    let chaptersAndSlidesRequest: CuePointListAction | null = null;
+    let hotspotsRequest: CuePointListAction | null = null;
+    let subTypesFilter = '';
+    if (allowedTabs.includes(itemTypes.Slide)) {
+      subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.slide},`
+    }
+    if (allowedTabs.includes(itemTypes.Chapter)) {
+      subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.chapter},`
+    }
+    if (subTypesFilter) {
+      chaptersAndSlidesRequest = new CuePointListAction({
+        filter: new KalturaThumbCuePointFilter({
+          entryIdEqual: this._corePlugin.player.config.sources.id,
+          cuePointTypeEqual: KalturaCuePointType.thumb,
+          subTypeIn: subTypesFilter,
+        }),
+      });
+      chaptersAndSlidesRequest.setRequestOptions({
+        acceptedTypes: [KalturaThumbCuePoint],
+      });
+      requests.push(chaptersAndSlidesRequest);
+    }
+    if (allowedTabs.includes(itemTypes.Hotspot)) {
+      hotspotsRequest = new CuePointListAction({
+        filter: new KalturaCuePointFilter({
+          entryIdEqual: this._corePlugin.player.config.sources.id,
+          cuePointTypeEqual: KalturaCuePointType.annotation,
+        }),
+      });
+      hotspotsRequest.setRequestOptions({
+        acceptedTypes: [KalturaAnnotation],
+      });
+      requests.push(hotspotsRequest);
+    }
+    if (requests.length) {
+      this._updateKitchenSink();
+      this._kalturaClient.multiRequest(requests).then(
+        (responses: KalturaMultiResponse | null) => {
+          this._listData = prepareVodData(
+            responses,
+            this._configs.playerConfig.provider.ks,
+            this._configs.playerConfig.provider.env.serviceUrl,
+            this._corePlugin.config.forceChaptersThumb,
+            this._itemsOrder
+          );
+          this._isLoading = false;
+          this._updateKitchenSink();
+        },
+        error => {
+          this._hasError = true;
+          this._isLoading = false;
+          logger.error('failed retrieving navigation data', {
+            method: '_fetchVodData',
+            data: error,
+          });
+          this._updateKitchenSink();
+        }
+      );
+    }
   };
 }
 
