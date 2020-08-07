@@ -44,6 +44,7 @@ import {
   prepareItemTypesOrder,
   preparePendingCuepoints,
   sortItems,
+  itemTypes
 } from './utils';
 import {
   PushNotification,
@@ -71,6 +72,7 @@ interface NavigationPluginConfig {
   userRole: string;
   expandMode: KitchenSinkExpandModes;
   itemsOrder: typeof itemTypesOrder;
+  allowedTabs: itemTypes[];
 }
 
 const DefaultAnonymousPrefix = 'Guest';
@@ -532,6 +534,12 @@ ContribPluginManager.registerPlugin(
       expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       userRole: UserRole.anonymousRole,
       itemsOrder: itemTypesOrder,
+      allowedTabs: [
+        itemTypes.Hotspot,
+        itemTypes.Chapter,
+        itemTypes.AnswerOnAir,
+        itemTypes.Slide,
+      ]
     },
   }
 );
