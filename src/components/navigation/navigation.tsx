@@ -169,7 +169,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _makeHighlightedMap = (cuepoints: any[]) => {
-    const maxTime = cuepoints[cuepoints.length - 1]?.startTime || -1;
+    const startTime = cuepoints[cuepoints.length - 1]?.startTime;
+    const maxTime = startTime !== undefined ? startTime : -1;
     const filtered = cuepoints.filter(item => item.startTime === maxTime);
     const highlightedMap = filtered.reduce((acc, item) => {
       return {...acc, [item.id]: true};
