@@ -308,8 +308,6 @@ export class NavigationPlugin
     );
     this._listData = listData;
     this._pendingData = pendingData;
-    console.log("list data", this._listData)
-    console.log("pendingData", this._pendingData)
     this._debouncedUpdateKitchenSink();
   };
 
