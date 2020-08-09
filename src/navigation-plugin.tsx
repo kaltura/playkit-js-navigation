@@ -341,21 +341,25 @@ export class NavigationPlugin
   // }: NotificationsErrorEvent): void => {};
 
   private _constructPushNotificationListener(): void {
+    const { allowedTabs } = this._configs.pluginConfig;
     // TODO: handle push notification errors
     // this._pushNotification.on(
     //   PushNotificationEventTypes.PushNotificationsError,
     //   this._handlePushNotificationError
     // );
+    if (allowedTabs.includes(itemTypes.AnswerOnAir)) {
+      this._pushNotification.on(
+        PushNotificationEventTypes.PublicNotifications,
+        this._handleAoaMessages
+      );
+    }
 
-    this._pushNotification.on(
-      PushNotificationEventTypes.PublicNotifications,
-      this._handleAoaMessages
-    );
-
-    this._pushNotification.on(
-      PushNotificationEventTypes.ThumbNotification,
-      this._handleThumbMessages
-    );
+    if (allowedTabs.includes(itemTypes.Slide)) {
+      this._pushNotification.on(
+        PushNotificationEventTypes.ThumbNotification,
+        this._handleThumbMessages
+      );
+    }
 
     // TODO: handle change-view-mode
     // this._pushNotification.on(
