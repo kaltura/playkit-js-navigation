@@ -53,7 +53,7 @@ interface NavigationState {
 
 const HEADER_HEIGHT = 94; // TODO: calculate Header height in runtime (only once);
 const HEADER_HEIGHT_WITH_AMOUNT = 120;
-const LiveSeekThreshold: number = 7 * 1000;
+const LiveSeekThreshold: number = 7 * 1000; // use 7sec (same as QnA) as SeekThreshold configuration for live entries
 const VodSeekThreshold: number = 2 * 1000;
 
 const logger = getContribLogger({

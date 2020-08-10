@@ -412,40 +412,30 @@ export const prepareItemTypesOrder = (
 // TODO: consider move to contrib
 export const isEmptyObject = (obj: Record<string, any>) => {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
+};
 
 // TODO: consider move to contrib
 export const isDataEqual = (
   prevData: ItemData[],
   nextData: ItemData[]
 ): boolean => {
-  if (prevData.length !== nextData.length) {
-    return false;
-  }
-  if (
-    prevData.length &&
-    nextData.length &&
-    (prevData[0].id !== nextData[0].id ||
-      prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id)
-  ) {
-    return false;
-  }
-  return true;
+  return !(
+    prevData.length !== nextData.length ||
+    (prevData.length &&
+      nextData.length &&
+      (prevData[0].id !== nextData[0].id ||
+        prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id))
+  );
 };
 
 // TODO: consider move to contrib
 export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
   const prevMapKeys = Object.keys(prevMap);
   const nextMapaKeys = Object.keys(nextMap);
-  if (prevMapKeys.length !== nextMapaKeys.length) {
-    return false;
-  }
-  if (
+  return !(
+    prevMapKeys.length !== nextMapaKeys.length ||
     prevMapKeys[0] !== nextMapaKeys[0] ||
-    prevMapKeys[prevMapKeys.length - 1] !==
-      nextMapaKeys[nextMapaKeys.length - 1]
-  ) {
-    return false;
-  }
-  return true;
+      prevMapKeys[prevMapKeys.length - 1] !==
+        nextMapaKeys[nextMapaKeys.length - 1]
+  );
 };
