@@ -403,3 +403,8 @@ export const prepareItemTypesOrder = (
   }
   return itemTypesOrder;
 };
+
+// TODO: consider move to contrib
+export const isEmptyObject = (obj: Record<string, any>) => {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
