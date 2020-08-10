@@ -44,6 +44,8 @@ import {
   prepareItemTypesOrder,
   preparePendingCuepoints,
   sortItems,
+  itemTypes,
+  isEmptyObject,
 } from './utils';
 import {
   PushNotification,
@@ -94,6 +96,7 @@ export class NavigationPlugin
   private _hasError = false;
   private _liveStartTime: number | null = null;
   private _itemsOrder = itemTypesOrder;
+  private _itemsFilter = itemTypesOrder;
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -110,6 +113,9 @@ export class NavigationPlugin
     });
     this._pushNotification = new PushNotification(this._corePlugin.player);
     this._itemsOrder = prepareItemTypesOrder(pluginConfig.itemsOrder);
+    this._itemsFilter = isEmptyObject(pluginConfig.itemsOrder)
+      ? itemTypesOrder
+      : pluginConfig.itemsOrder;
   }
 
   private _updateKitchenSink = () => {
@@ -118,7 +124,10 @@ export class NavigationPlugin
     }
   };
 
-  private _debouncedUpdateKitchenSink = debounce(this._updateKitchenSink, DEBOUNCE_TIMEOUT);
+  private _debouncedUpdateKitchenSink = debounce(
+    this._updateKitchenSink,
+    DEBOUNCE_TIMEOUT
+  );
 
   private _addPlayerListeners() {
     this._removePlayerListeners();
@@ -344,16 +353,19 @@ export class NavigationPlugin
     //   PushNotificationEventTypes.PushNotificationsError,
     //   this._handlePushNotificationError
     // );
+    if (this._itemsFilter[itemTypes.AnswerOnAir]) {
+      this._pushNotification.on(
+        PushNotificationEventTypes.PublicNotifications,
+        this._handleAoaMessages
+      );
+    }
 
-    this._pushNotification.on(
-      PushNotificationEventTypes.PublicNotifications,
-      this._handleAoaMessages
-    );
-
-    this._pushNotification.on(
-      PushNotificationEventTypes.ThumbNotification,
-      this._handleThumbMessages
-    );
+    if (this._itemsFilter[itemTypes.Slide]) {
+      this._pushNotification.on(
+        PushNotificationEventTypes.ThumbNotification,
+        this._handleThumbMessages
+      );
+    }
 
     // TODO: handle change-view-mode
     // this._pushNotification.on(
@@ -396,6 +408,7 @@ export class NavigationPlugin
         kitchenSinkActive={!!this._kitchenSinkItem?.isActive()}
         toggledWithEnter={this._triggeredByKeyboard}
         itemsOrder={this._itemsOrder}
+        isLive={this._corePlugin.player.isLive()}
       />
     );
   };
@@ -465,53 +478,68 @@ export class NavigationPlugin
   }
 
   private _fetchVodData = () => {
-    this._isLoading = true;
     const requests: KalturaRequest<any>[] = [];
-    const chaptersAndSlidesRequest = new CuePointListAction({
-      filter: new KalturaThumbCuePointFilter({
-        entryIdEqual: this._corePlugin.player.config.sources.id,
-        cuePointTypeEqual: KalturaCuePointType.thumb,
-        subTypeIn: `${KalturaThumbCuePointSubType.slide},${KalturaThumbCuePointSubType.chapter}`,
-      }),
-    });
-    const hotspotsRequest = new CuePointListAction({
-      filter: new KalturaCuePointFilter({
-        entryIdEqual: this._corePlugin.player.config.sources.id,
-        cuePointTypeEqual: KalturaCuePointType.annotation,
-      }),
-    });
-
-    chaptersAndSlidesRequest.setRequestOptions({
-      acceptedTypes: [KalturaThumbCuePoint],
-    });
-    hotspotsRequest.setRequestOptions({
-      acceptedTypes: [KalturaAnnotation],
-    });
-
-    requests.push(chaptersAndSlidesRequest, hotspotsRequest);
-    this._updateKitchenSink();
-    this._kalturaClient.multiRequest(requests).then(
-      (responses: KalturaMultiResponse | null) => {
-        this._listData = prepareVodData(
-          responses,
-          this._configs.playerConfig.provider.ks,
-          this._configs.playerConfig.provider.env.serviceUrl,
-          this._corePlugin.config.forceChaptersThumb,
-          this._itemsOrder
-        );
-        this._isLoading = false;
-        this._updateKitchenSink();
-      },
-      error => {
-        this._hasError = true;
-        this._isLoading = false;
-        logger.error('failed retrieving navigation data', {
-          method: '_fetchVodData',
-          data: error,
-        });
-        this._updateKitchenSink();
-      }
-    );
+    let chaptersAndSlidesRequest: CuePointListAction | null = null;
+    let hotspotsRequest: CuePointListAction | null = null;
+    let subTypesFilter = '';
+    if (this._itemsFilter[itemTypes.Slide]) {
+      subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.slide},`;
+    }
+    if (this._itemsFilter[itemTypes.Chapter]) {
+      subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.chapter},`;
+    }
+    if (subTypesFilter) {
+      chaptersAndSlidesRequest = new CuePointListAction({
+        filter: new KalturaThumbCuePointFilter({
+          entryIdEqual: this._corePlugin.player.config.sources.id,
+          cuePointTypeEqual: KalturaCuePointType.thumb,
+          subTypeIn: subTypesFilter,
+        }),
+      });
+      chaptersAndSlidesRequest.setRequestOptions({
+        acceptedTypes: [KalturaThumbCuePoint],
+      });
+      requests.push(chaptersAndSlidesRequest);
+    }
+    if (this._itemsFilter[itemTypes.Hotspot]) {
+      hotspotsRequest = new CuePointListAction({
+        filter: new KalturaCuePointFilter({
+          entryIdEqual: this._corePlugin.player.config.sources.id,
+          cuePointTypeEqual: KalturaCuePointType.annotation,
+        }),
+      });
+      hotspotsRequest.setRequestOptions({
+        acceptedTypes: [KalturaAnnotation],
+      });
+      requests.push(hotspotsRequest);
+    }
+    // TODO: add AoA cuepointsType request
+    if (requests.length) {
+      this._isLoading = true;
+      this._updateKitchenSink();
+      this._kalturaClient.multiRequest(requests).then(
+        (responses: KalturaMultiResponse | null) => {
+          this._listData = prepareVodData(
+            responses,
+            this._configs.playerConfig.provider.ks,
+            this._configs.playerConfig.provider.env.serviceUrl,
+            this._corePlugin.config.forceChaptersThumb,
+            this._itemsOrder
+          );
+          this._isLoading = false;
+          this._updateKitchenSink();
+        },
+        error => {
+          this._hasError = true;
+          this._isLoading = false;
+          logger.error('failed retrieving navigation data', {
+            method: '_fetchVodData',
+            data: error,
+          });
+          this._updateKitchenSink();
+        }
+      );
+    }
   };
 }
 
@@ -531,7 +559,7 @@ ContribPluginManager.registerPlugin(
       forceChaptersThumb: false,
       expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       userRole: UserRole.anonymousRole,
-      itemsOrder: itemTypesOrder,
+      itemsOrder: {},
     },
   }
 );
