@@ -40,6 +40,7 @@ export interface NavigationProps {
   kitchenSinkActive: boolean;
   toggledWithEnter: boolean;
   itemsOrder: typeof itemTypesOrder;
+  isLive: boolean;
 }
 
 interface NavigationState {
@@ -52,6 +53,8 @@ interface NavigationState {
 
 const HEADER_HEIGHT = 94; // TODO: calculate Header height in runtime (only once);
 const HEADER_HEIGHT_WITH_AMOUNT = 120;
+const LiveSeekThreshold: number = 7 * 1000; // use 7sec (same as QnA) as SeekThreshold configuration for live entries
+const VodSeekThreshold: number = 2 * 1000;
 
 const logger = getContribLogger({
   class: 'Navigation',
@@ -162,7 +165,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       this.setState(stateData);
       return;
     }
-    this._engine = new CuepointEngine<Cuepoint>(convertedData);
+    this._engine = new CuepointEngine<Cuepoint>(convertedData, {
+      reasonableSeekThreshold: this.props.isLive
+        ? LiveSeekThreshold
+        : VodSeekThreshold,
+    });
     this._syncVisibleData(stateData);
   };
 
@@ -334,7 +341,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             {this._renderHeader()}
             <div className={styles.body}>
               {this._renderNavigation()}
-              {(!autoscroll && !searchFilter.searchQuery) && (
+              {!autoscroll && !searchFilter.searchQuery && (
                 <button
                   className={styles.skipButton}
                   onClick={() => {

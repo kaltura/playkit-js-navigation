@@ -2,6 +2,7 @@ import {Component, h} from 'preact';
 import * as styles from './NavigationList.scss';
 import {NavigationItem, ItemData} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';
+import {isDataEqual, isMapEqual} from '../../../utils';
 
 export interface Props {
   data: Array<ItemData>;
@@ -19,8 +20,8 @@ export class NavigationList extends Component<Props> {
   private _selectedElementY: number = 0;
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
-      nextProps.highlightedMap !== this.props.highlightedMap ||
-      nextProps.data !== this.props.data ||
+      !isMapEqual(this.props.highlightedMap, nextProps.highlightedMap) ||
+      !isDataEqual(this.props.data, nextProps.data) ||
       nextProps.autoScroll !== this.props.autoScroll ||
       nextProps.headerHeight !== this.props.headerHeight ||
       (nextProps.widgetWidth &&
