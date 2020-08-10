@@ -44,7 +44,8 @@ import {
   prepareItemTypesOrder,
   preparePendingCuepoints,
   sortItems,
-  itemTypes
+  itemTypes,
+  isEmptyObject,
 } from './utils';
 import {
   PushNotification,
@@ -72,7 +73,6 @@ interface NavigationPluginConfig {
   userRole: string;
   expandMode: KitchenSinkExpandModes;
   itemsOrder: typeof itemTypesOrder;
-  allowedTabs: itemTypes[];
 }
 
 const DefaultAnonymousPrefix = 'Guest';
@@ -96,6 +96,7 @@ export class NavigationPlugin
   private _hasError = false;
   private _liveStartTime: number | null = null;
   private _itemsOrder = itemTypesOrder;
+  private _itemsFilter = itemTypesOrder;
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -112,6 +113,9 @@ export class NavigationPlugin
     });
     this._pushNotification = new PushNotification(this._corePlugin.player);
     this._itemsOrder = prepareItemTypesOrder(pluginConfig.itemsOrder);
+    this._itemsFilter = isEmptyObject(pluginConfig.itemsOrder)
+      ? itemTypesOrder
+      : pluginConfig.itemsOrder;
   }
 
   private _updateKitchenSink = () => {
@@ -120,7 +124,10 @@ export class NavigationPlugin
     }
   };
 
-  private _debouncedUpdateKitchenSink = debounce(this._updateKitchenSink, DEBOUNCE_TIMEOUT);
+  private _debouncedUpdateKitchenSink = debounce(
+    this._updateKitchenSink,
+    DEBOUNCE_TIMEOUT
+  );
 
   private _addPlayerListeners() {
     this._removePlayerListeners();
@@ -341,20 +348,19 @@ export class NavigationPlugin
   // }: NotificationsErrorEvent): void => {};
 
   private _constructPushNotificationListener(): void {
-    const { allowedTabs } = this._configs.pluginConfig;
     // TODO: handle push notification errors
     // this._pushNotification.on(
     //   PushNotificationEventTypes.PushNotificationsError,
     //   this._handlePushNotificationError
     // );
-    if (allowedTabs.includes(itemTypes.AnswerOnAir)) {
+    if (this._itemsFilter[itemTypes.AnswerOnAir]) {
       this._pushNotification.on(
         PushNotificationEventTypes.PublicNotifications,
         this._handleAoaMessages
       );
     }
 
-    if (allowedTabs.includes(itemTypes.Slide)) {
+    if (this._itemsFilter[itemTypes.Slide]) {
       this._pushNotification.on(
         PushNotificationEventTypes.ThumbNotification,
         this._handleThumbMessages
@@ -471,17 +477,15 @@ export class NavigationPlugin
   }
 
   private _fetchVodData = () => {
-    this._isLoading = true;
     const requests: KalturaRequest<any>[] = [];
-    const { allowedTabs } = this._configs.pluginConfig;
     let chaptersAndSlidesRequest: CuePointListAction | null = null;
     let hotspotsRequest: CuePointListAction | null = null;
     let subTypesFilter = '';
-    if (allowedTabs.includes(itemTypes.Slide)) {
-      subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.slide},`
+    if (this._itemsFilter[itemTypes.Slide]) {
+      subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.slide},`;
     }
-    if (allowedTabs.includes(itemTypes.Chapter)) {
-      subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.chapter},`
+    if (this._itemsFilter[itemTypes.Chapter]) {
+      subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.chapter},`;
     }
     if (subTypesFilter) {
       chaptersAndSlidesRequest = new CuePointListAction({
@@ -496,7 +500,7 @@ export class NavigationPlugin
       });
       requests.push(chaptersAndSlidesRequest);
     }
-    if (allowedTabs.includes(itemTypes.Hotspot)) {
+    if (this._itemsFilter[itemTypes.Hotspot]) {
       hotspotsRequest = new CuePointListAction({
         filter: new KalturaCuePointFilter({
           entryIdEqual: this._corePlugin.player.config.sources.id,
@@ -508,7 +512,9 @@ export class NavigationPlugin
       });
       requests.push(hotspotsRequest);
     }
+    // TODO: add AoA cuepointsType request
     if (requests.length) {
+      this._isLoading = true;
       this._updateKitchenSink();
       this._kalturaClient.multiRequest(requests).then(
         (responses: KalturaMultiResponse | null) => {
@@ -552,13 +558,7 @@ ContribPluginManager.registerPlugin(
       forceChaptersThumb: false,
       expandMode: KitchenSinkExpandModes.AlongSideTheVideo,
       userRole: UserRole.anonymousRole,
-      itemsOrder: itemTypesOrder,
-      allowedTabs: [
-        itemTypes.Hotspot,
-        itemTypes.Chapter,
-        itemTypes.AnswerOnAir,
-        itemTypes.Slide,
-      ]
+      itemsOrder: {},
     },
   }
 );
