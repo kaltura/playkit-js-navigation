@@ -33,12 +33,13 @@ export interface Props {
 export interface State {
   expandText: boolean;
   imageLoaded: boolean;
+  imageFailed: boolean;
 }
 
 export class NavigationItem extends Component<Props, State> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
-  state = {expandText: false, imageLoaded: false};
+  state = {expandText: false, imageLoaded: false, imageFailed: false};
 
   matchHeight() {
     if (!this._textContainerRef || !this._itemElementRef) {
@@ -109,6 +110,31 @@ export class NavigationItem extends Component<Props, State> {
     });
   };
 
+  private _renderThumbnail = () => {
+    if (this.state.imageFailed) {
+      return null;
+    }
+    const {data, selectedItem} = this.props;
+    const {previewImage} = data;
+    const imageProps: Record<string, any> = {
+      src: previewImage,
+      alt: 'Slide Preview',
+      className: styles.thumbnail,
+      onLoad: () => {
+        this.setState({imageLoaded: true});
+      },
+      onError: () => {
+        this.setState({imageFailed: true});
+      },
+    };
+    return (
+      <Fragment>
+        <img {...imageProps} />
+        <div className={styles.thumbGradient}></div>
+      </Fragment>
+    );
+  };
+
   render(props: Props) {
     const {selectedItem, showIcon, data} = this.props;
     const {
@@ -151,21 +177,7 @@ export class NavigationItem extends Component<Props, State> {
             styles.content,
             previewImage ? styles.hasImage : null,
           ].join(' ')}>
-          {previewImage && (
-            <Fragment>
-              <img
-                // TODO: hanndle onError state
-                onLoad={() => {
-                  this.setState({imageLoaded: true});
-                }}
-                src={previewImage}
-                alt={'Slide Preview'}
-                className={styles.thumbnail}
-              />
-              <div className={styles.thumbGradient}></div>
-            </Fragment>
-          )}
-
+          {previewImage && this._renderThumbnail()}
           <div
             className={styles.contentText}
             ref={node => {

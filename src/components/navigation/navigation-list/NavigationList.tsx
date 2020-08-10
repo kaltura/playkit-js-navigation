@@ -8,7 +8,7 @@ export interface Props {
   data: Array<ItemData>;
   onSeek: (n: number) => void;
   autoScroll: boolean;
-  scroll: (n: number) => void;
+  onScroll: (n: number) => void;
   widgetWidth: number;
   highlightedMap: Record<string, true>;
   showItemsIcons: boolean;
@@ -32,14 +32,14 @@ export class NavigationList extends Component<Props> {
   componentDidUpdate(previousProps: Readonly<Props>) {
     if (!previousProps.autoScroll && this.props.autoScroll) {
       // this is click on resume to autoscroll button
-      this.props.scroll(this._selectedElementY);
+      this.props.onScroll(this._selectedElementY);
     }
   }
 
   private updateSelected = ({itemY}: {itemY: number}) => {
     this._selectedElementY = itemY;
     if (this.props.autoScroll) {
-      this.props.scroll(this._selectedElementY);
+      this.props.onScroll(this._selectedElementY);
     }
   };
 

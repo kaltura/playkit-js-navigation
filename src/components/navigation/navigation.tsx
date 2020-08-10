@@ -311,7 +311,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         widgetWidth={widgetWidth}
         autoScroll={this.state.autoscroll}
         onSeek={this._handleSeek}
-        scroll={this._scroll}
+        onScroll={this._scrollTo}
         data={this.state.convertedData}
         highlightedMap={this.state.highlightedMap}
         showItemsIcons={searchFilter.activeTab === itemTypes.All}
@@ -340,7 +340,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     });
   };
 
-  private _scroll = (selectedElementY: number) => {
+  private _scrollTo = (selectedElementY: number) => {
     this._preventScrollEvent = true;
     if (this._listElementRef) {
       this._listElementRef.scrollTop =
