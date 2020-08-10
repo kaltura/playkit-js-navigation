@@ -23,7 +23,7 @@ export interface ItemData {
 
 export interface Props {
   data: ItemData;
-  onSelected: (a: any) => void;
+  onSelected: (params: {time: number; itemY: number}) => void;
   selectedItem: boolean;
   widgetWidth: number;
   onClick: (time: number) => void;
@@ -32,12 +32,14 @@ export interface Props {
 
 export interface State {
   expandText: boolean;
+  imageLoaded: boolean;
+  imageFailed: boolean;
 }
 
 export class NavigationItem extends Component<Props, State> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
-  state = {expandText: false};
+  state = {expandText: false, imageLoaded: false, imageFailed: false};
 
   matchHeight() {
     if (!this._textContainerRef || !this._itemElementRef) {
@@ -57,6 +59,7 @@ export class NavigationItem extends Component<Props, State> {
       selectedItem !== nextProps.selectedItem ||
       data !== nextProps.data ||
       nextState.expandText !== this.state.expandText ||
+      (selectedItem && nextState.imageLoaded && !this.state.imageLoaded) ||
       nextProps.widgetWidth !== widgetWidth
     ) {
       return true;
@@ -65,22 +68,36 @@ export class NavigationItem extends Component<Props, State> {
   }
 
   componentDidUpdate(previousProps: Readonly<Props>) {
-    if (
-      this.props.selectedItem &&
-      (!this.props.data.groupData ||
-        this.props.data.groupData === groupTypes.first)
-    ) {
-      this.props.onSelected({
-        time: this.props.data.startTime,
-        itemY: this._itemElementRef?.offsetTop,
-      });
-    }
+    this._getSelected();
     this.matchHeight();
   }
 
   componentDidMount() {
+    this._getSelected();
     this.matchHeight();
   }
+
+  private _getSelected = () => {
+    const {selectedItem, data} = this.props;
+    const {groupData, startTime, previewImage} = data;
+    if (
+      this._itemElementRef &&
+      selectedItem &&
+      (!groupData || groupData === groupTypes.first)
+    ) {
+      if (previewImage && this.state.imageLoaded) {
+        this.props.onSelected({
+          time: startTime,
+          itemY: this._itemElementRef.offsetTop,
+        });
+      } else if (!previewImage) {
+        this.props.onSelected({
+          time: startTime,
+          itemY: this._itemElementRef.offsetTop,
+        });
+      }
+    }
+  };
 
   private _handleClickHandler = () => {
     this.props.onClick(this.props.data.startTime);
@@ -91,6 +108,31 @@ export class NavigationItem extends Component<Props, State> {
     this.setState({
       expandText: !this.state.expandText,
     });
+  };
+
+  private _renderThumbnail = () => {
+    if (this.state.imageFailed) {
+      return null;
+    }
+    const {data, selectedItem} = this.props;
+    const {previewImage} = data;
+    const imageProps: Record<string, any> = {
+      src: previewImage,
+      alt: 'Slide Preview',
+      className: styles.thumbnail,
+      onLoad: () => {
+        this.setState({imageLoaded: true});
+      },
+      onError: () => {
+        this.setState({imageFailed: true});
+      },
+    };
+    return (
+      <Fragment>
+        <img {...imageProps} />
+        <div className={styles.thumbGradient}></div>
+      </Fragment>
+    );
   };
 
   render(props: Props) {
@@ -135,17 +177,7 @@ export class NavigationItem extends Component<Props, State> {
             styles.content,
             previewImage ? styles.hasImage : null,
           ].join(' ')}>
-          {previewImage && (
-            <Fragment>
-              <img
-                src={previewImage}
-                alt={'Slide Preview'}
-                className={styles.thumbnail}
-              />
-              <div className={styles.thumbGradient}></div>
-            </Fragment>
-          )}
-
+          {previewImage && this._renderThumbnail()}
           <div
             className={styles.contentText}
             ref={node => {
