@@ -25,6 +25,7 @@ export enum itemTypes {
   Chapter = 'Chapter',
   Slide = 'Slide',
   Hotspot = 'Hotspot',
+  Caption = 'Caption',
 }
 
 export const itemTypesOrder: Record<string, number> = {
@@ -33,6 +34,7 @@ export const itemTypesOrder: Record<string, number> = {
   [itemTypes.Slide]: 2,
   [itemTypes.Hotspot]: 3,
   [itemTypes.AnswerOnAir]: 4,
+  [itemTypes.Caption]: 5,
 };
 
 export enum cuePointTypes {
@@ -101,6 +103,8 @@ export const fillData = (
     item.displayTime = convertTime(item.startTime);
   }
   switch (item.cuePointType) {
+    case itemTypes.Caption:
+      item.itemType = itemTypes.Caption;
     case cuePointTypes.Annotation: // hotspot and AoA
       item.displayTitle = decodeString(item.text);
       switch (item.tags) {
@@ -435,7 +439,7 @@ export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
   return !(
     prevMapKeys.length !== nextMapaKeys.length ||
     prevMapKeys[0] !== nextMapaKeys[0] ||
-      prevMapKeys[prevMapKeys.length - 1] !==
-        nextMapaKeys[nextMapaKeys.length - 1]
+    prevMapKeys[prevMapKeys.length - 1] !==
+      nextMapaKeys[nextMapaKeys.length - 1]
   );
 };

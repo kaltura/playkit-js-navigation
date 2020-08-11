@@ -47,6 +47,7 @@ import {
   itemTypes,
   isEmptyObject,
 } from './utils';
+import {getCaptions} from './captions';
 import {
   PushNotification,
   PushNotificationEventTypes,
@@ -477,10 +478,9 @@ export class NavigationPlugin
     }
   }
 
-  private _fetchVodData = () => {
+  private _fetchVodData = async () => {
+    let data: any = [];
     const requests: KalturaRequest<any>[] = [];
-    let chaptersAndSlidesRequest: CuePointListAction | null = null;
-    let hotspotsRequest: CuePointListAction | null = null;
     let subTypesFilter = '';
     if (this._itemsFilter[itemTypes.Slide]) {
       subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.slide},`;
@@ -489,38 +489,57 @@ export class NavigationPlugin
       subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.chapter},`;
     }
     if (subTypesFilter) {
-      chaptersAndSlidesRequest = new CuePointListAction({
+      const request: CuePointListAction = new CuePointListAction({
         filter: new KalturaThumbCuePointFilter({
           entryIdEqual: this._corePlugin.player.config.sources.id,
           cuePointTypeEqual: KalturaCuePointType.thumb,
           subTypeIn: subTypesFilter,
         }),
       });
-      chaptersAndSlidesRequest.setRequestOptions({
+      request.setRequestOptions({
         acceptedTypes: [KalturaThumbCuePoint],
       });
-      requests.push(chaptersAndSlidesRequest);
+      requests.push(request);
     }
     if (this._itemsFilter[itemTypes.Hotspot]) {
-      hotspotsRequest = new CuePointListAction({
+      const request: CuePointListAction = new CuePointListAction({
         filter: new KalturaCuePointFilter({
           entryIdEqual: this._corePlugin.player.config.sources.id,
           cuePointTypeEqual: KalturaCuePointType.annotation,
         }),
       });
-      hotspotsRequest.setRequestOptions({
+      request.setRequestOptions({
         acceptedTypes: [KalturaAnnotation],
       });
-      requests.push(hotspotsRequest);
+      requests.push(request);
     }
+    if (this._itemsFilter[itemTypes.Caption]) {
+      const captionList = await getCaptions(
+        this._kalturaClient,
+        this._corePlugin.player.config.sources.id
+      );
+      data = [
+        {
+          result: {
+            objects: captionList.map(caption => ({
+              ...caption,
+              cuePointType: itemTypes.Caption
+            })),
+          },
+        },
+      ];
+    }
+
     // TODO: add AoA cuepointsType request
     if (requests.length) {
       this._isLoading = true;
       this._updateKitchenSink();
       this._kalturaClient.multiRequest(requests).then(
-        (responses: KalturaMultiResponse | null) => {
+        (responses: any) => {
+          console.log('responses', responses);
+          console.log('[...data, responses]', [...data, ...responses]);
           this._listData = prepareVodData(
-            responses,
+            [...data, ...responses],
             this._configs.playerConfig.provider.ks,
             this._configs.playerConfig.provider.env.serviceUrl,
             this._corePlugin.config.forceChaptersThumb,
