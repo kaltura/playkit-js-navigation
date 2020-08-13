@@ -536,8 +536,6 @@ export class NavigationPlugin
       this._updateKitchenSink();
       this._kalturaClient.multiRequest(requests).then(
         (responses: any) => {
-          console.log('responses', responses);
-          console.log('[...data, responses]', [...data, ...responses]);
           this._listData = prepareVodData(
             [...data, ...responses],
             this._configs.playerConfig.provider.ks,

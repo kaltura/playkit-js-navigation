@@ -247,7 +247,12 @@ export const getCaptions = async (
     kalturaClient,
     captionAsset.id
   );
-  return getCaptionData(captionContent, captionAsset, captionAssetList) || [];
+  const captionData =
+    getCaptionData(captionContent, captionAsset, captionAssetList) || [];
+  return captionData.map((caption: CaptionItem) => ({
+    ...caption,
+    startTime: caption.startTime * 1000,
+  }));
 };
 
-// TODO make custom CaptionAssetServeAction that handled error, prepared data  and return result
+// TODO consider to make custom CaptionAssetServeAction that handled error, prepared data  and return result

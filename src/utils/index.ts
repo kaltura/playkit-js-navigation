@@ -91,7 +91,7 @@ export const fillData = (
   originalItem: any,
   ks: string,
   serviceUrl: string,
-  forceChaptersThumb: boolean,
+  forceChaptersThumb: boolean = false,
   isLiveEntry: boolean = false
 ) => {
   const item: any = {...originalItem};
@@ -139,7 +139,11 @@ export const fillData = (
       }
       break;
   }
-  if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS) {
+  if (
+    item.displayTitle &&
+    item.displayTitle.length > MAX_CHARACTERS &&
+    item.itemType !== itemTypes.Caption
+  ) {
     let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
     item.shorthandTitle = elipsisString + '... ';
@@ -264,7 +268,9 @@ export const filterDataBySearchQuery = (
     return [];
   }
   if (!searchQuery) {
-    return data;
+    return data.filter((item: ItemData) => {
+      return item.itemType !== itemTypes.Caption;
+    });
   }
   const lowerQuery = searchQuery.toLowerCase();
   const filteredData = data.filter((item: ItemData) => {
