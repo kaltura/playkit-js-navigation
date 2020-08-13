@@ -1,5 +1,8 @@
 import {KitchenSinkExpandModes} from '@playkit-js-contrib/ui';
-import {ItemData} from '../components/navigation/navigation-item/NavigationItem';
+import {
+  ItemData,
+  RawItemData,
+} from '../components/navigation/navigation-item/NavigationItem';
 
 export function getConfigValue( // TODO: consider move to contrib
   value: any,
@@ -218,13 +221,13 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
 // items component will not contain too much logic in it and mostly will be a
 // dumb display-component (no offence - NavigationItem...)
 export const prepareVodData = (
-  receivedCuepoints: Array<ItemData>,
+  receivedCuepoints: Array<RawItemData>,
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
   itemOrder: typeof itemTypesOrder
 ): Array<ItemData> => {
-  const filledData = receivedCuepoints.map((cuepoint: ItemData) => {
+  const filledData = receivedCuepoints.map((cuepoint: RawItemData) => {
     return {
       ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
       liveTypeCuepoint: false,
@@ -369,10 +372,7 @@ export const prepareLiveData = (
   return result;
 };
 
-export const checkResponce = (
-  response: any,
-  type?: any
-): boolean => {
+export const checkResponce = (response: any, type?: any): boolean => {
   if (
     response &&
     response.result &&
@@ -445,5 +445,14 @@ export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
     prevMapKeys[0] !== nextMapaKeys[0] ||
     prevMapKeys[prevMapKeys.length - 1] !==
       nextMapaKeys[nextMapaKeys.length - 1]
+  );
+};
+
+export const findCuepointType = (
+  list: ItemData[],
+  cuePointType: itemTypes
+): boolean => {
+  return !!list.find(
+    (cuepoint: ItemData) => cuepoint.itemType === cuePointType
   );
 };

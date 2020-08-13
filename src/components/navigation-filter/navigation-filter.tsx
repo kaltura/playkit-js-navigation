@@ -14,6 +14,7 @@ export interface FilterProps {
   availableTabs: itemTypes[];
   totalResults: number | null;
   translates: Record<string, string>;
+  listDataContainCaptions: boolean;
 }
 
 export interface TabData {
@@ -98,13 +99,18 @@ export class NavigationFilter extends Component<FilterProps> {
   };
 
   private _getResultLabel = (): string => {
-    const {activeTab, translates, totalResults} = this.props;
+    const {
+      activeTab,
+      translates,
+      totalResults,
+      listDataContainCaptions,
+    } = this.props;
     // TODO: add locale (i18n)
     // TODO: look how player translates plural and single
     // @ts-ignore
     return `${totalResults} result${totalResults > 1 ? 's' : ''} in ${
       activeTab === itemTypes.All
-        ? 'all content'
+        ? `all content${listDataContainCaptions ? ' including captions' : ''}`
         : translates[activeTab].toLowerCase()
     }`;
   };

@@ -64,7 +64,10 @@ import {
 } from './pushNotification';
 import * as styles from './navigation-plugin.scss';
 import {Navigation} from './components/navigation';
-import {ItemData} from './components/navigation/navigation-item/NavigationItem';
+import {
+  ItemData,
+  RawItemData,
+} from './components/navigation/navigation-item/NavigationItem';
 
 const pluginName = `navigation`;
 
@@ -96,8 +99,8 @@ export class NavigationPlugin
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
   private _currentPosition = 0;
-  private _listData: Array<ItemData> = [];
   private _initialData: Array<ItemData> = [];
+  private _listData: Array<ItemData> = [];
   private _pendingData: Array<ItemData> = []; //_pendingData keeps live quepionts till player currentTime reach quepoint start-time
   private _captionAssetList: KalturaCaptionAsset[] = [];
   private _triggeredByKeyboard = false;
@@ -532,7 +535,6 @@ export class NavigationPlugin
       );
       requests.push(request);
     }
-
     if (this._itemsFilter[itemTypes.AnswerOnAir]) {
       // TODO: add AoA cuepointsType request
     }
@@ -547,11 +549,11 @@ export class NavigationPlugin
           throw new Error('ERROR! Wrong or empty data');
         }
         // extract all cuepoints from all requests
-        let receivedCuepoints: Array<ItemData> = [];
+        let receivedCuepoints: Array<RawItemData> = [];
         responses.forEach(response => {
           if (checkResponce(response, KalturaCuePointListResponse)) {
             receivedCuepoints = receivedCuepoints.concat(
-              response.result.objects as Array<ItemData>
+              response.result.objects as Array<RawItemData>
             );
           } else if (checkResponce(response, KalturaCaptionAssetListResponse)) {
             this._captionAssetList = response.result.objects;
@@ -565,18 +567,20 @@ export class NavigationPlugin
           this._itemsOrder
         );
         if (this._captionAssetList.length) {
-          const rawCaptionList = await getCaptions(
+          const rawCaptionList: any = await getCaptions(
             this._kalturaClient,
             this._captionAssetList[0], // HARDCODED! FOR DEMO WE TAKE 1st LANGUAGE FORM THE LIST
             this._captionAssetList
           );
-          const captionList = prepareVodData(
-            rawCaptionList as any,
-            this._configs.playerConfig.provider.ks,
-            this._configs.playerConfig.provider.env.serviceUrl,
-            this._corePlugin.config.forceChaptersThumb,
-            this._itemsOrder
-          );
+          const captionList = Array.isArray(rawCaptionList)
+            ? prepareVodData(
+                rawCaptionList as Array<RawItemData>,
+                this._configs.playerConfig.provider.ks,
+                this._configs.playerConfig.provider.env.serviceUrl,
+                this._corePlugin.config.forceChaptersThumb,
+                this._itemsOrder
+              )
+            : [];
           this._listData = [...this._initialData, ...captionList];
         } else {
           this._listData = [...this._initialData];

@@ -18,6 +18,7 @@ import {
   filterDataByActiveTab,
   addGroupData,
   itemTypesOrder,
+  findCuepointType,
 } from '../../utils';
 import {AutoscrollIcon} from './icons/AutoscrollIcon';
 import {ItemData} from './navigation-item/NavigationItem';
@@ -49,6 +50,7 @@ interface NavigationState {
   autoscroll: boolean;
   highlightedMap: Record<number, true>;
   convertedData: ItemData[];
+  listDataContainCaptions: boolean;
 }
 
 const HEADER_HEIGHT = 94; // TODO: calculate Header height in runtime (only once);
@@ -94,6 +96,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       highlightedMap: {},
       searchFilter: {...initialSearchFilter},
       convertedData: [],
+      listDataContainCaptions: false,
     };
   }
 
@@ -128,8 +131,12 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       this.props.data,
       searchQuery
     );
+    const listDataContainCaptions = searchQuery
+      ? findCuepointType(filteredBySearchQuery, itemTypes.Caption)
+      : findCuepointType(this.props.data, itemTypes.Caption);
     const stateData: NavigationState = {
       ...this.state,
+      listDataContainCaptions,
       convertedData: addGroupData(
         filterDataByActiveTab(filteredBySearchQuery, activeTab)
       ),
@@ -247,7 +254,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _renderHeader = () => {
     const {toggledWithEnter, kitchenSinkActive, hasError} = this.props;
-    const {searchFilter, convertedData} = this.state;
+    const {searchFilter, convertedData, listDataContainCaptions} = this.state;
 
     return (
       <div className={styles.header}>
@@ -276,6 +283,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             totalResults={
               searchFilter.searchQuery.length > 0 ? convertedData.length : null
             }
+            listDataContainCaptions={listDataContainCaptions}
           />
         )}
       </div>
@@ -301,7 +309,13 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderNavigation = () => {
-    const {searchFilter, widgetWidth} = this.state;
+    const {
+      searchFilter,
+      widgetWidth,
+      highlightedMap,
+      listDataContainCaptions,
+      convertedData,
+    } = this.state;
     const {hasError, retry} = this.props;
     if (hasError) {
       return <Error onRetryLoad={retry} />;
@@ -312,9 +326,10 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         autoScroll={this.state.autoscroll}
         onSeek={this._handleSeek}
         onScroll={this._scrollTo}
-        data={this.state.convertedData}
-        highlightedMap={this.state.highlightedMap}
+        data={convertedData}
+        highlightedMap={highlightedMap}
         showItemsIcons={searchFilter.activeTab === itemTypes.All}
+        listDataContainCaptions={listDataContainCaptions}
       />
     );
   };
