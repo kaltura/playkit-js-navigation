@@ -30,6 +30,7 @@ export class NavigationFilter extends Component<FilterProps> {
       [itemTypes.Chapter]: 'Chapters',
       [itemTypes.Slide]: 'Slides',
       [itemTypes.Hotspot]: 'Hotspots',
+      [itemTypes.Caption]: 'Captions',
     },
   };
 

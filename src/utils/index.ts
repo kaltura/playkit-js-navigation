@@ -218,39 +218,19 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
 // items component will not contain too much logic in it and mostly will be a
 // dumb display-component (no offence - NavigationItem...)
 export const prepareVodData = (
-  multirequestData: Array<any> | null,
+  receivedCuepoints: Array<ItemData>,
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
   itemOrder: typeof itemTypesOrder
 ): Array<ItemData> => {
-  if (!multirequestData || multirequestData.length === 0) {
-    // Wrong or empty data
-    throw new Error('ERROR ! multirequestData');
-    return [];
-  }
-  // extract all cuepoints from all requests
-  let receivedCuepoints: Array<ItemData> = [];
-  multirequestData.forEach(request => {
-    if (
-      request &&
-      request.result &&
-      request.result.objects &&
-      request.result.objects.length
-    ) {
-      receivedCuepoints = receivedCuepoints.concat(
-        request.result.objects as Array<ItemData>
-      );
-    }
-  });
-  // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
+  const filledData = receivedCuepoints.map((cuepoint: ItemData) => {
     return {
       ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
       liveTypeCuepoint: false,
     };
   });
-  return sortItems(receivedCuepoints, itemOrder);
+  return sortItems(filledData, itemOrder);
 };
 
 const clearGroupData = (data: Array<ItemData>) => {
@@ -387,6 +367,24 @@ export const prepareLiveData = (
   result.listData = sortItems(currentData.concat(result.listData), itemOrder);
   result.pendingData = filteredPendingData.concat(result.pendingData);
   return result;
+};
+
+export const checkResponce = (
+  response: any,
+  type?: any
+): boolean => {
+  if (
+    response &&
+    response.result &&
+    response.result.objects &&
+    response.result.objects.length
+  ) {
+    if (type) {
+      return response.result instanceof type;
+    }
+    return true;
+  }
+  return false;
 };
 
 export const convertLiveItemsStartTime = (

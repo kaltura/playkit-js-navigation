@@ -8,8 +8,8 @@ import {KalturaObjectMetadata} from 'kaltura-typescript-client/api/kaltura-objec
 import {KalturaCaptionAssetFilter} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetFilter';
 import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
 import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
-import {KalturaCaptionAssetListResponse} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetListResponse';
 import {Cuepoint, ObjectUtils} from '@playkit-js-contrib/common';
+import {itemTypes} from './utils';
 const {get} = ObjectUtils;
 
 export const HOUR = 3600; // seconds in 1 hour
@@ -121,7 +121,7 @@ export const TTML2Obj = (ttml: any): CaptionItem[] => {
 
 // KalturaClient uses custom CaptionAssetServeAction method,
 // once KalturaFileRequest is fixed remove custom CaptionAssetServeAction and use
-// CaptionAssetServeAction from "kaltura-typescript-client/api/types/CaptionAssetServeAction"
+// import CaptionAssetServeAction from "kaltura-typescript-client/api/types/CaptionAssetServeAction"
 interface CaptionAssetServeActionArgs extends KalturaRequestArgs {
   captionAssetId: string;
 }
@@ -178,13 +178,14 @@ const getCaptionData = (
   data: any,
   captionAsset: KalturaCaptionAsset,
   captionAssetList: KalturaCaptionAsset[]
-) => {
-  const rawCaptions = get(data, 'error.message', data);
-  if (rawCaptions) {
-    return parseCaptions(rawCaptions, captionAsset, captionAssetList);
-  } else {
-    // 'Captions data is empty', '_loadCaptionsAsset'
+): CaptionItem[] => {
+  if (!data || !captionAsset || !captionAssetList.length) {
+    return [];
   }
+  const rawCaptions = get(data, 'error.message', data);
+  return rawCaptions
+    ? parseCaptions(rawCaptions, captionAsset, captionAssetList)
+    : [];
 };
 
 export const makeCaptionAssetListRequest = (
@@ -201,21 +202,6 @@ export const makeCaptionAssetServeRequest = (
   captionAssetId: string
 ): CaptionAssetServeAction => {
   return new CaptionAssetServeAction({captionAssetId});
-};
-
-export const fetchCaptionsList = async (
-  kalturaClient: KalturaClient,
-  entryId: string
-) => {
-  // TODO: consider move CaptionAssetListAction to multirequest
-  const captionAssetListRequest = makeCaptionAssetListRequest(entryId);
-  let captionAssetListData: KalturaCaptionAssetListResponse | null = null;
-  try {
-    captionAssetListData = await kalturaClient.request(captionAssetListRequest);
-  } catch (err) {
-    // TODO: handle error;
-  }
-  return captionAssetListData?.objects ? captionAssetListData?.objects : [];
 };
 
 export const fetchCaptionAsset = async (
@@ -236,22 +222,22 @@ export const fetchCaptionAsset = async (
 
 export const getCaptions = async (
   kalturaClient: KalturaClient,
-  entryId: string
+  captionAsset: KalturaCaptionAsset, // TODO: implement
+  captionAssetList: KalturaCaptionAsset[]
 ) => {
-  const captionAssetList: KalturaCaptionAsset[] = await fetchCaptionsList(
-    kalturaClient,
-    entryId
-  );
-  const captionAsset: KalturaCaptionAsset = captionAssetList[0]; // HARDCODED!
   const captionContent = await fetchCaptionAsset(
     kalturaClient,
     captionAsset.id
   );
-  const captionData =
-    getCaptionData(captionContent, captionAsset, captionAssetList) || [];
+  const captionData = getCaptionData(
+    captionContent,
+    captionAsset,
+    captionAssetList
+  );
   return captionData.map((caption: CaptionItem) => ({
     ...caption,
     startTime: caption.startTime * 1000,
+    cuePointType: itemTypes.Caption,
   }));
 };
 

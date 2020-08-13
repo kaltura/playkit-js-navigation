@@ -28,11 +28,11 @@ import {KalturaCuePointFilter} from 'kaltura-typescript-client/api/types/Kaltura
 import {KalturaCuePointType} from 'kaltura-typescript-client/api/types/KalturaCuePointType';
 import {KalturaThumbCuePointSubType} from 'kaltura-typescript-client/api/types/KalturaThumbCuePointSubType';
 import {KalturaThumbCuePointFilter} from 'kaltura-typescript-client/api/types/KalturaThumbCuePointFilter';
-import {
-  KalturaClient,
-  KalturaMultiResponse,
-  KalturaRequest,
-} from 'kaltura-typescript-client';
+import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
+import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
+import {KalturaCaptionAssetListResponse} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetListResponse';
+import {KalturaCuePointListResponse} from 'kaltura-typescript-client/api/types/KalturaCuePointListResponse';
+import {KalturaClient, KalturaRequest} from 'kaltura-typescript-client';
 import {
   getConfigValue,
   prepareVodData,
@@ -46,8 +46,14 @@ import {
   sortItems,
   itemTypes,
   isEmptyObject,
+  checkResponce,
 } from './utils';
-import {getCaptions} from './captions';
+import {
+  getCaptions,
+  makeCaptionAssetListRequest,
+  // fetchCaptionAssetRequest,
+  // prepareCaptions,
+} from './captions';
 import {
   PushNotification,
   PushNotificationEventTypes,
@@ -91,7 +97,9 @@ export class NavigationPlugin
   private _kalturaClient = new KalturaClient();
   private _currentPosition = 0;
   private _listData: Array<ItemData> = [];
+  private _initialData: Array<ItemData> = [];
   private _pendingData: Array<ItemData> = []; //_pendingData keeps live quepionts till player currentTime reach quepoint start-time
+  private _captionAssetList: KalturaCaptionAsset[] = [];
   private _triggeredByKeyboard = false;
   private _isLoading = false;
   private _hasError = false;
@@ -145,6 +153,9 @@ export class NavigationPlugin
         this._corePlugin.player.Event.TIMED_METADATA,
         this._onTimedMetadataLoaded
       );
+    } else if (this._itemsFilter[itemTypes.Caption]) {
+      // TODO: handle language changes
+      // this._corePlugin.player.addEventListener(this._corePlugin.player.Event.TEXT_TRACK_CHANGED, e => console.log(e));
     }
   }
 
@@ -162,6 +173,9 @@ export class NavigationPlugin
         this._corePlugin.player.Event.TIMED_METADATA,
         this._onTimedMetadataLoaded
       );
+    } else if (this._itemsFilter[itemTypes.Caption]) {
+      // TODO: handle language changes
+      // this._corePlugin.player.removeEventListener(this._corePlugin.player.Event.TEXT_TRACK_CHANGED, e => console.log(e));
     }
   }
 
@@ -479,7 +493,6 @@ export class NavigationPlugin
   }
 
   private _fetchVodData = async () => {
-    let data: any = [];
     const requests: KalturaRequest<any>[] = [];
     let subTypesFilter = '';
     if (this._itemsFilter[itemTypes.Slide]) {
@@ -514,48 +527,71 @@ export class NavigationPlugin
       requests.push(request);
     }
     if (this._itemsFilter[itemTypes.Caption]) {
-      const captionList = await getCaptions(
-        this._kalturaClient,
+      const request: CaptionAssetListAction = makeCaptionAssetListRequest(
         this._corePlugin.player.config.sources.id
       );
-      data = [
-        {
-          result: {
-            objects: captionList.map(caption => ({
-              ...caption,
-              cuePointType: itemTypes.Caption
-            })),
-          },
-        },
-      ];
+      requests.push(request);
     }
 
-    // TODO: add AoA cuepointsType request
+    if (this._itemsFilter[itemTypes.AnswerOnAir]) {
+      // TODO: add AoA cuepointsType request
+    }
+
     if (requests.length) {
       this._isLoading = true;
       this._updateKitchenSink();
-      this._kalturaClient.multiRequest(requests).then(
-        (responses: any) => {
-          this._listData = prepareVodData(
-            [...data, ...responses],
+      try {
+        const responses = await this._kalturaClient.multiRequest(requests);
+        if (!responses || responses.length === 0) {
+          // Wrong or empty data
+          throw new Error('ERROR! Wrong or empty data');
+        }
+        // extract all cuepoints from all requests
+        let receivedCuepoints: Array<ItemData> = [];
+        responses.forEach(response => {
+          if (checkResponce(response, KalturaCuePointListResponse)) {
+            receivedCuepoints = receivedCuepoints.concat(
+              response.result.objects as Array<ItemData>
+            );
+          } else if (checkResponce(response, KalturaCaptionAssetListResponse)) {
+            this._captionAssetList = response.result.objects;
+          }
+        });
+        this._initialData = prepareVodData(
+          receivedCuepoints,
+          this._configs.playerConfig.provider.ks,
+          this._configs.playerConfig.provider.env.serviceUrl,
+          this._corePlugin.config.forceChaptersThumb,
+          this._itemsOrder
+        );
+        if (this._captionAssetList.length) {
+          const rawCaptionList = await getCaptions(
+            this._kalturaClient,
+            this._captionAssetList[0], // HARDCODED! FOR DEMO WE TAKE 1st LANGUAGE FORM THE LIST
+            this._captionAssetList
+          );
+          const captionList = prepareVodData(
+            rawCaptionList as any,
             this._configs.playerConfig.provider.ks,
             this._configs.playerConfig.provider.env.serviceUrl,
             this._corePlugin.config.forceChaptersThumb,
             this._itemsOrder
           );
-          this._isLoading = false;
-          this._updateKitchenSink();
-        },
-        error => {
-          this._hasError = true;
-          this._isLoading = false;
-          logger.error('failed retrieving navigation data', {
-            method: '_fetchVodData',
-            data: error,
-          });
-          this._updateKitchenSink();
+          this._listData = [...this._initialData, ...captionList];
+        } else {
+          this._listData = [...this._initialData];
         }
-      );
+        this._isLoading = false;
+        this._updateKitchenSink();
+      } catch (error) {
+        this._hasError = true;
+        this._isLoading = false;
+        logger.error('failed retrieving navigation data', {
+          method: '_fetchVodData',
+          data: error,
+        });
+        this._updateKitchenSink();
+      }
     }
   };
 }
