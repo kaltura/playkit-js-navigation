@@ -13,6 +13,7 @@ import {
   getContribLogger,
   KalturaLiveServices,
   debounce,
+  ObjectUtils,
 } from '@playkit-js-contrib/common';
 import {
   KitchenSinkContentRendererProps,
@@ -51,8 +52,7 @@ import {
 import {
   getCaptions,
   makeCaptionAssetListRequest,
-  // fetchCaptionAssetRequest,
-  // prepareCaptions,
+  findCaptionAsset,
 } from './captions';
 import {
   PushNotification,
@@ -68,6 +68,7 @@ import {
   ItemData,
   RawItemData,
 } from './components/navigation/navigation-item/NavigationItem';
+const {get} = ObjectUtils;
 
 const pluginName = `navigation`;
 
@@ -158,7 +159,10 @@ export class NavigationPlugin
       );
     } else if (this._itemsFilter[itemTypes.Caption]) {
       // TODO: handle language changes
-      // this._corePlugin.player.addEventListener(this._corePlugin.player.Event.TEXT_TRACK_CHANGED, e => console.log(e));
+      this._corePlugin.player.addEventListener(
+        this._corePlugin.player.Event.TEXT_TRACK_CHANGED,
+        this._handleLanguageChange
+      );
     }
   }
 
@@ -178,7 +182,10 @@ export class NavigationPlugin
       );
     } else if (this._itemsFilter[itemTypes.Caption]) {
       // TODO: handle language changes
-      // this._corePlugin.player.removeEventListener(this._corePlugin.player.Event.TEXT_TRACK_CHANGED, e => console.log(e));
+      this._corePlugin.player.removeEventListener(
+        this._corePlugin.player.Event.TEXT_TRACK_CHANGED,
+        this._handleLanguageChange
+      );
     }
   }
 
@@ -495,6 +502,67 @@ export class NavigationPlugin
     }
   }
 
+  private _handleLanguageChange = (
+    event: string | Record<string, any> = get(
+      this._configs,
+      'playerConfig.playback.textLanguage',
+      ''
+    )
+  ) => {
+    if (
+      ((typeof event === 'string'
+        ? event
+        : get(event, 'payload.selectedTextTrack._language', null)) === 'off' &&
+        this._captionAssetList.length) ||
+      !this._captionAssetList.length
+    ) {
+      // prevent loading of captions when user select "off" captions option
+      return;
+    }
+    this._isLoading = true;
+    this._updateKitchenSink();
+    this._loadCaptions(event)
+      .then((captionList: Array<ItemData>) => {
+        this._listData = [...this._initialData, ...captionList];
+        this._isLoading = false;
+        this._updateKitchenSink();
+      })
+      .catch(error => {
+        this._hasError = true;
+        this._isLoading = false;
+        logger.error('failed retrieving caption asset', {
+          method: '_handleLanguageChange',
+          data: error,
+        });
+        this._updateKitchenSink();
+      });
+  };
+
+  private _loadCaptions = async (event?: {}) => {
+    if (!this._captionAssetList.length) {
+      return [];
+    }
+    const captionAsset = findCaptionAsset(
+      (event || get(this._configs, 'playerConfig.playback.textLanguage', '')),
+      this._captionAssetList
+    );
+    const rawCaptionList: any = await getCaptions(
+      this._kalturaClient,
+      captionAsset,
+      this._captionAssetList
+    );
+    const captionList = Array.isArray(rawCaptionList)
+      ? prepareVodData(
+          rawCaptionList as Array<RawItemData>,
+          this._configs.playerConfig.provider.ks,
+          this._configs.playerConfig.provider.env.serviceUrl,
+          this._corePlugin.config.forceChaptersThumb,
+          this._itemsOrder
+        )
+      : [];
+    return captionList;
+  };
+
   private _fetchVodData = async () => {
     const requests: KalturaRequest<any>[] = [];
     let subTypesFilter = '';
@@ -567,20 +635,7 @@ export class NavigationPlugin
           this._itemsOrder
         );
         if (this._captionAssetList.length) {
-          const rawCaptionList: any = await getCaptions(
-            this._kalturaClient,
-            this._captionAssetList[0], // HARDCODED! FOR DEMO WE TAKE 1st LANGUAGE FORM THE LIST
-            this._captionAssetList
-          );
-          const captionList = Array.isArray(rawCaptionList)
-            ? prepareVodData(
-                rawCaptionList as Array<RawItemData>,
-                this._configs.playerConfig.provider.ks,
-                this._configs.playerConfig.provider.env.serviceUrl,
-                this._corePlugin.config.forceChaptersThumb,
-                this._itemsOrder
-              )
-            : [];
+          const captionList = await this._loadCaptions();
           this._listData = [...this._initialData, ...captionList];
         } else {
           this._listData = [...this._initialData];
