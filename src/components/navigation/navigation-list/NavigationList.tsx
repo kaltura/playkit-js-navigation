@@ -21,7 +21,7 @@ export class NavigationList extends Component<Props> {
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
       !isMapEqual(this.props.highlightedMap, nextProps.highlightedMap) ||
-      !isDataEqual(this.props.data, nextProps.data) ||
+      !isDataEqual(this.props.data, nextProps.data) || // ID is the same for different language captions 
       nextProps.autoScroll !== this.props.autoScroll ||
       nextProps.listDataContainCaptions !== this.props.listDataContainCaptions ||
       (nextProps.widgetWidth &&
