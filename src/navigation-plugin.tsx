@@ -158,7 +158,6 @@ export class NavigationPlugin
         this._onTimedMetadataLoaded
       );
     } else if (this._itemsFilter[itemTypes.Caption]) {
-      // TODO: handle language changes
       this._corePlugin.player.addEventListener(
         this._corePlugin.player.Event.TEXT_TRACK_CHANGED,
         this._handleLanguageChange
@@ -181,7 +180,6 @@ export class NavigationPlugin
         this._onTimedMetadataLoaded
       );
     } else if (this._itemsFilter[itemTypes.Caption]) {
-      // TODO: handle language changes
       this._corePlugin.player.removeEventListener(
         this._corePlugin.player.Event.TEXT_TRACK_CHANGED,
         this._handleLanguageChange
@@ -519,23 +517,24 @@ export class NavigationPlugin
       // prevent loading of captions when user select "off" captions option
       return;
     }
-    this._isLoading = true;
-    this._updateKitchenSink();
-    this._loadCaptions(event)
-      .then((captionList: Array<ItemData>) => {
-        this._listData = [...this._initialData, ...captionList];
-        this._isLoading = false;
-        this._updateKitchenSink();
-      })
-      .catch(error => {
-        this._hasError = true;
-        this._isLoading = false;
-        logger.error('failed retrieving caption asset', {
-          method: '_handleLanguageChange',
-          data: error,
-        });
-        this._updateKitchenSink();
-      });
+      // TODO: handle language change
+    // this._isLoading = true;
+    // this._updateKitchenSink();
+    // this._loadCaptions(event)
+    //   .then((captionList: Array<ItemData>) => {
+    //     this._listData = [...this._initialData, ...captionList];
+    //     this._isLoading = false;
+    //     this._updateKitchenSink();
+    //   })
+    //   .catch(error => {
+    //     this._hasError = true;
+    //     this._isLoading = false;
+    //     logger.error('failed retrieving caption asset', {
+    //       method: '_handleLanguageChange',
+    //       data: error,
+    //     });
+    //     this._updateKitchenSink();
+    //   });
   };
 
   private _loadCaptions = async (event?: {}) => {
