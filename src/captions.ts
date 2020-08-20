@@ -241,4 +241,48 @@ export const getCaptions = async (
   }));
 };
 
-// TODO consider to make custom CaptionAssetServeAction that handled error, prepared data  and return result
+export const filterCaptionAssetsByProperty = (
+  list: KalturaCaptionAsset[],
+  match: string | null,
+  property: string
+): KalturaCaptionAsset[] => {
+  return list.filter((kalturaCaptionAsset: KalturaCaptionAsset) => {
+    return get(kalturaCaptionAsset, property, null) === match;
+  });
+};
+
+export const findCaptionAsset = (
+  event: string | Record<string, any>,
+  captionAssetList: KalturaCaptionAsset[]
+): KalturaCaptionAsset => {
+  if (typeof event === 'string') {
+    const filteredByLang = filterCaptionAssetsByProperty(
+      captionAssetList,
+      event,
+      'languageCode'
+    );
+    // take first captions from caption-list when caption language is not defined
+    return filteredByLang[0] ? filteredByLang[0] : captionAssetList[0];
+  }
+  const filteredByLang = filterCaptionAssetsByProperty(
+    captionAssetList,
+    get(event, 'payload.selectedTextTrack._language', null),
+    'languageCode'
+  );
+  if (filteredByLang.length === 1) {
+    return filteredByLang[0];
+  }
+  const filteredByLabel = filterCaptionAssetsByProperty(
+    filteredByLang,
+    get(event, 'payload.selectedTextTrack._label', null),
+    'label'
+  );
+  if (filteredByLang.length === 1) {
+    return filteredByLabel[0];
+  }
+
+  const index: number = get(event, 'payload.selectedTextTrack._id', -1);
+  const filteredByIndex = captionAssetList[index];
+  // take first captions from caption-list when caption language is not defined
+  return filteredByIndex ? filteredByIndex : captionAssetList[0];
+};

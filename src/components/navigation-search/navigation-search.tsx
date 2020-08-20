@@ -1,5 +1,6 @@
 import {h, Component} from 'preact';
 import * as styles from './navigation-search.scss';
+import {debounce} from '@playkit-js-contrib/common';
 
 export interface SearchProps {
   onChange(value: string): void;
@@ -13,14 +14,20 @@ interface SearchState {
   focused: boolean;
 }
 
+const DEBOUNCE_TIMEOUT = 300;
+
 export class NavigationSearch extends Component<SearchProps, SearchState> {
-  state: SearchState = {
-    active: false,
-    focused: false,
-  };
   private _inputRef: null | HTMLInputElement = null;
   private _focusedByMouse = false;
-
+  private _debouncedOnChange: (value: string) => void;
+  constructor(props: SearchProps) {
+    super(props);
+    this._debouncedOnChange = debounce(props.onChange, DEBOUNCE_TIMEOUT);
+    this.state = {
+      active: false,
+      focused: false,
+    };
+  }
   shouldComponentUpdate(
     nextProps: Readonly<SearchProps>,
     nextState: Readonly<SearchState>
@@ -46,7 +53,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
     }
   }
   private _handleOnChange = (e: any) => {
-    this.props.onChange(e.target.value);
+    this._debouncedOnChange(e.target.value);
   };
 
   private _onClear = (event: MouseEvent) => {
