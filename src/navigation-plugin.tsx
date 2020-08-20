@@ -518,23 +518,23 @@ export class NavigationPlugin
       return;
     }
       // TODO: handle language change
-    // this._isLoading = true;
-    // this._updateKitchenSink();
-    // this._loadCaptions(event)
-    //   .then((captionList: Array<ItemData>) => {
-    //     this._listData = [...this._initialData, ...captionList];
-    //     this._isLoading = false;
-    //     this._updateKitchenSink();
-    //   })
-    //   .catch(error => {
-    //     this._hasError = true;
-    //     this._isLoading = false;
-    //     logger.error('failed retrieving caption asset', {
-    //       method: '_handleLanguageChange',
-    //       data: error,
-    //     });
-    //     this._updateKitchenSink();
-    //   });
+    this._isLoading = true;
+    this._updateKitchenSink();
+    this._loadCaptions(event)
+      .then((captionList: Array<ItemData>) => {
+        this._listData = [...this._initialData, ...captionList];
+        this._isLoading = false;
+        this._updateKitchenSink();
+      })
+      .catch(error => {
+        this._hasError = true;
+        this._isLoading = false;
+        logger.error('failed retrieving caption asset', {
+          method: '_handleLanguageChange',
+          data: error,
+        });
+        this._updateKitchenSink();
+      });
   };
 
   private _loadCaptions = async (event?: {}) => {

@@ -147,8 +147,7 @@ export class NavigationItem extends Component<Props, State> {
     );
   };
 
-  render(props: Props) {
-    const {selectedItem, showIcon, data} = this.props;
+  render({selectedItem, showIcon, data}: Props) {
     const {
       id,
       previewImage,
