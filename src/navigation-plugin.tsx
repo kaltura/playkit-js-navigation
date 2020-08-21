@@ -517,7 +517,6 @@ export class NavigationPlugin
       // prevent loading of captions when user select "off" captions option
       return;
     }
-      // TODO: handle language change
     this._isLoading = true;
     this._updateKitchenSink();
     this._loadCaptions(event)
