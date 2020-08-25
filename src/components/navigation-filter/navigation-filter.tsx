@@ -107,8 +107,9 @@ export class NavigationFilter extends Component<FilterProps> {
     } = this.props;
     // TODO: add locale (i18n)
     // TODO: look how player translates plural and single
-    // @ts-ignore
-    return `${totalResults} result${totalResults > 1 ? 's' : ''} in ${
+    return `${totalResults} result${
+      totalResults && totalResults > 1 ? 's' : ''
+    } in ${
       activeTab === itemTypes.All
         ? `all content${listDataContainCaptions ? ' including captions' : ''}`
         : translates[activeTab].toLowerCase()

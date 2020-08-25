@@ -8,9 +8,14 @@ import {KalturaObjectMetadata} from 'kaltura-typescript-client/api/kaltura-objec
 import {KalturaCaptionAssetFilter} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetFilter';
 import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
 import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
-import {Cuepoint, ObjectUtils} from '@playkit-js-contrib/common';
+import {Cuepoint, ObjectUtils, getContribLogger} from '@playkit-js-contrib/common';
 import {itemTypes} from './utils';
 const {get} = ObjectUtils;
+
+const logger = getContribLogger({
+  class: 'NavigationPlugin',
+  module: 'captions',
+});
 
 export const HOUR = 3600; // seconds in 1 hour
 
@@ -42,7 +47,6 @@ export const getCaptionsByFormat = (
   captionsFormat: string
 ): CaptionItem[] => {
   const format = captionsFormat.toLowerCase();
-  // const a = fromSrt(captions);
   switch (format) {
     case '1':
       return fromSrt(captions);
@@ -62,6 +66,10 @@ export const getCaptionsByFormat = (
 };
 
 const fromVtt = (data: string): CaptionItem[] => {
+  logger.debug('parsing VTT type of captions', {
+    method: 'fromVtt',
+    data: { data },
+  });
   let source: string | string[] = data.replace(/\r/g, '');
   const regex = /(\d+)?\n?(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3}).*\n/g;
   source = source.replace(/[\s\S]*.*(?=00:00:00.000)/, '');
@@ -80,6 +88,10 @@ const fromVtt = (data: string): CaptionItem[] => {
 };
 
 const fromSrt = (data: string): CaptionItem[] => {
+  logger.debug('parsing SRT type of captions', {
+    method: 'fromSrt',
+    data: { data },
+  });
   let source: string | string[] = data.replace(/\r/g, '');
   const regex = /(\d+)?\n?(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3}).*\n/g;
   source = source.split(regex);
@@ -97,6 +109,10 @@ const fromSrt = (data: string): CaptionItem[] => {
 };
 
 export const TTML2Obj = (ttml: any): CaptionItem[] => {
+  logger.debug('parsing TTML type of captions', {
+    method: 'TTML2Obj',
+    data: { ttml },
+  });
   const data: any = xml2js(ttml, {compact: true});
   // need only captions for showing. they located in tt.body.div.p.
   const chapters = data.tt.body.div.p;
@@ -169,7 +185,11 @@ const parseCaptions = (
     }
     return getCaptionsByFormat(data, captionFormat);
   } catch (err) {
-    // TODO: "Failed to parse the caption file", "_parseCaptions"
+    logger.error('Failed to parse the caption file', {
+      method: 'parseCaptions',
+      data: err,
+    });
+    throw new Error("Failed to parse the caption file");
   }
   return [];
 };
@@ -225,6 +245,10 @@ export const getCaptions = async (
   captionAsset: KalturaCaptionAsset, // TODO: implement
   captionAssetList: KalturaCaptionAsset[]
 ) => {
+  logger.debug('trying to fetch caption asset', {
+    method: 'getCaptions',
+    data: captionAsset,
+  });
   const captionContent = await fetchCaptionAsset(
     kalturaClient,
     captionAsset.id
@@ -234,6 +258,10 @@ export const getCaptions = async (
     captionAsset,
     captionAssetList
   );
+  logger.debug('caption data parsed', {
+    method: 'getCaptions',
+    data: captionData,
+  });
   return captionData.map((caption: CaptionItem) => ({
     ...caption,
     startTime: caption.startTime * 1000,

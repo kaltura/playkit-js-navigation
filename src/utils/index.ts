@@ -1,8 +1,10 @@
 import {KitchenSinkExpandModes} from '@playkit-js-contrib/ui';
+import {ObjectUtils} from '@playkit-js-contrib/common';
 import {
   ItemData,
   RawItemData,
 } from '../components/navigation/navigation-item/NavigationItem';
+const {get} = ObjectUtils;
 
 export function getConfigValue( // TODO: consider move to contrib
   value: any,
@@ -22,6 +24,7 @@ export enum groupTypes {
   last = 'last',
 }
 
+// TODO: make the types plurals
 export enum itemTypes {
   All = 'All',
   AnswerOnAir = 'AnswerOnAir',
@@ -373,12 +376,7 @@ export const prepareLiveData = (
 };
 
 export const checkResponce = (response: any, type?: any): boolean => {
-  if (
-    response &&
-    response.result &&
-    response.result.objects &&
-    response.result.objects.length
-  ) {
+  if (get(response, 'result.objects', [])) {
     if (type) {
       return response.result instanceof type;
     }

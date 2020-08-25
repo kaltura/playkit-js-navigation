@@ -14,6 +14,7 @@ interface SearchState {
   focused: boolean;
 }
 
+// TODO: UX expert have to finetune this value
 const DEBOUNCE_TIMEOUT = 300;
 
 export class NavigationSearch extends Component<SearchProps, SearchState> {
