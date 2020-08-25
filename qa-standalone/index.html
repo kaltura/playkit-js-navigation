@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>navigation - Player V7</title>
 
-        <script src="https://qa-apache-php7.dev.kaltura.com/p/6222/embedPlaykitJs/uiconf_id/15225868/versions/kaltura-ovp-player=0.54.1-canary-5-6c76aef.0"></script>
+        <script src="https://qa-apache-php7.dev.kaltura.com/p/6222/embedPlaykitJs/uiconf_id/15225868/versions/kaltura-ovp-player=0.55.0"></script>
         <script src="navigation.js"></script>
         <script src="../latest.js"></script>
         <script>
@@ -299,6 +299,8 @@
             var query = {};
             try {
                 var cleanedString = queryString.slice(1).replace(/%22/g, '"');
+                cleanedString = cleanedString.replace(/%7B/g, '{');
+                cleanedString = cleanedString.replace(/%7D/g, '}');
                 if (cleanedString) {
                     query = JSON.parse(cleanedString);
                 }

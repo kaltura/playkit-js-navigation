@@ -3,7 +3,19 @@ import * as styles from './NavigationItem.scss';
 import {groupTypes, itemTypes} from '../../../utils';
 import {IconsFactory} from '../icons/IconsFactory';
 
-export interface ItemData {
+export interface RawItemData {
+  id: string;
+  cuePointType: itemTypes;
+  startTime?: number;
+  createdAt?: number;
+  text?: string;
+  description?: string;
+  title?: string;
+  assetId?: string;
+  subType?: itemTypes;
+}
+
+export interface ItemData extends RawItemData {
   id: string;
   startTime: number;
   previewImage: string;
@@ -135,8 +147,7 @@ export class NavigationItem extends Component<Props, State> {
     );
   };
 
-  render(props: Props) {
-    const {selectedItem, showIcon, data} = this.props;
+  render({selectedItem, showIcon, data}: Props) {
     const {
       id,
       previewImage,

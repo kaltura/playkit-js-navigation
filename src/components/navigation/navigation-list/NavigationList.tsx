@@ -2,6 +2,7 @@ import {Component, h} from 'preact';
 import * as styles from './NavigationList.scss';
 import {NavigationItem, ItemData} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';
+import {EmptyState} from '../icons/EmptyState';
 import {isDataEqual, isMapEqual} from '../../../utils';
 
 export interface Props {
@@ -12,6 +13,7 @@ export interface Props {
   widgetWidth: number;
   highlightedMap: Record<string, true>;
   showItemsIcons: boolean;
+  listDataContainCaptions: boolean;
 }
 
 export class NavigationList extends Component<Props> {
@@ -21,6 +23,7 @@ export class NavigationList extends Component<Props> {
       !isMapEqual(this.props.highlightedMap, nextProps.highlightedMap) ||
       !isDataEqual(this.props.data, nextProps.data) ||
       nextProps.autoScroll !== this.props.autoScroll ||
+      nextProps.listDataContainCaptions !== this.props.listDataContainCaptions ||
       (nextProps.widgetWidth &&
         nextProps.widgetWidth !== this.props.widgetWidth)
     ) {
@@ -43,9 +46,16 @@ export class NavigationList extends Component<Props> {
     }
   };
 
-  render({data, widgetWidth, showItemsIcons, onSeek, highlightedMap}: Props) {
+  render({
+    data,
+    widgetWidth,
+    showItemsIcons,
+    onSeek,
+    highlightedMap,
+    listDataContainCaptions,
+  }: Props) {
     if (!data.length) {
-      return <EmptyList />;
+      return listDataContainCaptions ? <EmptyState /> : <EmptyList />;
     }
     return (
       <div className={styles.navigationList}>

@@ -1,5 +1,10 @@
 import {KitchenSinkExpandModes} from '@playkit-js-contrib/ui';
-import {ItemData} from '../components/navigation/navigation-item/NavigationItem';
+import {ObjectUtils} from '@playkit-js-contrib/common';
+import {
+  ItemData,
+  RawItemData,
+} from '../components/navigation/navigation-item/NavigationItem';
+const {get} = ObjectUtils;
 
 export function getConfigValue( // TODO: consider move to contrib
   value: any,
@@ -19,12 +24,14 @@ export enum groupTypes {
   last = 'last',
 }
 
+// TODO: make the types plurals
 export enum itemTypes {
   All = 'All',
   AnswerOnAir = 'AnswerOnAir',
   Chapter = 'Chapter',
   Slide = 'Slide',
   Hotspot = 'Hotspot',
+  Caption = 'Caption',
 }
 
 export const itemTypesOrder: Record<string, number> = {
@@ -33,6 +40,7 @@ export const itemTypesOrder: Record<string, number> = {
   [itemTypes.Slide]: 2,
   [itemTypes.Hotspot]: 3,
   [itemTypes.AnswerOnAir]: 4,
+  [itemTypes.Caption]: 5,
 };
 
 export enum cuePointTypes {
@@ -89,7 +97,7 @@ export const fillData = (
   originalItem: any,
   ks: string,
   serviceUrl: string,
-  forceChaptersThumb: boolean,
+  forceChaptersThumb: boolean = false,
   isLiveEntry: boolean = false
 ) => {
   const item: any = {...originalItem};
@@ -101,6 +109,8 @@ export const fillData = (
     item.displayTime = convertTime(item.startTime);
   }
   switch (item.cuePointType) {
+    case itemTypes.Caption:
+      item.itemType = itemTypes.Caption;
     case cuePointTypes.Annotation: // hotspot and AoA
       item.displayTitle = decodeString(item.text);
       switch (item.tags) {
@@ -135,7 +145,11 @@ export const fillData = (
       }
       break;
   }
-  if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS) {
+  if (
+    item.displayTitle &&
+    item.displayTitle.length > MAX_CHARACTERS &&
+    item.itemType !== itemTypes.Caption
+  ) {
     let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
     item.shorthandTitle = elipsisString + '... ';
@@ -210,39 +224,19 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
 // items component will not contain too much logic in it and mostly will be a
 // dumb display-component (no offence - NavigationItem...)
 export const prepareVodData = (
-  multirequestData: Array<any> | null,
+  receivedCuepoints: Array<RawItemData>,
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
   itemOrder: typeof itemTypesOrder
 ): Array<ItemData> => {
-  if (!multirequestData || multirequestData.length === 0) {
-    // Wrong or empty data
-    throw new Error('ERROR ! multirequestData');
-    return [];
-  }
-  // extract all cuepoints from all requests
-  let receivedCuepoints: Array<ItemData> = [];
-  multirequestData.forEach(request => {
-    if (
-      request &&
-      request.result &&
-      request.result.objects &&
-      request.result.objects.length
-    ) {
-      receivedCuepoints = receivedCuepoints.concat(
-        request.result.objects as Array<ItemData>
-      );
-    }
-  });
-  // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
+  const filledData = receivedCuepoints.map((cuepoint: RawItemData) => {
     return {
       ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
       liveTypeCuepoint: false,
     };
   });
-  return sortItems(receivedCuepoints, itemOrder);
+  return sortItems(filledData, itemOrder);
 };
 
 const clearGroupData = (data: Array<ItemData>) => {
@@ -260,7 +254,9 @@ export const filterDataBySearchQuery = (
     return [];
   }
   if (!searchQuery) {
-    return data;
+    return data.filter((item: ItemData) => {
+      return item.itemType !== itemTypes.Caption;
+    });
   }
   const lowerQuery = searchQuery.toLowerCase();
   const filteredData = data.filter((item: ItemData) => {
@@ -379,6 +375,16 @@ export const prepareLiveData = (
   return result;
 };
 
+export const checkResponce = (response: any, type?: any): boolean => {
+  if (get(response, 'result.objects', [])) {
+    if (type) {
+      return response.result instanceof type;
+    }
+    return true;
+  }
+  return false;
+};
+
 export const convertLiveItemsStartTime = (
   data: Array<ItemData>,
   liveStartTime: number
@@ -424,7 +430,12 @@ export const isDataEqual = (
     (prevData.length &&
       nextData.length &&
       (prevData[0].id !== nextData[0].id ||
-        prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id))
+        prevData[prevData.length - 1].id !==
+          nextData[nextData.length - 1].id)) ||
+    (prevData[0].text &&
+      nextData[0].text &&
+      prevData[0].text !== nextData[0].text) ||
+    prevData[prevData.length - 1].text !== nextData[nextData.length - 1].text
   );
 };
 
@@ -435,7 +446,16 @@ export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
   return !(
     prevMapKeys.length !== nextMapaKeys.length ||
     prevMapKeys[0] !== nextMapaKeys[0] ||
-      prevMapKeys[prevMapKeys.length - 1] !==
-        nextMapaKeys[nextMapaKeys.length - 1]
+    prevMapKeys[prevMapKeys.length - 1] !==
+      nextMapaKeys[nextMapaKeys.length - 1]
+  );
+};
+
+export const findCuepointType = (
+  list: ItemData[],
+  cuePointType: itemTypes
+): boolean => {
+  return !!list.find(
+    (cuepoint: ItemData) => cuepoint.itemType === cuePointType
   );
 };

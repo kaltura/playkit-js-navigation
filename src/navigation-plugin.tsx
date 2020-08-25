@@ -13,6 +13,7 @@ import {
   getContribLogger,
   KalturaLiveServices,
   debounce,
+  ObjectUtils,
 } from '@playkit-js-contrib/common';
 import {
   KitchenSinkContentRendererProps,
@@ -28,11 +29,11 @@ import {KalturaCuePointFilter} from 'kaltura-typescript-client/api/types/Kaltura
 import {KalturaCuePointType} from 'kaltura-typescript-client/api/types/KalturaCuePointType';
 import {KalturaThumbCuePointSubType} from 'kaltura-typescript-client/api/types/KalturaThumbCuePointSubType';
 import {KalturaThumbCuePointFilter} from 'kaltura-typescript-client/api/types/KalturaThumbCuePointFilter';
-import {
-  KalturaClient,
-  KalturaMultiResponse,
-  KalturaRequest,
-} from 'kaltura-typescript-client';
+import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
+import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
+import {KalturaCaptionAssetListResponse} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetListResponse';
+import {KalturaCuePointListResponse} from 'kaltura-typescript-client/api/types/KalturaCuePointListResponse';
+import {KalturaClient, KalturaRequest} from 'kaltura-typescript-client';
 import {
   getConfigValue,
   prepareVodData,
@@ -46,7 +47,13 @@ import {
   sortItems,
   itemTypes,
   isEmptyObject,
+  checkResponce,
 } from './utils';
+import {
+  getCaptions,
+  makeCaptionAssetListRequest,
+  findCaptionAsset,
+} from './captions';
 import {
   PushNotification,
   PushNotificationEventTypes,
@@ -57,7 +64,11 @@ import {
 } from './pushNotification';
 import * as styles from './navigation-plugin.scss';
 import {Navigation} from './components/navigation';
-import {ItemData} from './components/navigation/navigation-item/NavigationItem';
+import {
+  ItemData,
+  RawItemData,
+} from './components/navigation/navigation-item/NavigationItem';
+const {get} = ObjectUtils;
 
 const pluginName = `navigation`;
 
@@ -89,8 +100,10 @@ export class NavigationPlugin
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
   private _currentPosition = 0;
+  private _initialData: Array<ItemData> = [];
   private _listData: Array<ItemData> = [];
   private _pendingData: Array<ItemData> = []; //_pendingData keeps live quepionts till player currentTime reach quepoint start-time
+  private _captionAssetList: KalturaCaptionAsset[] = [];
   private _triggeredByKeyboard = false;
   private _isLoading = false;
   private _hasError = false;
@@ -144,6 +157,11 @@ export class NavigationPlugin
         this._corePlugin.player.Event.TIMED_METADATA,
         this._onTimedMetadataLoaded
       );
+    } else if (this._itemsFilter[itemTypes.Caption]) {
+      this._corePlugin.player.addEventListener(
+        this._corePlugin.player.Event.TEXT_TRACK_CHANGED,
+        this._handleLanguageChange
+      );
     }
   }
 
@@ -160,6 +178,11 @@ export class NavigationPlugin
       this._corePlugin.player.removeEventListener(
         this._corePlugin.player.Event.TIMED_METADATA,
         this._onTimedMetadataLoaded
+      );
+    } else if (this._itemsFilter[itemTypes.Caption]) {
+      this._corePlugin.player.removeEventListener(
+        this._corePlugin.player.Event.TEXT_TRACK_CHANGED,
+        this._handleLanguageChange
       );
     }
   }
@@ -477,10 +500,69 @@ export class NavigationPlugin
     }
   }
 
-  private _fetchVodData = () => {
+  private _handleLanguageChange = (
+    event: string | Record<string, any> = get(
+      this._configs,
+      'playerConfig.playback.textLanguage',
+      ''
+    )
+  ) => {
+    if (
+      ((typeof event === 'string'
+        ? event
+        : get(event, 'payload.selectedTextTrack._language', null)) === 'off' &&
+        this._captionAssetList.length) ||
+      !this._captionAssetList.length
+    ) {
+      // prevent loading of captions when user select "off" captions option
+      return;
+    }
+    this._isLoading = true;
+    this._updateKitchenSink();
+    this._loadCaptions(event)
+      .then((captionList: Array<ItemData>) => {
+        this._listData = [...this._initialData, ...captionList];
+        this._isLoading = false;
+        this._updateKitchenSink();
+      })
+      .catch(error => {
+        this._hasError = true;
+        this._isLoading = false;
+        logger.error('failed retrieving caption asset', {
+          method: '_handleLanguageChange',
+          data: error,
+        });
+        this._updateKitchenSink();
+      });
+  };
+
+  private _loadCaptions = async (event?: {}) => {
+    if (!this._captionAssetList.length) {
+      return [];
+    }
+    const captionAsset = findCaptionAsset(
+      (event || get(this._configs, 'playerConfig.playback.textLanguage', '')),
+      this._captionAssetList
+    );
+    const rawCaptionList: any = await getCaptions(
+      this._kalturaClient,
+      captionAsset,
+      this._captionAssetList
+    );
+    const captionList = Array.isArray(rawCaptionList)
+      ? prepareVodData(
+          rawCaptionList as Array<RawItemData>,
+          this._configs.playerConfig.provider.ks,
+          this._configs.playerConfig.provider.env.serviceUrl,
+          this._corePlugin.config.forceChaptersThumb,
+          this._itemsOrder
+        )
+      : [];
+    return captionList;
+  };
+
+  private _fetchVodData = async () => {
     const requests: KalturaRequest<any>[] = [];
-    let chaptersAndSlidesRequest: CuePointListAction | null = null;
-    let hotspotsRequest: CuePointListAction | null = null;
     let subTypesFilter = '';
     if (this._itemsFilter[itemTypes.Slide]) {
       subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.slide},`;
@@ -489,56 +571,84 @@ export class NavigationPlugin
       subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.chapter},`;
     }
     if (subTypesFilter) {
-      chaptersAndSlidesRequest = new CuePointListAction({
+      const request: CuePointListAction = new CuePointListAction({
         filter: new KalturaThumbCuePointFilter({
           entryIdEqual: this._corePlugin.player.config.sources.id,
           cuePointTypeEqual: KalturaCuePointType.thumb,
           subTypeIn: subTypesFilter,
         }),
       });
-      chaptersAndSlidesRequest.setRequestOptions({
+      request.setRequestOptions({
         acceptedTypes: [KalturaThumbCuePoint],
       });
-      requests.push(chaptersAndSlidesRequest);
+      requests.push(request);
     }
     if (this._itemsFilter[itemTypes.Hotspot]) {
-      hotspotsRequest = new CuePointListAction({
+      const request: CuePointListAction = new CuePointListAction({
         filter: new KalturaCuePointFilter({
           entryIdEqual: this._corePlugin.player.config.sources.id,
           cuePointTypeEqual: KalturaCuePointType.annotation,
         }),
       });
-      hotspotsRequest.setRequestOptions({
+      request.setRequestOptions({
         acceptedTypes: [KalturaAnnotation],
       });
-      requests.push(hotspotsRequest);
+      requests.push(request);
     }
-    // TODO: add AoA cuepointsType request
+    if (this._itemsFilter[itemTypes.Caption]) {
+      const request: CaptionAssetListAction = makeCaptionAssetListRequest(
+        this._corePlugin.player.config.sources.id
+      );
+      requests.push(request);
+    }
+    if (this._itemsFilter[itemTypes.AnswerOnAir]) {
+      // TODO: add AoA cuepointsType request
+    }
+
     if (requests.length) {
       this._isLoading = true;
       this._updateKitchenSink();
-      this._kalturaClient.multiRequest(requests).then(
-        (responses: KalturaMultiResponse | null) => {
-          this._listData = prepareVodData(
-            responses,
-            this._configs.playerConfig.provider.ks,
-            this._configs.playerConfig.provider.env.serviceUrl,
-            this._corePlugin.config.forceChaptersThumb,
-            this._itemsOrder
-          );
-          this._isLoading = false;
-          this._updateKitchenSink();
-        },
-        error => {
-          this._hasError = true;
-          this._isLoading = false;
-          logger.error('failed retrieving navigation data', {
-            method: '_fetchVodData',
-            data: error,
-          });
-          this._updateKitchenSink();
+      try {
+        const responses = await this._kalturaClient.multiRequest(requests);
+        if (!responses || responses.length === 0) {
+          // Wrong or empty data
+          throw new Error('ERROR! Wrong or empty data');
         }
-      );
+        // extract all cuepoints from all requests
+        let receivedCuepoints: Array<RawItemData> = [];
+        responses.forEach(response => {
+          if (checkResponce(response, KalturaCuePointListResponse)) {
+            receivedCuepoints = receivedCuepoints.concat(
+              response.result.objects as Array<RawItemData>
+            );
+          } else if (checkResponce(response, KalturaCaptionAssetListResponse)) {
+            this._captionAssetList = response.result.objects;
+          }
+        });
+        this._initialData = prepareVodData(
+          receivedCuepoints,
+          this._configs.playerConfig.provider.ks,
+          this._configs.playerConfig.provider.env.serviceUrl,
+          this._corePlugin.config.forceChaptersThumb,
+          this._itemsOrder
+        );
+        if (this._captionAssetList.length) {
+          const captionList = await this._loadCaptions();
+          this._listData = [...this._initialData, ...captionList];
+        } else {
+          this._listData = [...this._initialData];
+        }
+        this._isLoading = false;
+        this._updateKitchenSink();
+      } catch (error) {
+        this._hasError = true;
+        this._isLoading = false;
+        logger.error('failed retrieving navigation data', {
+          method: '_fetchVodData',
+          data: error,
+        });
+        this._updateKitchenSink();
+      }
     }
   };
 }
