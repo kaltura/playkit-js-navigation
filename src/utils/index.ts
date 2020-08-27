@@ -430,12 +430,14 @@ export const isDataEqual = (
     (prevData.length &&
       nextData.length &&
       (prevData[0].id !== nextData[0].id ||
-        prevData[prevData.length - 1].id !==
-          nextData[nextData.length - 1].id)) ||
-    (prevData[0].text &&
-      nextData[0].text &&
-      prevData[0].text !== nextData[0].text) ||
-    prevData[prevData.length - 1].text !== nextData[nextData.length - 1].text
+        prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id ||
+        (prevData[0].text &&
+          nextData[0].text &&
+          prevData[0].text !== nextData[0].text) ||
+        (prevData[prevData.length - 1].text &&
+          nextData[nextData.length - 1].text &&
+          prevData[prevData.length - 1].text !==
+            nextData[nextData.length - 1].text)))
   );
 };
 
