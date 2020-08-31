@@ -425,18 +425,32 @@ export const isDataEqual = (
   prevData: ItemData[],
   nextData: ItemData[]
 ): boolean => {
-  return !(
-    prevData.length !== nextData.length ||
-    (prevData.length &&
-      nextData.length &&
-      (prevData[0].id !== nextData[0].id ||
-        prevData[prevData.length - 1].id !==
-          nextData[nextData.length - 1].id)) ||
-    (prevData[0].text &&
+  if (prevData.length !== nextData.length) {
+    return false;
+  }
+  if (prevData.length && nextData.length) {
+    if (prevData[0].id !== nextData[0].id) {
+      return false;
+    }
+    if (prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id) {
+      return false;
+    }
+    if (
+      prevData[0].text &&
       nextData[0].text &&
-      prevData[0].text !== nextData[0].text) ||
-    prevData[prevData.length - 1].text !== nextData[nextData.length - 1].text
-  );
+      prevData[0].text !== nextData[0].text
+    ) {
+      return false;
+    }
+    if (
+      prevData[prevData.length - 1].text &&
+      nextData[nextData.length - 1].text &&
+      prevData[prevData.length - 1].text !== nextData[nextData.length - 1].text
+    ) {
+      return false;
+    }
+  }
+  return true;
 };
 
 // TODO: consider move to contrib
