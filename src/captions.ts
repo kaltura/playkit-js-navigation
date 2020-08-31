@@ -8,7 +8,11 @@ import {KalturaObjectMetadata} from 'kaltura-typescript-client/api/kaltura-objec
 import {KalturaCaptionAssetFilter} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetFilter';
 import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
 import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
-import {Cuepoint, ObjectUtils, getContribLogger} from '@playkit-js-contrib/common';
+import {
+  Cuepoint,
+  ObjectUtils,
+  getContribLogger,
+} from '@playkit-js-contrib/common';
 import {itemTypes} from './utils';
 const {get} = ObjectUtils;
 
@@ -32,7 +36,7 @@ export const toSeconds = (val: any, vtt = false): number => {
   if (parts === null) {
     return 0;
   }
-  for (var i = 1; i < 5; i++) {
+  for (let i = 1; i < 5; i++) {
     parts[i] = parseInt(parts[i], 10);
     if (isNaN(parts[i])) {
       parts[i] = 0;
@@ -40,6 +44,76 @@ export const toSeconds = (val: any, vtt = false): number => {
   }
   // hours + minutes + seconds + ms
   return parts[1] * HOUR + parts[2] * 60 + parts[3] + parts[4] / 1000;
+};
+
+const fromVtt = (data: string): CaptionItem[] => {
+  logger.debug('parsing VTT type of captions', {
+    method: 'fromVtt',
+    data: {data},
+  });
+  let source: string | string[] = data.replace(/\r/g, '');
+  const regex = /(\d+)?\n?(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3}).*\n/g;
+  source = source.replace(/[\s\S]*.*(?=00:00:00.000)/, '');
+  source = source.split(regex);
+  source.shift();
+  const result = [];
+  for (let i = 0; i < source.length; i += 4) {
+    result.push({
+      id: result.length + 1,
+      startTime: toSeconds(source[i + 1].trim(), true),
+      endTime: toSeconds(source[i + 2].trim(), true),
+      text: source[i + 3].trim(),
+    });
+  }
+  return result;
+};
+
+const fromSrt = (data: string): CaptionItem[] => {
+  logger.debug('parsing SRT type of captions', {
+    method: 'fromSrt',
+    data: {data},
+  });
+  let source: string | string[] = data.replace(/\r/g, '');
+  const regex = /(\d+)?\n?(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3}).*\n/g;
+  source = source.split(regex);
+  source.shift();
+  const result = [];
+  for (let i = 0; i < source.length; i += 4) {
+    result.push({
+      id: result.length + 1,
+      startTime: toSeconds(source[i + 1].trim()),
+      endTime: toSeconds(source[i + 2].trim()),
+      text: source[i + 3].trim(),
+    });
+  }
+  return result;
+};
+
+export const TTML2Obj = (ttml: any): CaptionItem[] => {
+  logger.debug('parsing TTML type of captions', {
+    method: 'TTML2Obj',
+    data: {ttml},
+  });
+  const data: any = xml2js(ttml, {compact: true});
+  // need only captions for showing. they located in tt.body.div.p.
+  const chapters = data.tt.body.div.p;
+  const correctData = chapters.map((item: any, index: number) => {
+    const {begin, end, ...otherAttributes} = item._attributes;
+    // convert time to 00:00:00.000 to 00:00:00,000
+    const endTime = end.replace(/\./g, ',');
+    const startTime = begin.replace(/\./g, ',');
+    const prepareObj = {
+      id: index + 1,
+      endTime: toSeconds(endTime),
+      startTime: toSeconds(startTime),
+      text:
+        (Array.isArray(item._text) ? item._text.join(' ') : item._text) || '',
+      // all non-required
+      // otherAttributes: otherAttributes
+    };
+    return prepareObj;
+  });
+  return correctData;
 };
 
 export const getCaptionsByFormat = (
@@ -63,76 +137,6 @@ export const getCaptionsByFormat = (
     default:
       return [];
   }
-};
-
-const fromVtt = (data: string): CaptionItem[] => {
-  logger.debug('parsing VTT type of captions', {
-    method: 'fromVtt',
-    data: { data },
-  });
-  let source: string | string[] = data.replace(/\r/g, '');
-  const regex = /(\d+)?\n?(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3}).*\n/g;
-  source = source.replace(/[\s\S]*.*(?=00:00:00.000)/, '');
-  source = source.split(regex);
-  source.shift();
-  const result = [];
-  for (let i = 0; i < source.length; i += 4) {
-    result.push({
-      id: result.length + 1,
-      startTime: toSeconds(source[i + 1].trim(), true),
-      endTime: toSeconds(source[i + 2].trim(), true),
-      text: source[i + 3].trim(),
-    });
-  }
-  return result;
-};
-
-const fromSrt = (data: string): CaptionItem[] => {
-  logger.debug('parsing SRT type of captions', {
-    method: 'fromSrt',
-    data: { data },
-  });
-  let source: string | string[] = data.replace(/\r/g, '');
-  const regex = /(\d+)?\n?(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3}).*\n/g;
-  source = source.split(regex);
-  source.shift();
-  const result = [];
-  for (let i = 0; i < source.length; i += 4) {
-    result.push({
-      id: result.length + 1,
-      startTime: toSeconds(source[i + 1].trim()),
-      endTime: toSeconds(source[i + 2].trim()),
-      text: source[i + 3].trim(),
-    });
-  }
-  return result;
-};
-
-export const TTML2Obj = (ttml: any): CaptionItem[] => {
-  logger.debug('parsing TTML type of captions', {
-    method: 'TTML2Obj',
-    data: { ttml },
-  });
-  const data: any = xml2js(ttml, {compact: true});
-  // need only captions for showing. they located in tt.body.div.p.
-  const chapters = data.tt.body.div.p;
-  const correctData = chapters.map((item: any, index: number) => {
-    const {begin, end, ...otherAttributes} = item._attributes;
-    // convert time to 00:00:00.000 to 00:00:00,000
-    const endTime = end.replace(/\./g, ',');
-    const startTime = begin.replace(/\./g, ',');
-    const prepareObj = {
-      id: index + 1,
-      endTime: toSeconds(endTime),
-      startTime: toSeconds(startTime),
-      text:
-        (Array.isArray(item._text) ? item._text.join(' ') : item._text) || '',
-      // all non-required
-      // otherAttributes: otherAttributes
-    };
-    return prepareObj;
-  });
-  return correctData;
 };
 
 // KalturaClient uses custom CaptionAssetServeAction method,
@@ -189,7 +193,7 @@ const parseCaptions = (
       method: 'parseCaptions',
       data: err,
     });
-    throw new Error("Failed to parse the caption file");
+    throw new Error('Failed to parse the caption file');
   }
   return [];
 };

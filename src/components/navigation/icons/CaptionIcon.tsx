@@ -1,10 +1,10 @@
 import {h} from 'preact';
 
-export interface props {
+export interface Props {
   color?: string;
 }
 
-export const CaptionIcon = (props: props) => {
+export const CaptionIcon = (props: Props) => {
   return (
     <svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1">
       <g

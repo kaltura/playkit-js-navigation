@@ -17,13 +17,14 @@ export interface Props {
 }
 
 export class NavigationList extends Component<Props> {
-  private _selectedElementY: number = 0;
+  private _selectedElementY = 0;
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
       !isMapEqual(this.props.highlightedMap, nextProps.highlightedMap) ||
       !isDataEqual(this.props.data, nextProps.data) ||
       nextProps.autoScroll !== this.props.autoScroll ||
-      nextProps.listDataContainCaptions !== this.props.listDataContainCaptions ||
+      nextProps.listDataContainCaptions !==
+        this.props.listDataContainCaptions ||
       (nextProps.widgetWidth &&
         nextProps.widgetWidth !== this.props.widgetWidth)
     ) {

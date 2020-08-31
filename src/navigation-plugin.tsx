@@ -541,7 +541,7 @@ export class NavigationPlugin
       return [];
     }
     const captionAsset = findCaptionAsset(
-      (event || get(this._configs, 'playerConfig.playback.textLanguage', '')),
+      event || get(this._configs, 'playerConfig.playback.textLanguage', ''),
       this._captionAssetList
     );
     const rawCaptionList: any = await getCaptions(

@@ -109,7 +109,7 @@ export class PushNotification {
     }
 
     // notifications objects
-    let registrationConfigs = [
+    const registrationConfigs = [
       this._createPublicRegistration(entryId),
       this._createThumbRegistration(entryId),
       this._createSlideRegistration(entryId),

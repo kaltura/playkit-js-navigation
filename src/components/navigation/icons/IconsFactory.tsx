@@ -6,7 +6,7 @@ import {ChapterIcon} from './ChapterIcon';
 import {SlideIcon} from './SlideIcon';
 import {CaptionIcon} from './CaptionIcon';
 import * as styles from './IconsFactory.scss';
-export interface props {
+export interface Props {
   iconType: itemTypes;
   color?: any;
   hoverColor?: any;
@@ -31,7 +31,7 @@ export enum BackgroundColors {
   Caption = '#322a08',
 }
 
-export const IconsFactory = (props: props) => {
+export const IconsFactory = (props: Props) => {
   return (
     <div className={styles.icon}>
       {props.iconType === itemTypes.Hotspot && (

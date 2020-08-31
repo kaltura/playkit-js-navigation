@@ -97,8 +97,8 @@ export const fillData = (
   originalItem: any,
   ks: string,
   serviceUrl: string,
-  forceChaptersThumb: boolean = false,
-  isLiveEntry: boolean = false
+  forceChaptersThumb = false,
+  isLiveEntry = false
 ) => {
   const item: any = {...originalItem};
   item.liveType = isLiveEntry;
@@ -327,6 +327,16 @@ export const preparePendingCuepoints = (
   );
 };
 
+export const convertLiveItemsStartTime = (
+  data: Array<ItemData>,
+  liveStartTime: number
+): Array<ItemData> => {
+  return data.map((item: ItemData) => ({
+    ...item,
+    startTime: (item.createdAt || 0) - liveStartTime,
+  }));
+};
+
 export const prepareLiveData = (
   currentData: Array<ItemData>,
   pendingData: Array<ItemData>,
@@ -383,17 +393,6 @@ export const checkResponce = (response: any, type?: any): boolean => {
     return true;
   }
   return false;
-};
-
-export const convertLiveItemsStartTime = (
-  data: Array<ItemData>,
-  liveStartTime: number
-): Array<ItemData> => {
-  return data.map((item: ItemData) => ({
-    ...item,
-    // @ts-ignore
-    startTime: item.createdAt - liveStartTime,
-  }));
 };
 
 // TODO: consider move to contrib

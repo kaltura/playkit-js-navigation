@@ -79,7 +79,7 @@ const initialSearchFilter = {
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
   private _engine: CuepointEngine<Cuepoint> | null = null;
-  private _preventScrollEvent: boolean = false;
+  private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
 
   private _log = (msg: string, method: string) => {

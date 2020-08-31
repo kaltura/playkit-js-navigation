@@ -1,10 +1,10 @@
-import {h, Component} from 'preact';
+import {h} from 'preact';
 
-export interface props {
+export interface Props {
   color: any;
 }
 
-export const AutoscrollIcon = (props: props) => {
+export const AutoscrollIcon = (props: Props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
