@@ -185,7 +185,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _makeHighlightedMap = (cuepoints: any[]) => {
     const startTime = cuepoints[cuepoints.length - 1]?.startTime;
     const maxTime = startTime !== undefined ? startTime : -1;
-    const filtered = cuepoints.filter(item => item.startTime === maxTime);
+    const filtered = cuepoints.filter((item) => item.startTime === maxTime);
     const highlightedMap = filtered.reduce((acc, item) => {
       return {...acc, [item.id]: true};
     }, {});
@@ -366,13 +366,30 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     }
   };
 
-  render(props: NavigationProps, state: NavigationState) {
+  private _renderAutoscrollButton = () => {
+    const {hasError} = this.props;
+    const {autoscroll, searchFilter, convertedData} = this.state;
+    if (
+      autoscroll ||
+      searchFilter.searchQuery ||
+      !convertedData.length ||
+      hasError
+    ) {
+      return null;
+    }
+    return (
+      <button className={styles.skipButton} onClick={this._enableAutoScroll}>
+        <AutoscrollIcon />
+      </button>
+    );
+  };
+
+  render(props: NavigationProps) {
     const {isLoading, kitchenSinkActive} = props;
-    const {autoscroll, searchFilter} = state;
     return (
       <div
         className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
-        ref={node => {
+        ref={(node) => {
           this._widgetRootRef = node;
         }}
         onKeyUp={this._handleClose}>
@@ -384,17 +401,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             <div
               className={styles.body}
               onScroll={this._handleScroll}
-              ref={node => {
+              ref={(node) => {
                 this._listElementRef = node;
               }}>
               {this._renderNavigation()}
-              {!autoscroll && !searchFilter.searchQuery && (
-                <button
-                  className={styles.skipButton}
-                  onClick={this._enableAutoScroll}>
-                  <AutoscrollIcon />
-                </button>
-              )}
+              {this._renderAutoscrollButton()}
             </div>
           </div>
         )}
