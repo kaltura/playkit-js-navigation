@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.0](https://github.com/kaltura/playkit-js-navigation/compare/v0.0.6...v2.1.0) (2021-01-04)
+
 ### [0.0.6](https://github.com/kaltura/playkit-js-navigation/compare/v0.0.5...v0.0.6) (2020-08-31)
 
 ### [0.0.5](https://github.com/kaltura/playkit-js-navigation/compare/v0.0.4...v0.0.5) (2020-08-25)
