@@ -26,7 +26,6 @@ export interface ItemData extends RawItemData {
   shorthandTitle?: string;
   displayDescription?: string;
   shorthandDescription?: string;
-  indexedText: string;
   originalTime: number;
   hasShowMore: boolean;
   liveType: boolean;
