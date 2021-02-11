@@ -164,19 +164,6 @@ export const fillData = (
     item.shorthandDescription = elipsisDescription + '... ';
   }
 
-  // indexed text to save calculation at runtime + filter
-  let indexedText = '';
-  if (item.displayDescription) {
-    indexedText = item.displayDescription;
-  }
-  if (item.displayTitle) {
-    indexedText += ' ' + item.displayTitle;
-  }
-  if (item.displayTime) {
-    indexedText += ' ' + item.displayTime;
-  }
-  indexedText += ' ' + item.itemType;
-  item.indexedText = indexedText.toLowerCase();
   item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
   return item;
 };
@@ -260,7 +247,28 @@ export const filterDataBySearchQuery = (
   }
   const lowerQuery = searchQuery.toLowerCase();
   const filteredData = data.filter((item: ItemData) => {
-    return item.indexedText.indexOf(lowerQuery) > -1;
+    // search by title
+    if (
+      item.displayTitle &&
+      `${item.displayTitle}`.toLowerCase().indexOf(lowerQuery) > -1
+    ) {
+      return true;
+    }
+    // search by description
+    if (
+      item.displayDescription &&
+      `${item.displayDescription}`.toLowerCase().indexOf(lowerQuery) > -1
+    ) {
+      return true;
+    }
+    // search by time
+    if (
+      item.displayTime &&
+      /([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(lowerQuery) &&
+      item.displayTime.indexOf(lowerQuery) > -1
+    ) {
+      return true;
+    }
   });
   //clear group values
   return clearGroupData(filteredData);
