@@ -40,7 +40,6 @@ import {
   prepareLiveData,
   convertLiveItemsStartTime,
   cuePointTags,
-  parseExpandMode,
   itemTypesOrder,
   prepareItemTypesOrder,
   preparePendingCuepoints,
@@ -474,7 +473,9 @@ export class NavigationPlugin
     } = this._configs.pluginConfig;
     this._kitchenSinkItem = this._contribServices.kitchenSinkManager.add({
       label: 'Navigation',
-      expandMode: parseExpandMode(expandMode),
+      expandMode: expandMode === KitchenSinkExpandModes.OverTheVideo ?
+        KitchenSinkExpandModes.OverTheVideo :
+        KitchenSinkExpandModes.AlongSideTheVideo,
       renderIcon: () => (
         // TODO - resolve tabIndex race with the core.
         <button

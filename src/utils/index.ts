@@ -1,4 +1,3 @@
-import {KitchenSinkExpandModes} from '@playkit-js-contrib/ui';
 import {ObjectUtils} from '@playkit-js-contrib/common';
 import {
   ItemData,
@@ -401,16 +400,6 @@ export const checkResponce = (response: any, type?: any): boolean => {
     return true;
   }
   return false;
-};
-
-// TODO: consider move to contrib
-export const parseExpandMode = (value: string): KitchenSinkExpandModes => {
-  switch (value) {
-    case KitchenSinkExpandModes.AlongSideTheVideo:
-      return KitchenSinkExpandModes.AlongSideTheVideo;
-    default:
-      return KitchenSinkExpandModes.OverTheVideo;
-  }
 };
 
 export const prepareItemTypesOrder = (
