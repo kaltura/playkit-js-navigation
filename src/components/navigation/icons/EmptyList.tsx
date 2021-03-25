@@ -1,13 +1,9 @@
 import {h} from 'preact';
+import * as styles from './EmptyList.scss';
 
 export const EmptyList = () => {
-  const style = {
-    'text-align': 'center',
-    'margin-top': '50%',
-    'margin-bottom': 'auto',
-  };
   return (
-    <div style={style}>
+    <div className={styles.emptyStateWrapper}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="184"
@@ -124,6 +120,8 @@ export const EmptyList = () => {
           </g>
         </g>
       </svg>
+      <div className={styles.primaryText}>No Results Found</div>
+      <div className={styles.secondaryText}>Try a more general keyword</div>
     </div>
   );
 };
