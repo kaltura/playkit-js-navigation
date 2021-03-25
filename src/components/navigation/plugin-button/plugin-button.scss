@@ -1,0 +1,30 @@
+.navigationPluginButton,
+.navigationPluginIcon {
+  min-height: 36px;
+  min-width: 36px;
+}
+
+.navigationPluginButton {
+  padding: 0;
+  border: none;
+  background: none;
+  &:hover,
+  &:active {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  .navigationPluginIcon {
+    top: 2px;
+    left: 2px;
+    position: relative;
+    background-image: url("../../../assets/images/search-icon.svg");
+    opacity: 0.8;
+    :active > & {
+      /* todo - find a better way that maintains one asset and fill changes by CSS */
+      background-image: url("../../../assets/images/search-icon-over.svg");
+    }
+    :disabled > & {
+      opacity: 0.4;
+    }
+  }
+}

@@ -7,7 +7,6 @@ import {
   CorePlugin,
   OnMediaLoad,
   OnMediaUnload,
-  OnPluginSetup,
 } from '@playkit-js-contrib/plugin';
 import {
   getContribLogger,
@@ -20,7 +19,6 @@ import {
   KitchenSinkExpandModes,
   KitchenSinkItem,
   KitchenSinkPositions,
-  UpperBarItem,
 } from '@playkit-js-contrib/ui';
 import {KalturaThumbCuePoint} from 'kaltura-typescript-client/api/types/KalturaThumbCuePoint';
 import {KalturaAnnotation} from 'kaltura-typescript-client/api/types/KalturaAnnotation';
@@ -61,12 +59,13 @@ import {
   SlideNotificationsEvent,
   NotificationsErrorEvent,
 } from './pushNotification';
-import * as styles from './navigation-plugin.scss';
 import {Navigation} from './components/navigation';
+import {PluginButton} from './components/navigation/plugin-button';
 import {
   ItemData,
   RawItemData,
 } from './components/navigation/navigation-item/NavigationItem';
+const {Tooltip} = KalturaPlayer.ui.components;
 const {get} = ObjectUtils;
 
 const pluginName = `navigation`;
@@ -473,13 +472,9 @@ export class NavigationPlugin
         KitchenSinkExpandModes.OverTheVideo :
         KitchenSinkExpandModes.AlongSideTheVideo,
       renderIcon: () => (
-        // TODO - resolve tabIndex race with the core.
-        <button
-          className={styles.pluginButton}
-          tabIndex={1}
-          onClick={this._handleIconClick}>
-          <div className={styles.pluginIcon} />
-        </button>
+        <Tooltip label='Search in Video' type='bottom'>
+          <PluginButton onClick={this._handleIconClick} />
+        </Tooltip>
       ),
       position: getConfigValue(
         position,
