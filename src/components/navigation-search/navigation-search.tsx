@@ -47,9 +47,9 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
     const {kitchenSinkActive, toggledWithEnter} = this.props;
     if (
       !previousProps.kitchenSinkActive &&
-      kitchenSinkActive &&
-      toggledWithEnter
+      kitchenSinkActive
     ) {
+      this._focusedByMouse = !toggledWithEnter;
       this._inputRef?.focus();
     }
   }
@@ -102,7 +102,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
           onBlur={this._onBlur}
           onMouseDown={this._handleMouseDown}
           tabIndex={1}
-          ref={node => {
+          ref={(node) => {
             this._inputRef = node;
           }}
         />

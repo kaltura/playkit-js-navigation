@@ -458,11 +458,7 @@ export class NavigationPlugin
   };
 
   private _handleIconClick = (event: MouseEvent) => {
-    if (event.x === 0 && event.y === 0) {
-      this._triggeredByKeyboard = true;
-    } else {
-      this._triggeredByKeyboard = false;
-    }
+    this._triggeredByKeyboard = event.x === 0 && event.y === 0;
   };
 
   private _addKitchenSinkItem(): void {
