@@ -8,10 +8,18 @@
   padding: 0;
   border: none;
   background: none;
-  &:hover,
-  &:active {
-    border-radius: 4px;
+  border-radius: 4px;
+  &.selected {
     background-color: rgba(0, 0, 0, 0.8);
+    .navigationPluginIcon {
+      background-image: url("../../../assets/images/search-icon-over.svg");
+    }
+  }
+  &.disabled {
+    opacity: 0.4;
+  }
+  &:hover:not(.disabled) {
+    background-color: rgb(17, 50, 60);
   }
   .navigationPluginIcon {
     top: 2px;
@@ -19,12 +27,5 @@
     position: relative;
     background-image: url("../../../assets/images/search-icon.svg");
     opacity: 0.8;
-    :active > & {
-      /* todo - find a better way that maintains one asset and fill changes by CSS */
-      background-image: url("../../../assets/images/search-icon-over.svg");
-    }
-    :disabled > & {
-      opacity: 0.4;
-    }
   }
 }

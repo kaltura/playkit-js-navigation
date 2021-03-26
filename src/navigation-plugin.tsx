@@ -471,11 +471,13 @@ export class NavigationPlugin
       expandMode: expandMode === KitchenSinkExpandModes.OverTheVideo ?
         KitchenSinkExpandModes.OverTheVideo :
         KitchenSinkExpandModes.AlongSideTheVideo,
-      renderIcon: () => (
-        <Tooltip label='Search in Video' type='bottom'>
-          <PluginButton onClick={this._handleIconClick} />
-        </Tooltip>
-      ),
+      renderIcon: (isActive: boolean) => {
+        return (
+          <Tooltip label='Search in Video' type='bottom'>
+            <PluginButton onClick={this._handleIconClick} selected={isActive} />
+          </Tooltip>
+        )
+      },
       position: getConfigValue(
         position,
         (position: KitchenSinkPositions) =>
