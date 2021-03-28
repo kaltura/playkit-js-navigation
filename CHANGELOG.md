@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.0...v2.1.1) (2021-03-28)
+
+
+### Bug Fixes
+
+* missing text on when search results absent (FEV-795) ([#138](https://github.com/kaltura/playkit-js-navigation/issues/138)) ([92b0b32](https://github.com/kaltura/playkit-js-navigation/commit/92b0b32213a690e34c276ccdc3e88456cc223390))
+* search conditions (FEV-802) ([#135](https://github.com/kaltura/playkit-js-navigation/issues/135)) ([965b86f](https://github.com/kaltura/playkit-js-navigation/commit/965b86f2a615ccf9f08f221d2be2634319bad52d))
+* **fev-748:** focus search input when navigation icon handle click ([#159](https://github.com/kaltura/playkit-js-navigation/issues/159)) ([42ea459](https://github.com/kaltura/playkit-js-navigation/commit/42ea459b1056e3659231a5b5d419c0b89672c883))
+* **fev-756:** add tooltip to autoscroll button ([#160](https://github.com/kaltura/playkit-js-navigation/issues/160)) ([596e8b6](https://github.com/kaltura/playkit-js-navigation/commit/596e8b6ba886f7dd17ac37f05bdbb04c0bd20d95))
+* **fev-800:** use player enums to define plugin expand mode ([#158](https://github.com/kaltura/playkit-js-navigation/issues/158)) ([1b7325f](https://github.com/kaltura/playkit-js-navigation/commit/1b7325f6b079fb6733f918922cf860d5812b22d3))
+* **fev-803:** add tooltip to plugin icon ([#161](https://github.com/kaltura/playkit-js-navigation/issues/161)) ([2bbbd68](https://github.com/kaltura/playkit-js-navigation/commit/2bbbd68f6142e8b591b503235e99979011c1fa1c))
+
 ### [2.1.0](https://github.com/kaltura/playkit-js-navigation/compare/v0.0.6...v2.1.0) (2021-01-04)
 
 ### [0.0.6](https://github.com/kaltura/playkit-js-navigation/compare/v0.0.5...v0.0.6) (2020-08-31)
