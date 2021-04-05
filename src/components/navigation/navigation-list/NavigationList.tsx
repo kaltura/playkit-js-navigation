@@ -14,6 +14,7 @@ export interface Props {
   highlightedMap: Record<string, true>;
   showItemsIcons: boolean;
   listDataContainCaptions: boolean;
+  searchActive: boolean;
 }
 
 export class NavigationList extends Component<Props> {
@@ -54,9 +55,14 @@ export class NavigationList extends Component<Props> {
     onSeek,
     highlightedMap,
     listDataContainCaptions,
+    searchActive,
   }: Props) {
     if (!data.length) {
-      return listDataContainCaptions ? <EmptyState /> : <EmptyList />;
+      return listDataContainCaptions ? (
+        <EmptyState />
+      ) : (
+        <EmptyList showNoResultsText={searchActive} />
+      );
     }
     return (
       <div className={styles.navigationList}>

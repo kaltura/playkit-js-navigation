@@ -20,8 +20,9 @@ import {
   itemTypesOrder,
   findCuepointType,
 } from '../../utils';
-import {AutoscrollIcon} from './icons/AutoscrollIcon';
 import {ItemData} from './navigation-item/NavigationItem';
+import {AutoscrollButton} from './autoscroll-button';
+const {Tooltip} = KalturaPlayer.ui.components;
 
 export interface SearchFilter {
   searchQuery: string;
@@ -322,6 +323,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     }
     return (
       <NavigationList
+        searchActive={searchFilter.searchQuery.length > 0}
         widgetWidth={widgetWidth}
         autoScroll={this.state.autoscroll}
         onSeek={this._handleSeek}
@@ -378,9 +380,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       return null;
     }
     return (
-      <button className={styles.skipButton} onClick={this._enableAutoScroll}>
-        <AutoscrollIcon />
-      </button>
+      <div className={styles.autoscrollWrapper}>
+        <Tooltip label="Resume AutoScroll" type="left">
+          <AutoscrollButton onClick={this._enableAutoScroll}></AutoscrollButton>
+        </Tooltip>
+      </div>
     );
   };
 
