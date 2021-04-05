@@ -7,11 +7,15 @@ interface PluginButtonProps {
   disabled?: boolean;
 }
 
-export const PluginButton = ({onClick, selected, disabled}: PluginButtonProps) => {
+export const PluginButton = ({
+  onClick,
+  selected,
+  disabled,
+}: PluginButtonProps) => {
   const iconStyles = [
     styles.navigationPluginButton,
-    selected && styles.selected,
-    disabled && styles.disabled,
+    selected ? styles.selected : '',
+    disabled ? styles.disabled : '',
   ].join(' ');
   return (
     <button className={iconStyles} tabIndex={1} onClick={onClick}>
