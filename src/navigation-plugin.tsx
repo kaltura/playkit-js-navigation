@@ -346,9 +346,20 @@ export class NavigationPlugin
       method: '_handleAoaMessages',
       data: messages,
     });
-    const aoaMessages: any[] = messages.filter((message: any) => {
-      return message.tags === cuePointTags.AnswerOnAir;
-    });
+    const aoaMessages: KalturaAnnotation[] = messages
+      .filter((message: KalturaAnnotation) => {
+        return message.tags === cuePointTags.AnswerOnAir;
+      })
+      .filter((message: KalturaAnnotation) => {
+        const relatedObject: any =
+          message.relatedObjects['QandA_ResponseProfile'];
+        if (relatedObject.objects.length === 0) {
+          // "There are no metadata objects xml at KalturaMetadataListResponse"
+          return;
+        }
+        const metadata = relatedObject.objects[0];
+        return metadata.xml.includes('<Type>AnswerOnAir</Type>');
+      });
     this._updateData(aoaMessages);
   };
 
@@ -468,15 +479,16 @@ export class NavigationPlugin
     } = this._configs.pluginConfig;
     this._kitchenSinkItem = this._contribServices.kitchenSinkManager.add({
       label: 'Navigation',
-      expandMode: expandMode === KitchenSinkExpandModes.OverTheVideo ?
-        KitchenSinkExpandModes.OverTheVideo :
-        KitchenSinkExpandModes.AlongSideTheVideo,
+      expandMode:
+        expandMode === KitchenSinkExpandModes.OverTheVideo
+          ? KitchenSinkExpandModes.OverTheVideo
+          : KitchenSinkExpandModes.AlongSideTheVideo,
       renderIcon: (isActive: boolean) => {
         return (
-          <Tooltip label='Search in Video' type='bottom'>
+          <Tooltip label="Search in Video" type="bottom">
             <PluginButton onClick={this._handleIconClick} selected={isActive} />
           </Tooltip>
-        )
+        );
       },
       position: getConfigValue(
         position,
@@ -519,7 +531,7 @@ export class NavigationPlugin
         this._isLoading = false;
         this._updateKitchenSink();
       })
-      .catch(error => {
+      .catch((error) => {
         this._hasError = true;
         this._isLoading = false;
         logger.error('failed retrieving caption asset', {
@@ -610,7 +622,7 @@ export class NavigationPlugin
         }
         // extract all cuepoints from all requests
         let receivedCuepoints: Array<RawItemData> = [];
-        responses.forEach(response => {
+        responses.forEach((response) => {
           if (checkResponce(response, KalturaCuePointListResponse)) {
             receivedCuepoints = receivedCuepoints.concat(
               response.result.objects as Array<RawItemData>
