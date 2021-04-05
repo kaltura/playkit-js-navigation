@@ -1,7 +1,11 @@
 import {h} from 'preact';
 import * as styles from './EmptyList.scss';
 
-export const EmptyList = () => {
+interface EmptyListProps {
+  showNoResultsText: boolean;
+}
+
+export const EmptyList = ({ showNoResultsText }: EmptyListProps) => {
   return (
     <div className={styles.emptyStateWrapper}>
       <svg
@@ -120,8 +124,8 @@ export const EmptyList = () => {
           </g>
         </g>
       </svg>
-      <div className={styles.primaryText}>No Results Found</div>
-      <div className={styles.secondaryText}>Try a more general keyword</div>
+      {showNoResultsText && <div className={styles.primaryText}>No Results Found</div>}
+      {showNoResultsText && <div className={styles.secondaryText}>Try a more general keyword</div>}
     </div>
   );
 };

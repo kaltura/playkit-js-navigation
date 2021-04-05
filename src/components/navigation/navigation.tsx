@@ -323,6 +323,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     }
     return (
       <NavigationList
+        searchActive={searchFilter.searchQuery.length > 0}
         widgetWidth={widgetWidth}
         autoScroll={this.state.autoscroll}
         onSeek={this._handleSeek}
