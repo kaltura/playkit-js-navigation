@@ -334,16 +334,6 @@ export const preparePendingCuepoints = (
   );
 };
 
-export const convertLiveItemsStartTime = (
-  data: Array<ItemData>,
-  liveStartTime: number
-): Array<ItemData> => {
-  return data.map((item: ItemData) => ({
-    ...item,
-    startTime: (item.createdAt || 0) - liveStartTime,
-  }));
-};
-
 export const prepareLiveData = (
   currentData: Array<ItemData>,
   pendingData: Array<ItemData>,
@@ -371,12 +361,6 @@ export const prepareLiveData = (
   receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
     return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
   });
-  if (liveStartTime) {
-    receivedCuepoints = convertLiveItemsStartTime(
-      receivedCuepoints,
-      liveStartTime
-    );
-  }
   const result: {
     listData: Array<ItemData>;
     pendingData: Array<ItemData>;

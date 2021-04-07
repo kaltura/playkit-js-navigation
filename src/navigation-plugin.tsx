@@ -36,7 +36,6 @@ import {
   getConfigValue,
   prepareVodData,
   prepareLiveData,
-  convertLiveItemsStartTime,
   cuePointTags,
   itemTypesOrder,
   prepareItemTypesOrder,
@@ -97,7 +96,6 @@ export class NavigationPlugin
   private _kitchenSinkItem: KitchenSinkItem | null = null;
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
-  private _currentPosition = 0;
   private _initialData: Array<ItemData> = [];
   private _listData: Array<ItemData> = [];
   private _pendingData: Array<ItemData> = []; //_pendingData keeps live quepionts till player currentTime reach quepoint start-time
@@ -108,6 +106,10 @@ export class NavigationPlugin
   private _liveStartTime: number | null = null;
   private _itemsOrder = itemTypesOrder;
   private _itemsFilter = itemTypesOrder;
+
+  private _id3Timestamp: number | null = 0;
+  private _currentTime = 0;
+  private _currentTimeLive = 0;
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -201,21 +203,8 @@ export class NavigationPlugin
             method: '_onTimedMetadataLoaded',
           }
         );
-        if (id3Timestamp && !this._liveStartTime) {
-          this._liveStartTime = Math.ceil(
-            id3Timestamp - this._corePlugin.player.currentTime
-          );
-          this._corePlugin.player.removeEventListener(
-            this._corePlugin.player.Event.TIMED_METADATA,
-            this._onTimedMetadataLoaded
-          );
-        }
-        if (this._liveStartTime && this._listData.length) {
-          this._listData = convertLiveItemsStartTime(
-            this._listData,
-            this._liveStartTime
-          );
-          this._updateKitchenSink();
+        if (id3Timestamp) {
+          this._id3Timestamp = id3Timestamp;
         }
       } catch (e) {
         logger.debug('failed retrieving id3 tag metadata', {
@@ -279,7 +268,13 @@ export class NavigationPlugin
   };
 
   private _seekTo = (time: number) => {
-    this._corePlugin.player.currentTime = time;
+    if (this._corePlugin.player.isLive() && this._corePlugin.player.isDvr()) {
+      // live quepoints has absolute time
+      this._corePlugin.player.currentTime =
+        this._corePlugin.player.currentTime - (this._currentTimeLive - time);
+    } else {
+      this._corePlugin.player.currentTime = time;
+    }
   };
 
   private getUserId(): string {
@@ -334,7 +329,7 @@ export class NavigationPlugin
       this._corePlugin.config.forceChaptersThumb,
       this._liveStartTime,
       this._itemsOrder,
-      this._currentPosition
+      this._currentTime
     );
     this._listData = listData;
     this._pendingData = pendingData;
@@ -428,6 +423,7 @@ export class NavigationPlugin
   private _renderKitchenSinkContent = (
     props: KitchenSinkContentRendererProps
   ) => {
+    const isLive = this._corePlugin.player.isLive();
     return (
       <Navigation
         {...props}
@@ -436,24 +432,40 @@ export class NavigationPlugin
         isLoading={this._isLoading}
         hasError={this._hasError}
         retry={this._retryFetchData}
-        currentTime={this._currentPosition}
+        currentTime={isLive ? this._currentTimeLive : this._currentTime}
         kitchenSinkActive={!!this._kitchenSinkItem?.isActive()}
         toggledWithEnter={this._triggeredByKeyboard}
         itemsOrder={this._itemsOrder}
-        isLive={this._corePlugin.player.isLive()}
+        isLive={isLive}
       />
     );
   };
 
   private _onTimeUpdate = (): void => {
     // reduce refresh to only when the time really chanes - check UX speed
+    // TODO: hls has decimal currentTime format
     const newTime = Math.ceil(this._corePlugin.player.currentTime);
-    if (newTime !== this._currentPosition) {
-      this._currentPosition = newTime;
-      if (this._corePlugin.player.isLive() && this._pendingData.length) {
+    if (newTime === this._currentTime) {
+      return;
+    }
+    this._currentTime = newTime;
+    if (this._corePlugin.player.isLive()) {
+      if (this._id3Timestamp && this._id3Timestamp === this._currentTimeLive) {
+        // prevent updating if calculated _currentTimeLive value the same as _id3Timestamp
+        this._id3Timestamp = null;
+        return;
+      }
+      if (this._id3Timestamp) {
+        this._currentTimeLive = this._id3Timestamp;
+        this._id3Timestamp = null;
+      } else {
+        this._currentTimeLive++;
+      }
+      // compare startTime of pending items with _currentTimeLive
+      if (this._pendingData.length) {
         const {listData, pendingData} = preparePendingCuepoints(
           this._pendingData,
-          this._currentPosition
+          this._currentTimeLive
         );
         this._pendingData = pendingData;
         if (listData.length) {
@@ -463,8 +475,8 @@ export class NavigationPlugin
           );
         }
       }
-      this._updateKitchenSink();
     }
+    this._updateKitchenSink();
   };
 
   private _handleIconClick = (event: MouseEvent) => {
