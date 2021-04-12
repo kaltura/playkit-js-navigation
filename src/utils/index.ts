@@ -449,3 +449,10 @@ export const findCuepointType = (
     (cuepoint: ItemData) => cuepoint.itemType === cuePointType
   );
 };
+
+export const filterCuepointsByStartTime = (
+  list: ItemData[],
+  startTime: number
+): ItemData[] => {
+  return list.filter((item) => item.startTime >= startTime);
+};
