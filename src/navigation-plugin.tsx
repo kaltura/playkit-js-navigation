@@ -103,7 +103,6 @@ export class NavigationPlugin
   private _triggeredByKeyboard = false;
   private _isLoading = false;
   private _hasError = false;
-  private _liveStartTime: number | null = null;
   private _itemsOrder = itemTypesOrder;
   private _itemsFilter = itemTypesOrder;
 
@@ -328,9 +327,8 @@ export class NavigationPlugin
       this._configs.playerConfig.provider.ks,
       this._configs.playerConfig.provider.env.serviceUrl,
       this._corePlugin.config.forceChaptersThumb,
-      this._liveStartTime,
       this._itemsOrder,
-      this._currentTime
+      this._currentTimeLive
     );
     this._listData = listData;
     this._pendingData = pendingData;
