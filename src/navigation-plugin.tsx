@@ -188,6 +188,7 @@ export class NavigationPlugin
   }
 
   private _onTimedMetadataLoaded = (event: any): void => {
+    // TODO: handle dash format
     const id3TagCues = event.payload.cues.filter(
       (cue: any) => cue.value && cue.value.key === 'TEXT'
     );
@@ -443,7 +444,7 @@ export class NavigationPlugin
 
   private _onTimeUpdate = (): void => {
     // reduce refresh to only when the time really chanes - check UX speed
-    // TODO: hls has decimal currentTime format
+    // TODO: handle dash format
     const newTime = Math.ceil(this._corePlugin.player.currentTime);
     if (newTime === this._currentTime) {
       return;
