@@ -44,6 +44,7 @@ import {
   itemTypes,
   isEmptyObject,
   checkResponce,
+  filterCuepointsByStartTime,
 } from './utils';
 import {
   getCaptions,
@@ -478,6 +479,12 @@ export class NavigationPlugin
           );
         }
       }
+
+      // filter cuepoints that out of DVR window
+      this._listData = filterCuepointsByStartTime(
+        this._listData,
+        this._currentTimeLive - this._corePlugin.player.currentTime
+      );
     }
     this._updateKitchenSink();
   };
