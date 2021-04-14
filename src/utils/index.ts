@@ -315,14 +315,14 @@ export const getAvailableTabs = (
 
 export const preparePendingCuepoints = (
   currentData: Array<ItemData>,
-  currentPosition: number
+  currentTimeLive: number
 ): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
   return currentData.reduce(
     (
       acc: {listData: Array<ItemData>; pendingData: Array<ItemData>},
       item: ItemData
     ) => {
-      if (currentPosition < item.startTime) {
+      if (currentTimeLive < item.startTime) {
         return {
           listData: acc.listData,
           pendingData: [...acc.pendingData, item],
@@ -334,16 +334,6 @@ export const preparePendingCuepoints = (
   );
 };
 
-export const convertLiveItemsStartTime = (
-  data: Array<ItemData>,
-  liveStartTime: number
-): Array<ItemData> => {
-  return data.map((item: ItemData) => ({
-    ...item,
-    startTime: (item.createdAt || 0) - liveStartTime,
-  }));
-};
-
 export const prepareLiveData = (
   currentData: Array<ItemData>,
   pendingData: Array<ItemData>,
@@ -351,9 +341,8 @@ export const prepareLiveData = (
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
-  liveStartTime: number | null,
   itemOrder: typeof itemTypesOrder,
-  currentPosition: number
+  currentTimeLive: number
 ): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
   if (!newData || newData.length === 0) {
     // Wrong or empty data
@@ -371,19 +360,10 @@ export const prepareLiveData = (
   receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
     return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
   });
-  if (liveStartTime) {
-    receivedCuepoints = convertLiveItemsStartTime(
-      receivedCuepoints,
-      liveStartTime
-    );
-  }
   const result: {
     listData: Array<ItemData>;
     pendingData: Array<ItemData>;
-  } = preparePendingCuepoints(
-    receivedCuepoints,
-    liveStartTime ? currentPosition : 0
-  ); // set all live cuepoints as pending untill we get entry liveStartTime
+  } = preparePendingCuepoints(receivedCuepoints, currentTimeLive);
   const filteredPendingData = pendingData.filter((cuepoint: ItemData) => {
     return !result.listData.find((item: ItemData) => item.id === cuepoint.id);
   });
