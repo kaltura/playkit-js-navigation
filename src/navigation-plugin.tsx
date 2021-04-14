@@ -450,17 +450,21 @@ export class NavigationPlugin
     }
     this._currentTime = newTime;
     if (this._corePlugin.player.isLive()) {
-      if (this._id3Timestamp && this._id3Timestamp === this._currentTimeLive) {
-        // prevent updating if calculated _currentTimeLive value the same as _id3Timestamp
-        this._id3Timestamp = null;
-        return;
-      }
       if (this._id3Timestamp) {
+
+        if (this._id3Timestamp === this._currentTimeLive) {
+          // prevent updating if calculated _currentTimeLive value the same as _id3Timestamp
+          this._id3Timestamp = null;
+          return;
+        }
+        // update _currentTimeLive from id3Tag time
         this._currentTimeLive = this._id3Timestamp;
         this._id3Timestamp = null;
       } else {
+        // update _currentTimeLive between id3Tags
         this._currentTimeLive++;
       }
+      
       // compare startTime of pending items with _currentTimeLive
       if (this._pendingData.length) {
         const {listData, pendingData} = preparePendingCuepoints(
