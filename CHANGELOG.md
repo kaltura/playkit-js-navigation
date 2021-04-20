@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.1...v2.1.2) (2021-04-20)
+
+
+### Bug Fixes
+
+* **fev-791:** add only AOA types from push notifications ([#170](https://github.com/kaltura/playkit-js-navigation/issues/170)) ([9c109cb](https://github.com/kaltura/playkit-js-navigation/commit/9c109cb88e53589cf90d48725cd23bd76370bf22))
+* **fev-849:** render no-result text only if search contains text ([#164](https://github.com/kaltura/playkit-js-navigation/issues/164)) ([202d26e](https://github.com/kaltura/playkit-js-navigation/commit/202d26e2826f79eb3967aece357194690a7b04f7))
+
 ### [2.1.1](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.0...v2.1.1) (2021-03-28)
 
 
