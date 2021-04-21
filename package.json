@@ -13,9 +13,9 @@
   "dependencies": {
     "@playkit-js-contrib/cli": "1.1.4",
     "@playkit-js-contrib/common": "^4.1.5",
-    "@playkit-js-contrib/plugin": "^4.1.6",
-    "@playkit-js-contrib/push-notifications": "^4.1.5",
-    "@playkit-js-contrib/ui": "^4.1.6",
+    "@playkit-js-contrib/plugin": "^4.1.7",
+    "@playkit-js-contrib/push-notifications": "^4.1.7",
+    "@playkit-js-contrib/ui": "^4.1.7",
     "classnames": "2.2.6",
     "kaltura-typescript-client": "file:libs/kaltura-typescript-client-7.0.0-v20190324-101134.tgz",
     "null": "^2.0.0",
