@@ -110,6 +110,7 @@ export class NavigationPlugin
   private _id3Timestamp: number | null = 0;
   private _currentTime = 0;
   private _currentTimeLive = 0;
+  private _seekDifference: number | null = 0;
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -157,6 +158,10 @@ export class NavigationPlugin
         this._corePlugin.player.Event.TIMED_METADATA,
         this._onTimedMetadataLoaded
       );
+      this._corePlugin.player.addEventListener(
+        this._corePlugin.player.Event.SEEKING,
+        this._handleSeeking
+      );
     } else if (this._itemsFilter[itemTypes.Caption]) {
       this._corePlugin.player.addEventListener(
         this._corePlugin.player.Event.TEXT_TRACK_CHANGED,
@@ -179,6 +184,10 @@ export class NavigationPlugin
         this._corePlugin.player.Event.TIMED_METADATA,
         this._onTimedMetadataLoaded
       );
+      this._corePlugin.player.removeEventListener(
+        this._corePlugin.player.Event.SEEKING,
+        this._handleSeeking
+      );
     } else if (this._itemsFilter[itemTypes.Caption]) {
       this._corePlugin.player.removeEventListener(
         this._corePlugin.player.Event.TEXT_TRACK_CHANGED,
@@ -187,6 +196,10 @@ export class NavigationPlugin
     }
   }
 
+  private _handleSeeking = (): void => {
+    this._seekDifference = Math.ceil(this._currentTime - this._corePlugin.player.currentTime);
+  }
+  
   private _onTimedMetadataLoaded = (event: any): void => {
     // TODO: handle dash format
     const id3TagCues = event.payload.cues.filter(
@@ -271,8 +284,11 @@ export class NavigationPlugin
   private _seekTo = (time: number) => {
     if (this._corePlugin.player.isLive() && this._corePlugin.player.isDvr()) {
       // live quepoints has absolute time
-      this._corePlugin.player.currentTime =
-        this._corePlugin.player.currentTime - (this._currentTimeLive - time);
+      const newCurrentTime = this._corePlugin.player.currentTime - (this._currentTimeLive - time);
+      if (Math.abs(this._corePlugin.player.currentTime - newCurrentTime) >= 1) {
+        // prevent seek less than 1s
+        this._corePlugin.player.currentTime = newCurrentTime;
+      } 
     } else {
       this._corePlugin.player.currentTime = time;
     }
@@ -450,7 +466,10 @@ export class NavigationPlugin
     }
     this._currentTime = newTime;
     if (this._corePlugin.player.isLive()) {
-      if (this._id3Timestamp) {
+      if (this._seekDifference !== null && this._currentTimeLive) {
+        // update _currentTimeLive after seek
+        this._currentTimeLive = this._currentTimeLive - this._seekDifference;
+      } else if (this._id3Timestamp) {
 
         if (this._id3Timestamp === this._currentTimeLive) {
           // prevent updating if calculated _currentTimeLive value the same as _id3Timestamp
@@ -459,11 +478,13 @@ export class NavigationPlugin
         }
         // update _currentTimeLive from id3Tag time
         this._currentTimeLive = this._id3Timestamp;
-        this._id3Timestamp = null;
       } else {
         // update _currentTimeLive between id3Tags
         this._currentTimeLive++;
       }
+
+      this._id3Timestamp = null;
+      this._seekDifference = null;
       
       // compare startTime of pending items with _currentTimeLive
       if (this._pendingData.length) {
@@ -481,10 +502,11 @@ export class NavigationPlugin
       }
 
       // filter cuepoints that out of DVR window
-      this._listData = filterCuepointsByStartTime(
+      const filtredQuepoints = filterCuepointsByStartTime(
         this._listData,
-        this._currentTimeLive - this._corePlugin.player.currentTime
+        this._currentTimeLive - this._currentTime
       );
+      this._listData = filtredQuepoints;
     }
     this._updateKitchenSink();
   };
