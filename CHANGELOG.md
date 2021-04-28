@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.5](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.4...v2.1.5) (2021-04-28)
+
+
+### Bug Fixes
+
+* **fev-747:** add plugin UI only when VOD content exist ([#180](https://github.com/kaltura/playkit-js-navigation/issues/180)) ([8e6630d](https://github.com/kaltura/playkit-js-navigation/commit/8e6630d079ebfb0f65e8438e9a9ef69d6abca80a))
+
 ### [2.1.4](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.3...v2.1.4) (2021-04-23)
 
 
