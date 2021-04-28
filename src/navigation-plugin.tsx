@@ -231,8 +231,9 @@ export class NavigationPlugin
 
   onMediaLoad(): void {
     this._addPlayerListeners();
-    this._addKitchenSinkItem();
     if (this._corePlugin.player.isLive()) {
+      // always initialize plugin UI for live type of media
+      this._addKitchenSinkItem();
       this._registerToPushServer();
     } else {
       this._fetchVodData();
@@ -675,6 +676,10 @@ export class NavigationPlugin
             this._captionAssetList = response.result.objects;
           }
         });
+        if (receivedCuepoints.length) {
+          // for VOD type of media initialize plugin UI only if content exist
+          this._addKitchenSinkItem();
+        }
         this._initialData = prepareVodData(
           receivedCuepoints,
           this._configs.playerConfig.provider.ks,
