@@ -283,15 +283,17 @@ export class NavigationPlugin
   };
 
   private _seekTo = (time: number) => {
-    if (this._corePlugin.player.isLive() && this._corePlugin.player.isDvr()) {
+    if (!this._corePlugin.player.isLive()) {
+      this._corePlugin.player.currentTime = time;
+      return;
+    }
+    if (this._corePlugin.player.isDvr()) {
       // live quepoints has absolute time
       const newCurrentTime = this._corePlugin.player.currentTime - (this._currentTimeLive - time);
       if (Math.abs(this._corePlugin.player.currentTime - newCurrentTime) >= 1) {
         // prevent seek less than 1s
         this._corePlugin.player.currentTime = newCurrentTime;
       } 
-    } else {
-      this._corePlugin.player.currentTime = time;
     }
   };
 
@@ -503,11 +505,12 @@ export class NavigationPlugin
       }
 
       // filter cuepoints that out of DVR window
-      const filtredQuepoints = filterCuepointsByStartTime(
-        this._listData,
-        this._currentTimeLive - this._currentTime
-      );
-      this._listData = filtredQuepoints;
+      if (this._corePlugin.player.isDvr()) {
+        this._listData = filterCuepointsByStartTime(
+          this._listData,
+          this._currentTimeLive - this._currentTime
+        )
+      }
     }
     this._updateKitchenSink();
   };
