@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.6](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.5...v2.1.6) (2021-05-13)
+
+
+### Bug Fixes
+
+* **fev-891:** non-dvr - prevent seek; don't filter quepoints ([#184](https://github.com/kaltura/playkit-js-navigation/issues/184)) ([763fdbb](https://github.com/kaltura/playkit-js-navigation/commit/763fdbba22b6f3e48b1b8f3782c2a253a8c306b6))
+
 ### [2.1.5](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.4...v2.1.5) (2021-04-28)
 
 
