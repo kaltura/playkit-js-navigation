@@ -30,7 +30,7 @@ elif [ "${TRAVIS_MODE}" = "release" ] || [ "${TRAVIS_MODE}" = "releaseCanary" ];
     conventional-github-releaser -p angular -t $GH_TOKEN || true
   fi
   echo "Building..."
-  yarn run build
+  npm run build
   echo "Finish building"
 elif [ "${TRAVIS_MODE}" = "deploy" ]; then
   echo "Deploy..."
