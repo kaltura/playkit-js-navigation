@@ -119,7 +119,7 @@ export class NavigationPlugin
   ) {
     const {playerConfig, pluginConfig} = this._configs;
     this._kalturaClient.setOptions({
-      clientTag: 'playkit-navigation',
+      clientTag: 'playkit-js-navigation',
       endpointUrl: playerConfig.provider.env.serviceUrl,
     });
     this._kalturaClient.setDefaultRequestOptions({
@@ -334,7 +334,7 @@ export class NavigationPlugin
     this._pushNotification.init({
       ks: ks,
       serviceUrl: provider.env.serviceUrl,
-      clientTag: 'playkit-navigation',
+      clientTag: 'playkit-js-navigation',
       kalturaPlayer: this._corePlugin.player,
     });
   }
