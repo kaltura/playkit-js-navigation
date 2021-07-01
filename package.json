@@ -89,6 +89,9 @@
     "infra:local": "kcontrib infra --type=local",
     "infra:add": "kcontrib infra --add"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
