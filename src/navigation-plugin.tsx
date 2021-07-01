@@ -119,7 +119,7 @@ export class NavigationPlugin
   ) {
     const {playerConfig, pluginConfig} = this._configs;
     this._kalturaClient.setOptions({
-      clientTag: 'playkit-js-navigation',
+      clientTag: 'playkit-navigation',
       endpointUrl: playerConfig.provider.env.serviceUrl,
     });
     this._kalturaClient.setDefaultRequestOptions({
@@ -199,7 +199,7 @@ export class NavigationPlugin
   private _handleSeeking = (): void => {
     this._seekDifference = Math.ceil(this._currentTime - this._corePlugin.player.currentTime);
   }
-  
+
   private _onTimedMetadataLoaded = (event: any): void => {
     // TODO: handle dash format
     const id3TagCues = event.payload.cues.filter(
@@ -293,7 +293,7 @@ export class NavigationPlugin
       if (Math.abs(this._corePlugin.player.currentTime - newCurrentTime) >= 1) {
         // prevent seek less than 1s
         this._corePlugin.player.currentTime = newCurrentTime;
-      } 
+      }
     }
   };
 
@@ -334,7 +334,7 @@ export class NavigationPlugin
     this._pushNotification.init({
       ks: ks,
       serviceUrl: provider.env.serviceUrl,
-      clientTag: 'playkit-js-navigation',
+      clientTag: 'playkit-navigation',
       kalturaPlayer: this._corePlugin.player,
     });
   }
@@ -488,7 +488,7 @@ export class NavigationPlugin
 
       this._id3Timestamp = null;
       this._seekDifference = null;
-      
+
       // compare startTime of pending items with _currentTimeLive
       if (this._pendingData.length) {
         const {listData, pendingData} = preparePendingCuepoints(

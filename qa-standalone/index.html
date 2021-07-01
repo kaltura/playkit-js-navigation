@@ -6,7 +6,7 @@
         <title>Navigation - Player V7</title>
 
         <script src="https://qa-apache-php7.dev.kaltura.com/p/6222/embedPlaykitJs/uiconf_id/15225868/versions/kaltura-ovp-player=1.2.1"></script>
-        <script src="playkit-js-navigation.js"></script>
+        <script src="playkit-navigation.js"></script>
         <script src="../latest.js"></script>
         <script>
             function loadJSON(path, callback) {
@@ -91,7 +91,7 @@
         <div style="position:relative;margin-top:10px">
             <div id="player-div"></div>
         </div>
-        
+
         <div class="change-media-button">
             <input class="btn btn-info " value="Change Media">
         </div>
@@ -286,7 +286,7 @@
                     provider.ks = ks;
                 }
                 config.provider = provider;
-                
+
                 window.onload = function() {
                     fetchTranslates(function(lang) {
                         config.ui.translations = lang;
