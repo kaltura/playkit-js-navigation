@@ -41,7 +41,7 @@
     "husky": "4.2.5",
     "lint-staged": "^10.3.0",
     "preact": "^10.4.8",
-    "prettier": "^2.1.1",
+    "prettier": "^2.3.2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.17.0",
     "tslint-consistent-codestyle": "^1.14.1",
