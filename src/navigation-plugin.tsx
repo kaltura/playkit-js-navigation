@@ -199,7 +199,7 @@ export class NavigationPlugin
   private _handleSeeking = (): void => {
     this._seekDifference = Math.ceil(this._currentTime - this._corePlugin.player.currentTime);
   }
-  
+
   private _onTimedMetadataLoaded = (event: any): void => {
     // TODO: handle dash format
     const id3TagCues = event.payload.cues.filter(
@@ -293,7 +293,7 @@ export class NavigationPlugin
       if (Math.abs(this._corePlugin.player.currentTime - newCurrentTime) >= 1) {
         // prevent seek less than 1s
         this._corePlugin.player.currentTime = newCurrentTime;
-      } 
+      }
     }
   };
 
@@ -488,7 +488,7 @@ export class NavigationPlugin
 
       this._id3Timestamp = null;
       this._seekDifference = null;
-      
+
       // compare startTime of pending items with _currentTimeLive
       if (this._pendingData.length) {
         const {listData, pendingData} = preparePendingCuepoints(
