@@ -104,7 +104,7 @@ export const fillData = (
   if (isLiveEntry) {
     item.startTime = item.createdAt;
   } else {
-    item.startTime = Math.floor(item.startTime / 1000);
+    item.startTime = Math.round(item.startTime / 1000);
     item.displayTime = convertTime(item.startTime);
   }
   switch (item.cuePointType) {
