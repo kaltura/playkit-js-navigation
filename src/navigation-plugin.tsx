@@ -461,13 +461,7 @@ export class NavigationPlugin
   };
 
   private _onTimeUpdate = (): void => {
-    // reduce refresh to only when the time really chanes - check UX speed
-    // TODO: handle dash format
-    const newTime = Math.floor(this._corePlugin.player.currentTime);
-    if (newTime === this._currentTime) {
-      return;
-    }
-    this._currentTime = newTime;
+    this._currentTime = this._corePlugin.player.currentTime;
     if (this._corePlugin.player.isLive()) {
       if (this._seekDifference !== null && this._currentTimeLive) {
         // update _currentTimeLive after seek
