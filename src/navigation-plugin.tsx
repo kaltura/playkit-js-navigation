@@ -461,8 +461,12 @@ export class NavigationPlugin
   };
 
   private _onTimeUpdate = (): void => {
-    this._currentTime = this._corePlugin.player.currentTime;
     if (this._corePlugin.player.isLive()) {
+      const newTime = Math.floor(this._corePlugin.player.currentTime);
+      if (newTime === this._currentTime) {
+        return;
+      }
+      this._currentTime = newTime;
       if (this._seekDifference !== null && this._currentTimeLive) {
         // update _currentTimeLive after seek
         this._currentTimeLive = this._currentTimeLive - this._seekDifference;
@@ -505,6 +509,8 @@ export class NavigationPlugin
           this._currentTimeLive - this._currentTime
         )
       }
+    } else {
+      this._currentTime = this._corePlugin.player.currentTime;
     }
     this._updateKitchenSink();
   };
