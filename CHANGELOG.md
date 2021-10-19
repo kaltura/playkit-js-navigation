@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.8](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.7...v2.1.8) (2021-10-19)
+
+
+### Bug Fixes
+
+* **fev-1079:** round cue-point startTime to the nearest second ([#245](https://github.com/kaltura/playkit-js-navigation/issues/245)) ([36e8f08](https://github.com/kaltura/playkit-js-navigation/commit/36e8f08e5e0c18077e0ba80f1852b8d5c31228c0))
+
 ### [2.1.7](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.6...v2.1.7) (2021-07-05)
 
 ### [2.1.6](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.5...v2.1.6) (2021-05-13)

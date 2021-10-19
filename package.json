@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/navigation",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "private": false,
   "bugs": {
     "url": "https://github.com/kaltura/playkit-js-navigation/issues"
@@ -85,6 +85,7 @@
     "deploy:prepare": "kcontrib deploy --prepare",
     "copy-resources": "cp ./dist/* ./qa-standalone/ && cp -r ./translates ./qa-standalone/ && cp -r ./translates ./dist/",
     "infra:latest": "kcontrib infra --type=latest",
+    "contrib:latest": "kcontrib infra --type=latest",
     "infra:next": "kcontrib infra --type=next",
     "infra:local": "kcontrib infra --type=local",
     "infra:add": "kcontrib infra --add"
