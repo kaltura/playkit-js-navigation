@@ -55,7 +55,6 @@ export enum cuePointTags {
 // TODO: move to config
 const MAX_CHARACTERS = 77;
 
-// TODO: check if exist in QNA and if QNA did it more elegant
 export const convertTime = (sec: number): string => {
   const hours = Math.floor(sec / 3600);
   if (hours >= 1) {
@@ -104,8 +103,8 @@ export const fillData = (
   if (isLiveEntry) {
     item.startTime = item.createdAt;
   } else {
-    item.startTime = Math.floor(item.startTime / 1000);
-    item.displayTime = convertTime(item.startTime);
+    item.startTime = item.startTime / 1000;
+    item.displayTime = convertTime(Math.floor(item.startTime));
   }
   switch (item.cuePointType) {
     case itemTypes.Caption:

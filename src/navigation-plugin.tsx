@@ -223,7 +223,7 @@ export class NavigationPlugin
       } catch (e) {
         logger.debug('failed retrieving id3 tag metadata', {
           method: '_onTimedMetadataLoaded',
-          data: e,
+          data: e as any,
         });
       }
     }
@@ -461,13 +461,7 @@ export class NavigationPlugin
   };
 
   private _onTimeUpdate = (): void => {
-    // reduce refresh to only when the time really chanes - check UX speed
-    // TODO: handle dash format
-    const newTime = Math.ceil(this._corePlugin.player.currentTime);
-    if (newTime === this._currentTime) {
-      return;
-    }
-    this._currentTime = newTime;
+    this._currentTime = this._corePlugin.player.currentTime;
     if (this._corePlugin.player.isLive()) {
       if (this._seekDifference !== null && this._currentTimeLive) {
         // update _currentTimeLive after seek
@@ -703,7 +697,7 @@ export class NavigationPlugin
         this._isLoading = false;
         logger.error('failed retrieving navigation data', {
           method: '_fetchVodData',
-          data: error,
+          data: error as any,
         });
         this._updateKitchenSink();
       }
