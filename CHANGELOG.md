@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.9](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.8...v2.1.9) (2021-10-21)
+
+
+### Bug Fixes
+
+* **fev-1112:** calculate current time for live entries once per second ([#246](https://github.com/kaltura/playkit-js-navigation/issues/246)) ([f580d50](https://github.com/kaltura/playkit-js-navigation/commit/f580d50c70a02d5b54fba6ddcf3d1e92f850b0f7))
+
 ### [2.1.8](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.7...v2.1.8) (2021-10-19)
 
 
