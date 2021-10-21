@@ -617,6 +617,7 @@ export class NavigationPlugin
 
   private _fetchVodData = async () => {
     const requests: KalturaRequest<any>[] = [];
+    const entryId = (this._corePlugin.player as any).sources.id;
     let subTypesFilter = '';
     if (this._itemsFilter[itemTypes.Slide]) {
       subTypesFilter = `${subTypesFilter}${KalturaThumbCuePointSubType.slide},`;
@@ -627,7 +628,7 @@ export class NavigationPlugin
     if (subTypesFilter) {
       const request: CuePointListAction = new CuePointListAction({
         filter: new KalturaThumbCuePointFilter({
-          entryIdEqual: this._corePlugin.player.config.sources.id,
+          entryIdEqual: entryId,
           cuePointTypeEqual: KalturaCuePointType.thumb,
           subTypeIn: subTypesFilter,
         }),
@@ -640,7 +641,7 @@ export class NavigationPlugin
     if (this._itemsFilter[itemTypes.Hotspot]) {
       const request: CuePointListAction = new CuePointListAction({
         filter: new KalturaCuePointFilter({
-          entryIdEqual: this._corePlugin.player.config.sources.id,
+          entryIdEqual: entryId,
           cuePointTypeEqual: KalturaCuePointType.annotation,
         }),
       });
@@ -651,7 +652,7 @@ export class NavigationPlugin
     }
     if (this._itemsFilter[itemTypes.Caption]) {
       const request: CaptionAssetListAction = makeCaptionAssetListRequest(
-        this._corePlugin.player.config.sources.id
+        entryId
       );
       requests.push(request);
     }

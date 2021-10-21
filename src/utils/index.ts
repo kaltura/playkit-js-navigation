@@ -5,6 +5,8 @@ import {
 } from '../components/navigation/navigation-item/NavigationItem';
 const {get} = ObjectUtils;
 
+export const DEFAULT_SERVICE_URL = '//cdnapisec.kaltura.com/api_v3';
+
 export function getConfigValue( // TODO: consider move to contrib
   value: any,
   condition: (value: any) => boolean,
@@ -94,7 +96,7 @@ export const decodeString = (content: any): string => {
 export const fillData = (
   originalItem: any,
   ks: string,
-  serviceUrl: string,
+  serviceUrl: string = DEFAULT_SERVICE_URL,
   forceChaptersThumb = false,
   isLiveEntry = false
 ) => {
@@ -124,7 +126,7 @@ export const fillData = (
       item.displayDescription = decodeString(item.description);
       item.displayTitle = decodeString(item.title);
       if (item.assetId) {
-        item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
+        item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}`;
       }
       switch (item.subType) {
         case 1:
