@@ -123,7 +123,7 @@ export class NavigationPlugin
       endpointUrl: playerConfig.provider.env.serviceUrl,
     });
     this._kalturaClient.setDefaultRequestOptions({
-      ks: playerConfig.provider.ks,
+      ks: playerConfig.session?.ks,
     });
     this._pushNotification = new PushNotification(this._corePlugin.player);
     this._itemsOrder = prepareItemTypesOrder(pluginConfig.itemsOrder);
@@ -314,8 +314,7 @@ export class NavigationPlugin
   }
 
   private _initNotification(): void {
-    const ks = this._contribServices.getPlayerKS();
-    if (!ks) {
+    if (!this._configs.playerConfig.session?.ks) {
       logger.warn(
         'Warn: Failed to initialize.' +
           'Failed to retrieve ks from configuration ' +
@@ -332,7 +331,7 @@ export class NavigationPlugin
     } = this._configs;
     // should be created once on pluginSetup (entryId/userId registration will be called onMediaLoad)
     this._pushNotification.init({
-      ks: ks,
+      ks: this._configs.playerConfig.session?.ks,
       serviceUrl: provider.env.serviceUrl,
       clientTag: 'playkit-js-navigation',
       kalturaPlayer: this._corePlugin.player,
@@ -344,7 +343,7 @@ export class NavigationPlugin
       this._listData,
       this._pendingData,
       cuePointData,
-      this._configs.playerConfig.provider.ks,
+      this._configs.playerConfig.session?.ks!,
       this._configs.playerConfig.provider.env.serviceUrl,
       this._corePlugin.config.forceChaptersThumb,
       this._itemsOrder,
@@ -606,7 +605,7 @@ export class NavigationPlugin
     const captionList = Array.isArray(rawCaptionList)
       ? prepareVodData(
           rawCaptionList as Array<RawItemData>,
-          this._configs.playerConfig.provider.ks,
+          this._configs.playerConfig.session?.ks!,
           this._configs.playerConfig.provider.env.serviceUrl,
           this._corePlugin.config.forceChaptersThumb,
           this._itemsOrder
@@ -685,7 +684,7 @@ export class NavigationPlugin
         }
         this._initialData = prepareVodData(
           receivedCuepoints,
-          this._configs.playerConfig.provider.ks,
+          this._configs.playerConfig.session?.ks!,
           this._configs.playerConfig.provider.env.serviceUrl,
           this._corePlugin.config.forceChaptersThumb,
           this._itemsOrder
