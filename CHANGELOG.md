@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.10](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.9...v2.1.10) (2021-10-28)
+
+
+### Bug Fixes
+
+* **fev-859:** take ks from player session ([#248](https://github.com/kaltura/playkit-js-navigation/issues/248)) ([aa150e2](https://github.com/kaltura/playkit-js-navigation/commit/aa150e2cf8d61d3083b05055d6d803747e5ea82a))
+
 ### [2.1.9](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.8...v2.1.9) (2021-10-21)
 
 
