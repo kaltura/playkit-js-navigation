@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.11](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.10...v2.1.11) (2021-11-06)
+
+
+### Bug Fixes
+
+* **FEV-859:** slides doesn't appear in kitchen sink  ([#249](https://github.com/kaltura/playkit-js-navigation/issues/249)) ([48176e1](https://github.com/kaltura/playkit-js-navigation/commit/48176e1b1f48e64f323c041c019a6f3a3fa0352a))
+
 ### [2.1.10](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.9...v2.1.10) (2021-10-28)
 
 
