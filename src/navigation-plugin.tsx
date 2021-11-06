@@ -122,9 +122,6 @@ export class NavigationPlugin
       clientTag: 'playkit-js-navigation',
       endpointUrl: playerConfig.provider.env.serviceUrl,
     });
-    this._kalturaClient.setDefaultRequestOptions({
-      ks: playerConfig.session?.ks,
-    });
     this._pushNotification = new PushNotification(this._corePlugin.player);
     this._itemsOrder = prepareItemTypesOrder(pluginConfig.itemsOrder);
     this._itemsFilter = isEmptyObject(pluginConfig.itemsOrder)
@@ -236,6 +233,9 @@ export class NavigationPlugin
       this._addKitchenSinkItem();
       this._registerToPushServer();
     } else {
+      this._kalturaClient.setDefaultRequestOptions({
+        ks: this._corePlugin.player.config.session?.ks,
+      });
       this._fetchVodData();
     }
   }
