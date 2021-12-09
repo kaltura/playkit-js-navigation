@@ -13,6 +13,8 @@ export interface RawItemData {
   title?: string;
   assetId?: string;
   subType?: itemTypes;
+  partnerData: string;
+  tags: string;
 }
 
 export interface ItemData extends RawItemData {
