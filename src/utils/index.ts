@@ -333,8 +333,13 @@ export const preparePendingCuepoints = (
   );
 };
 
-function filterPreviewDuplications(sortedData: Array<ItemData>) {
-  const filteredArr = [sortedData[0]];
+function filterPreviewDuplications(
+  sortedData: Array<ItemData>
+): Array<ItemData> {
+  if (sortedData.length <= 2) {
+    return sortedData;
+  }
+  const filteredArr: Array<ItemData> = [sortedData[0]];
   for (let i = 0; i < sortedData.length - 1; i++) {
     if (
       !(
