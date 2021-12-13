@@ -343,9 +343,6 @@ export const preparePendingCuepoints = (
 export function filterPreviewDuplications(
   cues: Array<ItemData>
 ): Array<ItemData> {
-  if (!(cues[0] && cues[1])) {
-    return cues;
-  }
   const filteredArr: Array<ItemData> = [cues[0]];
   for (let i = 0; i < cues.length - 1; i++) {
     if (
