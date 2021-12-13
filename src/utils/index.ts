@@ -333,26 +333,33 @@ export const preparePendingCuepoints = (
   );
 };
 
+/**
+ * @function filterPreviewDuplications
+ * filter out all slides which are duplication of their adjacent previous slides
+ * (happens while switching from preview to live mode on the webcast app)
+ * @param { Array<ItemData>} cues - the cues data
+ * @returns {Array<ItemData>}
+ */
 export function filterPreviewDuplications(
-  sortedData: Array<ItemData>
+  cues: Array<ItemData>
 ): Array<ItemData> {
-  if (!(sortedData[0] && sortedData[1])) {
-    return sortedData;
+  if (!(cues[0] && cues[1])) {
+    return cues;
   }
-  const filteredArr: Array<ItemData> = [sortedData[0]];
-  for (let i = 0; i < sortedData.length - 1; i++) {
+  const filteredArr: Array<ItemData> = [cues[0]];
+  for (let i = 0; i < cues.length - 1; i++) {
     if (
       !(
-        sortedData[i].itemType === itemTypes.Slide &&
-        sortedData[i + 1].itemType === itemTypes.Slide &&
-        sortedData[i].title === sortedData[i + 1].title &&
-        sortedData[i].partnerData === sortedData[i + 1].partnerData &&
-        [sortedData[i].tags, sortedData[i + 1].tags].includes(
+        cues[i].itemType === itemTypes.Slide &&
+        cues[i + 1].itemType === itemTypes.Slide &&
+        cues[i].title === cues[i + 1].title &&
+        cues[i].partnerData === cues[i + 1].partnerData &&
+        [cues[i].tags, cues[i + 1].tags].includes(
           'select-a-thumb, __PREVIEW_CUEPOINT_TAG__'
         )
       )
     ) {
-      filteredArr.push(sortedData[i + 1]);
+      filteredArr.push(cues[i + 1]);
     }
   }
   return filteredArr;
