@@ -359,7 +359,7 @@ export function filterPreviewDuplications(
       filteredArr.push(cues[i + 1]);
     }
   }
-  return filteredArr;
+  return cues.length >= 2 ? filteredArr : cues;
 }
 
 export const prepareLiveData = (
