@@ -333,29 +333,6 @@ export const preparePendingCuepoints = (
   );
 };
 
-function filterPreviewDuplications(
-  sortedData: Array<ItemData>
-): Array<ItemData> {
-  if (sortedData.length <= 2) {
-    return sortedData;
-  }
-  const filteredArr: Array<ItemData> = [sortedData[0]];
-  for (let i = 0; i < sortedData.length - 1; i++) {
-    if (
-      !(
-        sortedData[i].title === sortedData[i + 1].title &&
-        sortedData[i].partnerData === sortedData[i + 1].partnerData &&
-        [sortedData[i].tags, sortedData[i + 1].tags].includes(
-          'select-a-thumb, __PREVIEW_CUEPOINT_TAG__'
-        )
-      )
-    ) {
-      filteredArr.push(sortedData[i + 1]);
-    }
-  }
-  return filteredArr;
-}
-
 export const prepareLiveData = (
   currentData: Array<ItemData>,
   pendingData: Array<ItemData>,
@@ -389,8 +366,7 @@ export const prepareLiveData = (
   const filteredPendingData = pendingData.filter((cuepoint: ItemData) => {
     return !result.listData.find((item: ItemData) => item.id === cuepoint.id);
   });
-  const sortedData = sortItems(currentData.concat(result.listData), itemOrder);
-  result.listData = filterPreviewDuplications(sortedData);
+  result.listData = sortItems(currentData.concat(result.listData), itemOrder);
   result.pendingData = filteredPendingData.concat(result.pendingData);
   return result;
 };

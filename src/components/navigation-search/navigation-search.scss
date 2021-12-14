@@ -44,6 +44,7 @@
     height: 32px;
     border: none;
     cursor: pointer;
+    margin-top: 3px;
   }
   &.active {
     color: #cccccc;
@@ -54,3 +55,10 @@
     border-radius: 4px;
   }
 }
+
+:global {
+  .playkit-tooltip {
+    z-index: 1;
+  }
+}
+
