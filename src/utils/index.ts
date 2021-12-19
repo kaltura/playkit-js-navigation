@@ -343,23 +343,33 @@ export const preparePendingCuepoints = (
 export function filterPreviewDuplications(
   cues: Array<ItemData>
 ): Array<ItemData> {
-  const filteredArr: Array<ItemData> = [cues[0]];
-  for (let i = 0; i < cues.length - 1; i++) {
-    if (
-      !(
-        cues[i].itemType === itemTypes.Slide &&
-        cues[i + 1].itemType === itemTypes.Slide &&
-        cues[i].title === cues[i + 1].title &&
-        cues[i].partnerData === cues[i + 1].partnerData &&
-        [cues[i].tags, cues[i + 1].tags].includes(
-          'select-a-thumb, __PREVIEW_CUEPOINT_TAG__'
-        )
+  const isDuplicatedSlide = (
+    previousSlide: ItemData | null,
+    currentSlide: ItemData
+  ) => {
+    return (
+      previousSlide &&
+      currentSlide.title === previousSlide.title &&
+      currentSlide.partnerData === previousSlide.partnerData &&
+      [currentSlide.tags, previousSlide.tags].includes(
+        'select-a-thumb, __PREVIEW_CUEPOINT_TAG__'
       )
-    ) {
-      filteredArr.push(cues[i + 1]);
+    );
+  };
+
+  const filteredArr: Array<ItemData> = [];
+  let previousSlide: ItemData | null = null;
+  for (let i = 0; i < cues.length; i++) {
+    if (cues[i].itemType !== itemTypes.Slide) {
+      filteredArr.push(cues[i]);
+    } else {
+      if (!isDuplicatedSlide(previousSlide, cues[i])) {
+        filteredArr.push(cues[i]);
+      }
+      previousSlide = cues[i];
     }
   }
-  return cues.length >= 2 ? filteredArr : cues;
+  return filteredArr;
 }
 
 export const prepareLiveData = (
