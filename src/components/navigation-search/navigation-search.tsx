@@ -114,6 +114,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
               label="Search in Video"
               type="bottom"
               className={styles.tooltip}>
+              {/* Fragment added to overcome css issues */}
               <Fragment>
                 <button
                   className={styles.clearIcon}
