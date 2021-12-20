@@ -333,6 +333,45 @@ export const preparePendingCuepoints = (
   );
 };
 
+/**
+ * @function filterPreviewDuplications
+ * filter out all slides which are duplication of their adjacent previous slides
+ * (happens while switching from preview to live mode on the webcast app)
+ * @param { Array<ItemData>} cues - the cues data
+ * @returns {Array<ItemData>}
+ */
+export function filterPreviewDuplications(
+  cues: Array<ItemData>
+): Array<ItemData> {
+  const isDuplicatedSlide = (
+    previousSlide: ItemData | null,
+    currentSlide: ItemData
+  ) => {
+    return (
+      previousSlide &&
+      currentSlide.title === previousSlide.title &&
+      currentSlide.partnerData === previousSlide.partnerData &&
+      [currentSlide.tags, previousSlide.tags].includes(
+        'select-a-thumb, __PREVIEW_CUEPOINT_TAG__'
+      )
+    );
+  };
+
+  const filteredArr: Array<ItemData> = [];
+  let previousSlide: ItemData | null = null;
+  for (let i = 0; i < cues.length; i++) {
+    if (cues[i].itemType !== itemTypes.Slide) {
+      filteredArr.push(cues[i]);
+    } else {
+      if (!isDuplicatedSlide(previousSlide, cues[i])) {
+        filteredArr.push(cues[i]);
+      }
+      previousSlide = cues[i];
+    }
+  }
+  return filteredArr;
+}
+
 export const prepareLiveData = (
   currentData: Array<ItemData>,
   pendingData: Array<ItemData>,

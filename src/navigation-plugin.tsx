@@ -45,6 +45,7 @@ import {
   isEmptyObject,
   checkResponce,
   filterCuepointsByStartTime,
+  filterPreviewDuplications,
 } from './utils';
 import {
   getCaptions,
@@ -98,7 +99,7 @@ export class NavigationPlugin
   private _pushNotification: PushNotification;
   private _kalturaClient = new KalturaClient();
   private _initialData: Array<ItemData> = [];
-  private _listData: Array<ItemData> = [];
+  private _listItemsData: Array<ItemData> = [];
   private _pendingData: Array<ItemData> = []; //_pendingData keeps live quepionts till player currentTime reach quepoint start-time
   private _captionAssetList: KalturaCaptionAsset[] = [];
   private _triggeredByKeyboard = false;
@@ -111,6 +112,14 @@ export class NavigationPlugin
   private _currentTime = 0;
   private _currentTimeLive = 0;
   private _seekDifference: number | null = 0;
+
+  private get _listData() {
+    return this._listItemsData;
+  }
+
+  private set _listData(data: Array<ItemData>) {
+    this._listItemsData = filterPreviewDuplications(data);
+  }
 
   constructor(
     private _corePlugin: CorePlugin,
@@ -470,7 +479,6 @@ export class NavigationPlugin
         // update _currentTimeLive after seek
         this._currentTimeLive = this._currentTimeLive - this._seekDifference;
       } else if (this._id3Timestamp) {
-
         if (this._id3Timestamp === this._currentTimeLive) {
           // prevent updating if calculated _currentTimeLive value the same as _id3Timestamp
           this._id3Timestamp = null;
