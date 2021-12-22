@@ -119,7 +119,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
                 <button
                   className={styles.clearIcon}
                   onClick={this._onClear}
-                  tabIndex={1}
+                  tabIndex={0}
                 />
               </Fragment>
             </Tooltip>
