@@ -1,6 +1,8 @@
-import {h, Component} from 'preact';
+import {h, Component, Fragment} from 'preact';
 import * as styles from './navigation-search.scss';
 import {debounce} from '@playkit-js-contrib/common';
+
+const {Tooltip} = KalturaPlayer.ui.components;
 
 export interface SearchProps {
   onChange(value: string): void;
@@ -107,11 +109,21 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
           }}
         />
         {searchQuery && (
-          <button
-            className={styles.clearIcon}
-            onClick={this._onClear}
-            tabIndex={1}
-          />
+          <div>
+            <Tooltip
+              label="Search in Video"
+              type="bottom"
+              className={styles.tooltip}>
+              {/* Fragment added to overcome css issues */}
+              <Fragment>
+                <button
+                  className={styles.clearIcon}
+                  onClick={this._onClear}
+                  tabIndex={0}
+                />
+              </Fragment>
+            </Tooltip>
+          </div>
         )}
       </div>
     );

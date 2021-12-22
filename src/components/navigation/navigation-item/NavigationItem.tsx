@@ -162,6 +162,7 @@ export class NavigationItem extends Component<Props, State> {
     } = data;
     return (
       <div
+        tabIndex={0}
         ref={node => {
           this._itemElementRef = node;
         }}
