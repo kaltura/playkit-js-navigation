@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.12](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.11...v2.1.12) (2021-12-23)
+
+
+### Bug Fixes
+
+* **FEV-861:** player v7 Duplicate slide is displayed on the kitchen sink when moving from preview to live ([#250](https://github.com/kaltura/playkit-js-navigation/issues/250)) ([373c300](https://github.com/kaltura/playkit-js-navigation/commit/373c300fd8bb9f8263ae6965ebda0af842c9215e))
+
 ### [2.1.11](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.10...v2.1.11) (2021-11-06)
 
 
