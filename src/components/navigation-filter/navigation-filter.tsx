@@ -63,7 +63,7 @@ export class NavigationFilter extends Component<FilterProps> {
     return (
       <button
         key={tab.type}
-        tabIndex={1}
+        tabIndex={0}
         className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
         style={style}
         onClick={() => this._handleChange(tab.type)}>

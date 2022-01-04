@@ -103,7 +103,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onMouseDown={this._handleMouseDown}
-          tabIndex={1}
+          tabIndex={0}
           ref={(node) => {
             this._inputRef = node;
           }}

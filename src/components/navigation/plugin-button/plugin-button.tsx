@@ -18,7 +18,7 @@ export const PluginButton = ({
     disabled ? styles.disabled : '',
   ].join(' ');
   return (
-    <button className={iconStyles} tabIndex={1} onClick={onClick}>
+    <button className={iconStyles} tabIndex={0} onClick={onClick}>
       <div className={styles.navigationPluginIcon} />
     </button>
   );
