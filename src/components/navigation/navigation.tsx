@@ -273,7 +273,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         {hasError && <p className={styles.pluginName}>Navigation</p>}
         <button
           className={styles.closeButton}
-          tabIndex={1}
+          tabIndex={0}
           onClick={this.props.onClose}
         />
         {!hasError && (

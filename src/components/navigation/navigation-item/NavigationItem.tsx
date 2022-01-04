@@ -2,7 +2,8 @@ import {Component, h, Fragment} from 'preact';
 import * as styles from './NavigationItem.scss';
 import {groupTypes, itemTypes} from '../../../utils';
 import {IconsFactory} from '../icons/IconsFactory';
-
+// @ts-ignore
+const {KeyMap} = KalturaPlayer.ui.utils;
 export interface RawItemData {
   id: string;
   cuePointType: itemTypes;
@@ -116,8 +117,14 @@ export class NavigationItem extends Component<Props, State> {
     this.props.onClick(this.props.data.startTime);
   };
 
+  private _handleKeyHandler = (e: KeyboardEvent) => {
+    if (e.keyCode === KeyMap.ENTER || e.keyCode === KeyMap.SPACE) {
+      this._handleClickHandler();
+    }
+  };
+
   private _handleExpandChange = (event: Event) => {
-    event.stopImmediatePropagation();
+    event.stopPropagation();
     this.setState({
       expandText: !this.state.expandText,
     });
@@ -163,7 +170,8 @@ export class NavigationItem extends Component<Props, State> {
     return (
       <div
         tabIndex={0}
-        ref={node => {
+        role="button"
+        ref={(node) => {
           this._itemElementRef = node;
         }}
         className={[
@@ -172,7 +180,8 @@ export class NavigationItem extends Component<Props, State> {
           selectedItem ? styles.selected : null,
         ].join(' ')}
         data-entry-id={id}
-        onClick={this._handleClickHandler}>
+        onClick={this._handleClickHandler}
+        onKeyDown={this._handleKeyHandler}>
         <div
           className={[
             styles.metadata,
@@ -193,7 +202,7 @@ export class NavigationItem extends Component<Props, State> {
           {previewImage && this._renderThumbnail()}
           <div
             className={styles.contentText}
-            ref={node => {
+            ref={(node) => {
               this._textContainerRef = node;
             }}>
             {shorthandTitle && !this.state.expandText && (
@@ -208,12 +217,24 @@ export class NavigationItem extends Component<Props, State> {
               <div className={styles.description}>{displayDescription}</div>
             )}
             {hasShowMore && (
-              <button
+              <div
+                role={'button'}
+                tabIndex={0}
                 className={styles.showMoreButton}
-                onClick={this._handleExpandChange}>
+                onClick={(e) => {
+                  this._handleExpandChange(e);
+                }}
+                onKeyDown={(e) => {
+                  if (
+                    e.keyCode === KeyMap.ENTER ||
+                    e.keyCode === KeyMap.SPACE
+                  ) {
+                    this._handleExpandChange(e);
+                  }
+                }}>
                 {/* TODO - locale */}
                 {this.state.expandText ? 'Read Less' : 'Read More'}
-              </button>
+              </div>
             )}
           </div>
         </div>
