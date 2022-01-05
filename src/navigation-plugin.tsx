@@ -527,6 +527,7 @@ export class NavigationPlugin
   };
 
   private _addKitchenSinkItem(): void {
+    const buttonLabel = 'Search in Video';
     const {
       expandMode,
       position,
@@ -540,8 +541,8 @@ export class NavigationPlugin
           : KitchenSinkExpandModes.AlongSideTheVideo,
       renderIcon: (isActive: boolean) => {
         return (
-          <Tooltip label="Search in Video" type="bottom">
-            <PluginButton onClick={this._handleIconClick} selected={isActive} />
+          <Tooltip label={buttonLabel} type="bottom">
+            <PluginButton label={buttonLabel} onClick={this._handleIconClick} selected={isActive} />
           </Tooltip>
         );
       },

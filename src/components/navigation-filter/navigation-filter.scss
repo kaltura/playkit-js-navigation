@@ -53,4 +53,12 @@
     border-radius: 4px;
     background-color: rgba($color: #fff, $alpha: 0.16);
   }
+
+  :global {
+    .playkit-tooltip {
+      display: flex;
+    }
+  }
 }
+
+

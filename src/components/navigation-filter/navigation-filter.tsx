@@ -6,7 +6,7 @@ import {
   IconColors,
   BackgroundColors,
 } from '../navigation/icons/IconsFactory';
-const {Tooltip} = KalturaPlayer.ui.components.Tooltip;
+const {Tooltip} = KalturaPlayer.ui.components;
 
 export interface FilterProps {
   onChange(value: itemTypes): void;
@@ -61,28 +61,29 @@ export class NavigationFilter extends Component<FilterProps> {
       backgroundColor: BackgroundColors[tab.type],
     };
     return (
-      <button
-        key={tab.type}
-        tabIndex={0}
-        className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
-        style={style}
-        onClick={() => this._handleChange(tab.type)}>
-        {tab.type === itemTypes.All ? (
-          <span>{this.props.translates[itemTypes.All]}</span>
-        ) : (
-          <Fragment>
-            <Tooltip label={tab.label}>
+      <Tooltip label={tab.label}>
+        <button
+          aria-label={tab.label}
+          key={tab.type}
+          tabIndex={0}
+          className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
+          style={style}
+          onClick={() => this._handleChange(tab.type)}>
+          {tab.type === itemTypes.All ? (
+            <span>{this.props.translates[itemTypes.All]}</span>
+          ) : (
+            <Fragment>
               <IconsFactory
                 iconType={tab.type}
                 color={tab.isActive ? null : '#cccccc'}
               />
-            </Tooltip>
-            {this.props.availableTabs.length < 4 && (
-              <span className={styles.label}>{tab.label}</span>
-            )}
-          </Fragment>
-        )}
-      </button>
+              {this.props.availableTabs.length < 4 && (
+                <span className={styles.label}>{tab.label}</span>
+              )}
+            </Fragment>
+          )}
+        </button>
+      </Tooltip>
     );
   };
 
@@ -126,7 +127,7 @@ export class NavigationFilter extends Component<FilterProps> {
       <div className={styles.filterRoot}>
         {totalResults !== 0 && (
           <div className={styles.tabsWrapper}>
-            {tabs.map(tab => {
+            {tabs.map((tab) => {
               return this._renderTab(tab);
             })}
           </div>
