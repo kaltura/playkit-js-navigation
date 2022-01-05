@@ -47,10 +47,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
   }
   componentDidUpdate(previousProps: Readonly<SearchProps>): void {
     const {kitchenSinkActive, toggledWithEnter} = this.props;
-    if (
-      !previousProps.kitchenSinkActive &&
-      kitchenSinkActive
-    ) {
+    if (!previousProps.kitchenSinkActive && kitchenSinkActive) {
       this._focusedByMouse = !toggledWithEnter;
       this._inputRef?.focus();
     }
@@ -110,19 +107,12 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
         />
         {searchQuery && (
           <div>
-            <Tooltip
-              label="Search in Video"
-              type="bottom"
-              className={styles.tooltip}>
-              {/* Fragment added to overcome css issues */}
-              <Fragment>
-                <button
-                  className={styles.clearIcon}
-                  onClick={this._onClear}
-                  tabIndex={0}
-                />
-              </Fragment>
-            </Tooltip>
+            <button
+              aria-label={'Clear search'}
+              className={styles.clearIcon}
+              onClick={this._onClear}
+              tabIndex={0}
+            />
           </div>
         )}
       </div>

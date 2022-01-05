@@ -5,9 +5,11 @@ interface PluginButtonProps {
   onClick: (event: MouseEvent) => void;
   selected: boolean;
   disabled?: boolean;
+  label: string;
 }
 
 export const PluginButton = ({
+  label,
   onClick,
   selected,
   disabled,
@@ -18,7 +20,11 @@ export const PluginButton = ({
     disabled ? styles.disabled : '',
   ].join(' ');
   return (
-    <button className={iconStyles} tabIndex={0} onClick={onClick}>
+    <button
+      aria-label={label}
+      className={iconStyles}
+      tabIndex={0}
+      onClick={onClick}>
       <div className={styles.navigationPluginIcon} />
     </button>
   );

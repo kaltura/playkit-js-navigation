@@ -272,6 +272,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         )}
         {hasError && <p className={styles.pluginName}>Navigation</p>}
         <button
+          aria-label={'Close search in video'}
           className={styles.closeButton}
           tabIndex={0}
           onClick={this.props.onClose}
