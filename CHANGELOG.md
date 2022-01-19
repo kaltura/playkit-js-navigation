@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.13](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.12...v2.1.13) (2022-01-19)
+
+
+### Bug Fixes
+
+* **FEV-1028:** fix more a11y issues ([#252](https://github.com/kaltura/playkit-js-navigation/issues/252)) ([313de4d](https://github.com/kaltura/playkit-js-navigation/commit/313de4df04465d506614359b75b84eb8bb942768))
+* **FEV-1160:** missing aria-labels ([#253](https://github.com/kaltura/playkit-js-navigation/issues/253)) ([076c275](https://github.com/kaltura/playkit-js-navigation/commit/076c27525c815397352b2a2c4acf6fef04a65fe9))
+
 ### [2.1.12](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.11...v2.1.12) (2021-12-23)
 
 
