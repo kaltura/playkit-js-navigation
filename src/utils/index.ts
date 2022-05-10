@@ -90,6 +90,37 @@ export const decodeString = (content: any): string => {
     .replace(/&quot;/gi, '"');
 };
 
+export function getKs(player: any): string {
+  if (player.shouldAddKs && player.shouldAddKs() && player.config.session?.ks) {
+    return player.config.session.ks;
+  }
+  return '';
+}
+
+export function makeAssetUrl(
+  serviceUrl: string,
+  assetId: string,
+  ks: string = ''
+) {
+  return `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${assetId}${
+    ks ? `/ks/${ks}` : ''
+  }?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
+}
+
+export function makeChapterThumb(
+  serviceUrl: string,
+  partnerId: number,
+  entryId: string,
+  startTime: number,
+  ks: string = ''
+) {
+  return `${
+    serviceUrl.split('api_v3')[0]
+  }/p/${partnerId}/sp/${partnerId}00/thumbnail/entry_id/${entryId}/width/400/vid_sec/${startTime}${
+    ks ? `/ks/${ks}` : ''
+  }`;
+}
+
 // normlise time, extract description and title, find thumbnail if exist etc'
 export const fillData = (
   originalItem: any,
@@ -124,7 +155,7 @@ export const fillData = (
       item.displayDescription = decodeString(item.description);
       item.displayTitle = decodeString(item.title);
       if (item.assetId) {
-        item.previewImage = `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${item.assetId}/ks/${ks}?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
+        item.previewImage = makeAssetUrl(serviceUrl, item.assetId, ks);
       }
       switch (item.subType) {
         case 1:
@@ -133,11 +164,13 @@ export const fillData = (
         case 2:
           item.itemType = itemTypes.Chapter;
           if (!item.previewImage && forceChaptersThumb) {
-            item.previewImage = `${serviceUrl.split('api_v3')[0]}/p/${
-              item.partnerId
-            }/sp/${item.partnerId}00/thumbnail/entry_id/${
-              item.entryId
-            }/width/400/vid_sec/${item.startTime}/ks/${ks}`;
+            item.previewImage = makeChapterThumb(
+              serviceUrl,
+              item.partnerId,
+              item.entryId,
+              item.startTime,
+              ks
+            );
           }
           break;
       }

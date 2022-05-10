@@ -46,6 +46,7 @@ import {
   checkResponce,
   filterCuepointsByStartTime,
   filterPreviewDuplications,
+  getKs,
 } from './utils';
 import {
   getCaptions,
@@ -352,7 +353,7 @@ export class NavigationPlugin
       this._listData,
       this._pendingData,
       cuePointData,
-      this._configs.playerConfig.session?.ks!,
+      getKs(this._corePlugin.player),
       this._configs.playerConfig.provider.env.serviceUrl,
       this._corePlugin.config.forceChaptersThumb,
       this._itemsOrder,
@@ -614,7 +615,7 @@ export class NavigationPlugin
     const captionList = Array.isArray(rawCaptionList)
       ? prepareVodData(
           rawCaptionList as Array<RawItemData>,
-          this._configs.playerConfig.session?.ks!,
+          getKs(this._corePlugin.player),
           this._configs.playerConfig.provider.env.serviceUrl,
           this._corePlugin.config.forceChaptersThumb,
           this._itemsOrder
@@ -693,7 +694,7 @@ export class NavigationPlugin
         }
         this._initialData = prepareVodData(
           receivedCuepoints,
-          this._configs.playerConfig.session?.ks!,
+          getKs(this._corePlugin.player),
           this._configs.playerConfig.provider.env.serviceUrl,
           this._corePlugin.config.forceChaptersThumb,
           this._itemsOrder
