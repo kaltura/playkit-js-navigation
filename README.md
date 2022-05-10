@@ -3,13 +3,12 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 ## Overview
-> this section will be added soon
-
-## Project structure
-> this section will be added soon
+Kaltura navigation plugin.
 
 ## Commands
-> this section will be added soon
+Run dev server: `npm run serve`;<br/>
+Update contrib: `npm run infra:latest`;<br/>
+Bump version: `npm run deploy:prepare`;<br/>
 
 ## Configuration
 Plugin configuration:<br/>
@@ -28,3 +27,9 @@ Plugin configuration:<br/>
         }
     );
     ```
+## Troubleshooting
+### Dev env
+Node version: up to 14.18.1<br/>
+If nvm installed: `nvm use` change version of current terminal to required.<br/>
+### ARM Architecture support
+Install dependencies with `npm install --target_arch=x64` set target arch for running it through Rosetta (requires Rosetta installation).<br/>
