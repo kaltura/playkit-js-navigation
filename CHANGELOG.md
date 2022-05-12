@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.14](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.13...v2.1.14) (2022-05-12)
+
+
+### Bug Fixes
+
+* **FEV-1249:** use 'player.shouldAddKs' method to define if KS needed ([#259](https://github.com/kaltura/playkit-js-navigation/issues/259)) ([4973000](https://github.com/kaltura/playkit-js-navigation/commit/4973000ce7a3e642e3f9eb9065b2eeab8ad2b8b4))
+
 ### [2.1.13](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.12...v2.1.13) (2022-01-19)
 
 
