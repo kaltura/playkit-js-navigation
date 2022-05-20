@@ -731,9 +731,11 @@ export class NavigationPlugin
         responses.forEach((response) => {
           if (checkResponce(response, KalturaCuePointListResponse)) {
             const cuePointListResponseData = response.result.objects as Array<RawItemData>;
-            const cuePoint: RawItemData = cuePointListResponseData[0];
-            if (cuePoint instanceof KalturaThumbCuePoint && (cuePoint as RawItemData).assetId) {
-              this._fetchThumbAssetUrl((cuePoint as RawItemData).assetId as string);
+            const thumbCuePoint = cuePointListResponseData.find(cuePoint => {
+              return cuePoint instanceof KalturaThumbCuePoint && (cuePoint as RawItemData).assetId;
+            })
+            if (thumbCuePoint) {
+              this._fetchThumbAssetUrl(thumbCuePoint.assetId as string);
               shouldWaitBaseThumbAssetUrlPromise = true;
             }
             receivedCuepoints = receivedCuepoints.concat(cuePointListResponseData);
