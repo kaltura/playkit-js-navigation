@@ -730,7 +730,7 @@ export class NavigationPlugin
         let shouldWaitBaseThumbAssetUrlPromise = false;
         responses.forEach((response) => {
           if (checkResponce(response, KalturaCuePointListResponse)) {
-            let cuePointListResponseData = response.result.objects as Array<RawItemData>;
+            const cuePointListResponseData = response.result.objects as Array<RawItemData>;
             if (cuePointListResponseData[0] instanceof KalturaThumbCuePoint) {
               const thumbCuePoint: RawItemData = cuePointListResponseData[0];
               this._fetchThumbAssetUrl(thumbCuePoint?.assetId as string);
