@@ -97,14 +97,13 @@ export function getKs(player: any): string {
   return '';
 }
 
-export function makeAssetUrl(
-  serviceUrl: string,
-  assetId: string,
-  ks: string = ''
-) {
-  return `${serviceUrl}/index.php/service/thumbAsset/action/serve/thumbAssetId/${assetId}${
-    ks ? `/ks/${ks}` : ''
-  }?thumbParams:objectType=KalturaThumbParams&thumbParams:width=400`;
+export function makeAssetUrl(baseThumbAssetUrl: string, assetId: string) {
+  let assetUrl = '';
+  // for some thumb cue points, assetId may be undefined from the API.
+  if (typeof assetId !== 'undefined') {
+    assetUrl = baseThumbAssetUrl.replace(/thumbAssetId\/([^\/]+)/, '/thumbAssetId/' + assetId);
+  }
+  return assetUrl;
 }
 
 export function makeChapterThumb(
@@ -126,6 +125,7 @@ export const fillData = (
   originalItem: any,
   ks: string,
   serviceUrl: string,
+  baseThumbAssetUrl = '',
   forceChaptersThumb = false,
   isLiveEntry = false
 ) => {
@@ -155,7 +155,7 @@ export const fillData = (
       item.displayDescription = decodeString(item.description);
       item.displayTitle = decodeString(item.title);
       if (item.assetId) {
-        item.previewImage = makeAssetUrl(serviceUrl, item.assetId, ks);
+        item.previewImage = makeAssetUrl(baseThumbAssetUrl, item.assetId);
       }
       switch (item.subType) {
         case 1:
@@ -246,11 +246,12 @@ export const prepareVodData = (
   ks: string,
   serviceUrl: string,
   forceChaptersThumb: boolean,
-  itemOrder: typeof itemTypesOrder
+  itemOrder: typeof itemTypesOrder,
+  baseThumbAssetUrl?: string
 ): Array<ItemData> => {
   const filledData = receivedCuepoints.map((cuepoint: RawItemData) => {
     return {
-      ...fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, false),
+      ...fillData(cuepoint, ks, serviceUrl, baseThumbAssetUrl, forceChaptersThumb, false),
       liveTypeCuepoint: false,
     };
   });
@@ -413,7 +414,8 @@ export const prepareLiveData = (
   serviceUrl: string,
   forceChaptersThumb: boolean,
   itemOrder: typeof itemTypesOrder,
-  currentTimeLive: number
+  currentTimeLive: number,
+  baseThumbAssetUrl?: string
 ): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
   if (!newData || newData.length === 0) {
     // Wrong or empty data
@@ -429,7 +431,7 @@ export const prepareLiveData = (
   );
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
   receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
-    return fillData(cuepoint, ks, serviceUrl, forceChaptersThumb, true);
+    return fillData(cuepoint, ks, serviceUrl, baseThumbAssetUrl, forceChaptersThumb, true);
   });
   const result: {
     listData: Array<ItemData>;
