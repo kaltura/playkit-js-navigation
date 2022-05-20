@@ -731,9 +731,9 @@ export class NavigationPlugin
         responses.forEach((response) => {
           if (checkResponce(response, KalturaCuePointListResponse)) {
             const cuePointListResponseData = response.result.objects as Array<RawItemData>;
-            if (cuePointListResponseData[0] instanceof KalturaThumbCuePoint) {
-              const thumbCuePoint: RawItemData = cuePointListResponseData[0];
-              this._fetchThumbAssetUrl(thumbCuePoint?.assetId as string);
+            const cuePoint: RawItemData = cuePointListResponseData[0];
+            if (cuePoint instanceof KalturaThumbCuePoint && (cuePoint as RawItemData).assetId) {
+              this._fetchThumbAssetUrl((cuePoint as RawItemData).assetId as string);
               shouldWaitBaseThumbAssetUrlPromise = true;
             }
             receivedCuepoints = receivedCuepoints.concat(cuePointListResponseData);
