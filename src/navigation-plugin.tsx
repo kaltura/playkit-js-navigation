@@ -31,6 +31,7 @@ import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCa
 import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
 import {KalturaCaptionAssetListResponse} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetListResponse';
 import {KalturaCuePointListResponse} from 'kaltura-typescript-client/api/types/KalturaCuePointListResponse';
+import {ThumbAssetGetUrlAction} from "kaltura-typescript-client/api/types/ThumbAssetGetUrlAction";
 import {KalturaClient, KalturaRequest} from 'kaltura-typescript-client';
 import {
   getConfigValue,
@@ -114,6 +115,17 @@ export class NavigationPlugin
   private _currentTimeLive = 0;
   private _seekDifference: number | null = 0;
 
+  private _makeThumbUrlLoaderResolvePromise = () => {
+    return new Promise<void>(res => {
+      this._baseThumbAssetUrlResolvePromise = res;
+    });
+  };
+
+  private _baseThumbAssetUrl = '';
+  private _baseThumbAssetUrlResolvePromise = () => {};
+  private _baseThumbAssetUrlPromise = this._makeThumbUrlLoaderResolvePromise();
+  private _baseThumbAssetUrlIsFetching = false;
+
   private get _listData() {
     return this._listItemsData;
   }
@@ -137,6 +149,34 @@ export class NavigationPlugin
     this._itemsFilter = isEmptyObject(pluginConfig.itemsOrder)
       ? itemTypesOrder
       : pluginConfig.itemsOrder;
+  }
+
+  private _fetchThumbAssetUrl = (thumbAssetId: string): void => {
+    if (!this._baseThumbAssetUrl && !this._baseThumbAssetUrlIsFetching) {
+      this._baseThumbAssetUrlIsFetching = true;
+      this._kalturaClient.request(new ThumbAssetGetUrlAction({id: thumbAssetId}))
+        .then(response => {
+          this._baseThumbAssetUrlIsFetching = false;
+          if (response) {
+            this._baseThumbAssetUrl = response;
+            this._baseThumbAssetUrlResolvePromise();
+          }
+        }, err => {
+          this._baseThumbAssetUrlIsFetching = false;
+          logger.error(
+            `Can't load baseThumbAssetUrl`,
+            {
+              method: '_getBaseThumbAssetUrl',
+              data: err,
+            }
+          );
+        })
+    }
+  }
+
+  private _resetBaseThumbAssetUrl = () => {
+    this._baseThumbAssetUrl = '';
+    this._baseThumbAssetUrlPromise = this._makeThumbUrlLoaderResolvePromise();
   }
 
   private _updateKitchenSink = () => {
@@ -251,6 +291,7 @@ export class NavigationPlugin
   }
 
   onMediaUnload(): void {
+    this._resetBaseThumbAssetUrl();
     this._removePlayerListeners();
     if (this._corePlugin.player.isLive()) {
       this._pushNotification.reset();
@@ -357,7 +398,8 @@ export class NavigationPlugin
       this._configs.playerConfig.provider.env.serviceUrl,
       this._corePlugin.config.forceChaptersThumb,
       this._itemsOrder,
-      this._currentTimeLive
+      this._currentTimeLive,
+      this._baseThumbAssetUrl
     );
     this._listData = listData;
     this._pendingData = pendingData;
@@ -387,11 +429,15 @@ export class NavigationPlugin
   };
 
   private _handleThumbMessages = ({thumbs}: ThumbNotificationsEvent): void => {
-    logger.debug('handle push notification event', {
-      method: '_handleThumbMessages',
-      data: thumbs,
-    });
-    this._updateData(thumbs);
+    this._fetchThumbAssetUrl(thumbs[0]?.assetId);
+    this._baseThumbAssetUrlPromise.then(() => {
+      // wait till baseThumbAssetUrl fetched
+      logger.debug('handle push notification event', {
+        method: '_handleThumbMessages',
+        data: thumbs,
+      });
+      this._updateData(thumbs);
+    })
   };
 
   // private _handleSlideMessages = ({
@@ -679,11 +725,18 @@ export class NavigationPlugin
         }
         // extract all cuepoints from all requests
         let receivedCuepoints: Array<RawItemData> = [];
+        let shouldWaitBaseThumbAssetUrlPromise = false;
         responses.forEach((response) => {
           if (checkResponce(response, KalturaCuePointListResponse)) {
-            receivedCuepoints = receivedCuepoints.concat(
-              response.result.objects as Array<RawItemData>
-            );
+            const cuePointListResponseData = response.result.objects as Array<RawItemData>;
+            const thumbCuePoint = cuePointListResponseData.find(cuePoint => {
+              return cuePoint instanceof KalturaThumbCuePoint && (cuePoint as RawItemData).assetId;
+            })
+            if (thumbCuePoint) {
+              this._fetchThumbAssetUrl(thumbCuePoint.assetId as string);
+              shouldWaitBaseThumbAssetUrlPromise = true;
+            }
+            receivedCuepoints = receivedCuepoints.concat(cuePointListResponseData);
           } else if (checkResponce(response, KalturaCaptionAssetListResponse)) {
             this._captionAssetList = response.result.objects;
           }
@@ -692,12 +745,17 @@ export class NavigationPlugin
           // for VOD type of media initialize plugin UI only if content exist
           this._addKitchenSinkItem();
         }
+        if (shouldWaitBaseThumbAssetUrlPromise) {
+          // wait till baseThumbAssetUrl fetched
+          await this._baseThumbAssetUrlPromise;
+        }
         this._initialData = prepareVodData(
           receivedCuepoints,
           getKs(this._corePlugin.player),
           this._configs.playerConfig.provider.env.serviceUrl,
           this._corePlugin.config.forceChaptersThumb,
-          this._itemsOrder
+          this._itemsOrder,
+          this._baseThumbAssetUrl
         );
         if (this._captionAssetList.length) {
           const captionList = await this._loadCaptions();
