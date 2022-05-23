@@ -32,7 +32,6 @@ import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/Captio
 import {KalturaCaptionAssetListResponse} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetListResponse';
 import {KalturaCuePointListResponse} from 'kaltura-typescript-client/api/types/KalturaCuePointListResponse';
 import {ThumbAssetGetUrlAction} from "kaltura-typescript-client/api/types/ThumbAssetGetUrlAction";
-import {KalturaThumbParams} from "kaltura-typescript-client/api/types/KalturaThumbParams";
 import {KalturaClient, KalturaRequest} from 'kaltura-typescript-client';
 import {
   getConfigValue,
@@ -155,8 +154,7 @@ export class NavigationPlugin
   private _fetchThumbAssetUrl = (thumbAssetId: string): void => {
     if (!this._baseThumbAssetUrl && !this._baseThumbAssetUrlIsFetching) {
       this._baseThumbAssetUrlIsFetching = true;
-      const thumbParams = new KalturaThumbParams();
-      this._kalturaClient.request(new ThumbAssetGetUrlAction({id: thumbAssetId, storageId: 0, thumbParams}))
+      this._kalturaClient.request(new ThumbAssetGetUrlAction({id: thumbAssetId}))
         .then(response => {
           this._baseThumbAssetUrlIsFetching = false;
           if (response) {
