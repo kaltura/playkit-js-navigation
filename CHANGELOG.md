@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.15](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.14...v2.1.15) (2022-05-26)
+
+
+### Bug Fixes
+
+* **FEV-1249:** Kaltura CuePoints loads thumb assets always with KS ([#260](https://github.com/kaltura/playkit-js-navigation/issues/260)) ([ccd98cd](https://github.com/kaltura/playkit-js-navigation/commit/ccd98cd270e5238993fc00ad40ceb42eb637bf1d))
+
 ### [2.1.14](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.13...v2.1.14) (2022-05-12)
 
 
