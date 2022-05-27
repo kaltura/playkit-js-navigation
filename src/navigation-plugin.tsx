@@ -278,14 +278,14 @@ export class NavigationPlugin
 
   onMediaLoad(): void {
     this._addPlayerListeners();
+    this._kalturaClient.setDefaultRequestOptions({
+      ks: this._corePlugin.player.config.session?.ks,
+    });
     if (this._corePlugin.player.isLive()) {
       // always initialize plugin UI for live type of media
       this._addKitchenSinkItem();
       this._registerToPushServer();
     } else {
-      this._kalturaClient.setDefaultRequestOptions({
-        ks: this._corePlugin.player.config.session?.ks,
-      });
       this._fetchVodData();
     }
   }
