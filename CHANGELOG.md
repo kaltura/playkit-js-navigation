@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.16](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.15...v2.1.16) (2022-05-27)
+
+
+### Bug Fixes
+
+* **FEV-1264:** set KS for both VOD and Live entries ([#261](https://github.com/kaltura/playkit-js-navigation/issues/261)) ([c952e44](https://github.com/kaltura/playkit-js-navigation/commit/c952e442ce9fff07ae32fb3794e075a2d4fa67cb))
+
 ### [2.1.15](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.14...v2.1.15) (2022-05-26)
 
 
