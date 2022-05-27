@@ -188,7 +188,7 @@ const parseCaptions = (
       data = data.toString().replace('Error: ', '');
     }
     return getCaptionsByFormat(data, captionFormat);
-  } catch (err) {
+  } catch (err: any) {
     logger.error('Failed to parse the caption file', {
       method: 'parseCaptions',
       data: err,

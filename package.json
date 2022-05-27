@@ -26,9 +26,12 @@
     "@commitlint/config-conventional": "9.1.2",
     "@types/classnames": "2.2.10",
     "@types/node": "14.6.4",
-    "@typescript-eslint/eslint-plugin": "2.34.0",
-    "@typescript-eslint/parser": "2.34.0",
-    "conventional-github-releaser": "^3.1.3",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
+    "conventional-github-releaser": "3.1.3",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.7.1",
+    "documentation": "^13.2.5",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-filenames": "^1.3.2",
@@ -38,27 +41,36 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-standard": "^4.0.1",
-    "husky": "4.2.5",
-    "lint-staged": "^10.3.0",
+    "husky": "^8.0.1",
+    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#master",
+    "lint-staged": "^12.4.1",
+    "node-sass": "^7.0.1",
     "preact": "^10.4.8",
-    "prettier": "^2.1.1",
-    "tslint": "^5.11.0",
+    "prettier": "^2.6.2",
+    "sass-loader": "^12.6.0",
+    "standard-version": "^9.3.2",
+    "stream-browserify": "^3.0.0",
+    "style-loader": "1.3.0",
+    "ts-loader": "^9.3.0",
+    "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.17.0",
     "tslint-consistent-codestyle": "^1.14.1",
     "tslint-eslint-rules": "^5.4.0",
     "tslint-react": "^4.1.0",
-    "typescript": "3.9.7"
+    "typescript": "^4.6.4",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.0"
+  },
+  "peerDependencies": {
+    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#master"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
       "npm run --silent lint:fix",
       "git add"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "npm run husky:commit-msg"
-    }
   },
   "license": "AGPL-3.0",
   "files": [
@@ -88,7 +100,8 @@
     "contrib:latest": "kcontrib infra --type=latest",
     "infra:next": "kcontrib infra --type=next",
     "infra:local": "kcontrib infra --type=local",
-    "infra:add": "kcontrib infra --add"
+    "infra:add": "kcontrib infra --add",
+    "dev": "webpack-dev-server --mode development"
   },
   "publishConfig": {
     "access": "public"
