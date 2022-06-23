@@ -1,9 +1,9 @@
-import {ObjectUtils} from '@playkit-js-contrib/common';
+// import {ObjectUtils} from '@playkit-js-contrib/common';
 import {
   ItemData,
   RawItemData,
 } from '../components/navigation/navigation-item/NavigationItem';
-const {get} = ObjectUtils;
+// const {get} = ObjectUtils;
 
 export function getConfigValue( // TODO: consider move to contrib
   value: any,
@@ -446,12 +446,12 @@ export const prepareLiveData = (
 };
 
 export const checkResponce = (response: any, type?: any): boolean => {
-  if (get(response, 'result.objects', [])) {
-    if (type) {
-      return response.result instanceof type;
-    }
-    return true;
-  }
+  // if (get(response, 'result.objects', [])) {
+  //   if (type) {
+  //     return response.result instanceof type;
+  //   }
+  //   return true;
+  // }
   return false;
 };
 

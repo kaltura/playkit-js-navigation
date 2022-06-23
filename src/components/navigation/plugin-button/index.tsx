@@ -14,6 +14,7 @@ export const PluginButton = ({
   selected,
   disabled,
 }: PluginButtonProps) => {
+    console.log(666888)
   const iconStyles = [
     styles.navigationPluginButton,
     selected ? styles.selected : '',

@@ -1,10 +1,10 @@
 import {h, Component} from 'preact';
-import {KeyboardKeys} from '@playkit-js-contrib/ui';
-import {
-  getContribLogger,
-  CuepointEngine,
-  Cuepoint,
-} from '@playkit-js-contrib/common';
+// import {KeyboardKeys} from '@playkit-js-contrib/ui';
+// import {
+//   getContribLogger,
+//   CuepointEngine,
+//   Cuepoint,
+// } from '@playkit-js-contrib/common';
 import * as styles from './navigaton.scss';
 import {NavigationList} from './navigation-list/NavigationList';
 import {NavigationSearch} from '../navigation-search/navigation-search';
@@ -59,10 +59,10 @@ const HEADER_HEIGHT_WITH_AMOUNT = 120;
 const LiveSeekThreshold: number = 7 * 1000; // use 7sec (same as QnA) as SeekThreshold configuration for live entries
 const VodSeekThreshold: number = 2 * 1000;
 
-const logger = getContribLogger({
-  class: 'Navigation',
-  module: 'navigation-plugin',
-});
+// const logger = getContribLogger({
+//   class: 'Navigation',
+//   module: 'navigation-plugin',
+// });
 
 const initialSearchFilter = {
   searchQuery: '',
@@ -79,14 +79,14 @@ const initialSearchFilter = {
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
-  private _engine: CuepointEngine<Cuepoint> | null = null;
+//   private _engine: CuepointEngine<Cuepoint> | null = null;
   private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
 
   private _log = (msg: string, method: string) => {
-    logger.trace(msg, {
-      method: method || 'Method not defined',
-    });
+    // logger.trace(msg, {
+    //   method: method || 'Method not defined',
+    // });
   };
 
   constructor(props: NavigationProps) {
@@ -123,7 +123,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   componentWillUnmount(): void {
     this._log('Removing engine', 'componentWillUnmount');
-    this._engine = null;
+    // this._engine = null;
   }
 
   private _prepareNavigationData = (searchFilter: SearchFilter) => {
@@ -154,7 +154,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       // if the user erases all the chars in the input field, the auto-scroll functionality will be kept
       stateData.autoscroll = true;
     }
-    this._updateEngine(stateData);
+    // this._updateEngine(stateData);
   };
 
   private _prepareSearchFilter = (
@@ -168,20 +168,20 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     };
   };
 
-  private _updateEngine = (stateData: NavigationState) => {
-    const {convertedData} = stateData;
-    if (!convertedData || convertedData.length === 0) {
-      this._engine = null;
-      this.setState(stateData);
-      return;
-    }
-    this._engine = new CuepointEngine<Cuepoint>(convertedData, {
-      reasonableSeekThreshold: this.props.isLive
-        ? LiveSeekThreshold
-        : VodSeekThreshold,
-    });
-    this._syncVisibleData(stateData);
-  };
+//   private _updateEngine = (stateData: NavigationState) => {
+//     const {convertedData} = stateData;
+//     if (!convertedData || convertedData.length === 0) {
+//       this._engine = null;
+//       this.setState(stateData);
+//       return;
+//     }
+//     this._engine = new CuepointEngine<Cuepoint>(convertedData, {
+//       reasonableSeekThreshold: this.props.isLive
+//         ? LiveSeekThreshold
+//         : VodSeekThreshold,
+//     });
+//     this._syncVisibleData(stateData);
+//   };
 
   private _makeHighlightedMap = (cuepoints: any[]) => {
     const startTime = cuepoints[cuepoints.length - 1]?.startTime;
@@ -197,26 +197,26 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     const {currentTime} = this.props;
     this.setState((state: NavigationState) => {
       const newState = {...state, ...stateData};
-      if (!this._engine) {
-        return {
-          ...newState,
-          highlightedMap: {},
-        };
-      }
-      const itemsUpdate = this._engine.updateTime(currentTime);
-      if (itemsUpdate.snapshot) {
-        return {
-          ...newState,
-          highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot),
-        };
-      }
-      if (!itemsUpdate.delta) {
-        return newState;
-      }
-      const {show} = itemsUpdate.delta;
-      if (show.length > 0) {
-        return {highlightedMap: this._makeHighlightedMap(show)};
-      }
+    //   if (!this._engine) {
+    //     return {
+    //       ...newState,
+    //       highlightedMap: {},
+    //     };
+    //   }
+    //   const itemsUpdate = this._engine.updateTime(currentTime);
+    //   if (itemsUpdate.snapshot) {
+    //     return {
+    //       ...newState,
+    //       highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot),
+    //     };
+    //   }
+    //   if (!itemsUpdate.delta) {
+    //     return newState;
+    //   }
+    //   const {show} = itemsUpdate.delta;
+    //   if (show.length > 0) {
+    //     return {highlightedMap: this._makeHighlightedMap(show)};
+    //   }
       return newState;
     });
   };
@@ -342,9 +342,9 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _handleClose = (event: KeyboardEvent) => {
-    if (event.keyCode === KeyboardKeys.Esc) {
-      this.props.onClose();
-    }
+    // if (event.keyCode === KeyboardKeys.Esc) {
+    //   this.props.onClose();
+    // }
   };
 
   private _enableAutoScroll = (event: any) => {

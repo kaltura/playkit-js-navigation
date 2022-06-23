@@ -191,7 +191,7 @@ const parseCaptions = (
   } catch (err) {
     logger.error('Failed to parse the caption file', {
       method: 'parseCaptions',
-      data: err,
+      // data: err,
     });
     throw new Error('Failed to parse the caption file');
   }
