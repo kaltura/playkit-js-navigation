@@ -276,7 +276,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _renderNavigation = () => {
     const {searchFilter, widgetWidth, highlightedMap, listDataContainCaptions, convertedData} = this.state;
-    debugger;
     const {hasError, retry} = this.props;
     if (hasError) {
       return <Error onRetryLoad={retry} />;

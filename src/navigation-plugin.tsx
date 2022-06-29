@@ -312,7 +312,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _retryFetchData = () => {
     this._hasError = false;
     if (this.player.isLive()) {
-      console.log('_registerToPushServer');
       // this._registerToPushServer();
     } else {
       this._fetchVodData();
