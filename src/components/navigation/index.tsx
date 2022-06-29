@@ -1,10 +1,6 @@
 import {h, Component} from 'preact';
-// import {KeyboardKeys} from '@playkit-js-contrib/ui';
-// import {
-//   getContribLogger,
-//   CuepointEngine,
-//   Cuepoint,
-// } from '@playkit-js-contrib/common';
+import {KeyboardKeys} from '@playkit-js-contrib/ui';
+import {getContribLogger, CuepointEngine, Cuepoint} from '@playkit-js-contrib/common';
 import * as styles from './navigaton.scss';
 import {NavigationList} from './navigation-list/NavigationList';
 import {NavigationSearch} from '../navigation-search/navigation-search';
@@ -18,7 +14,7 @@ import {
   filterDataByActiveTab,
   addGroupData,
   itemTypesOrder,
-  findCuepointType,
+  findCuepointType
 } from '../../utils';
 import {ItemData} from './navigation-item/NavigationItem';
 import {AutoscrollButton} from './autoscroll-button';
@@ -67,19 +63,13 @@ const VodSeekThreshold: number = 2 * 1000;
 const initialSearchFilter = {
   searchQuery: '',
   activeTab: itemTypes.All,
-  availableTabs: [
-    itemTypes.All,
-    itemTypes.Chapter,
-    itemTypes.Slide,
-    itemTypes.Hotspot,
-    itemTypes.AnswerOnAir,
-  ],
-  totalResults: 0,
+  availableTabs: [itemTypes.All, itemTypes.Chapter, itemTypes.Slide, itemTypes.Hotspot, itemTypes.AnswerOnAir],
+  totalResults: 0
 };
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
-//   private _engine: CuepointEngine<Cuepoint> | null = null;
+  private _engine: CuepointEngine<Cuepoint> | null = null;
   private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
 
@@ -97,7 +87,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       highlightedMap: {},
       searchFilter: {...initialSearchFilter},
       convertedData: [],
-      listDataContainCaptions: false,
+      listDataContainCaptions: false
     };
   }
 
@@ -106,10 +96,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     this._prepareNavigationData(this.state.searchFilter);
   }
 
-  componentDidUpdate(
-    previousProps: Readonly<NavigationProps>,
-    previousState: Readonly<NavigationState>
-  ): void {
+  componentDidUpdate(previousProps: Readonly<NavigationProps>, previousState: Readonly<NavigationState>): void {
     this._setWidgetSize();
     if (previousProps.data !== this.props.data) {
       this._log('Prepare navigation data', 'componentDidUpdate');
@@ -128,23 +115,15 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _prepareNavigationData = (searchFilter: SearchFilter) => {
     const {searchQuery, activeTab} = searchFilter;
-    const filteredBySearchQuery = filterDataBySearchQuery(
-      this.props.data,
-      searchQuery
-    );
+    const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
     const listDataContainCaptions = searchQuery
       ? findCuepointType(filteredBySearchQuery, itemTypes.Caption)
       : findCuepointType(this.props.data, itemTypes.Caption);
     const stateData: NavigationState = {
       ...this.state,
       listDataContainCaptions,
-      convertedData: addGroupData(
-        filterDataByActiveTab(filteredBySearchQuery, activeTab)
-      ),
-      searchFilter: this._prepareSearchFilter(
-        filteredBySearchQuery,
-        searchFilter
-      ),
+      convertedData: addGroupData(filterDataByActiveTab(filteredBySearchQuery, activeTab)),
+      searchFilter: this._prepareSearchFilter(filteredBySearchQuery, searchFilter)
     };
     if (this.state.searchFilter.searchQuery !== searchQuery) {
       // Any search interaction should stop autoscroll
@@ -154,39 +133,34 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       // if the user erases all the chars in the input field, the auto-scroll functionality will be kept
       stateData.autoscroll = true;
     }
-    // this._updateEngine(stateData);
+    this._updateEngine(stateData);
   };
 
-  private _prepareSearchFilter = (
-    data: ItemData[],
-    searchFilter: SearchFilter
-  ): SearchFilter => {
+  private _prepareSearchFilter = (data: ItemData[], searchFilter: SearchFilter): SearchFilter => {
     const availableTabs = getAvailableTabs(data, this.props.itemsOrder);
     return {
       ...searchFilter,
-      availableTabs,
+      availableTabs
     };
   };
 
-//   private _updateEngine = (stateData: NavigationState) => {
-//     const {convertedData} = stateData;
-//     if (!convertedData || convertedData.length === 0) {
-//       this._engine = null;
-//       this.setState(stateData);
-//       return;
-//     }
-//     this._engine = new CuepointEngine<Cuepoint>(convertedData, {
-//       reasonableSeekThreshold: this.props.isLive
-//         ? LiveSeekThreshold
-//         : VodSeekThreshold,
-//     });
-//     this._syncVisibleData(stateData);
-//   };
+  private _updateEngine = (stateData: NavigationState) => {
+    const {convertedData} = stateData;
+    if (!convertedData || convertedData.length === 0) {
+      this._engine = null;
+      this.setState(stateData);
+      return;
+    }
+    this._engine = new CuepointEngine<Cuepoint>(convertedData, {
+      reasonableSeekThreshold: this.props.isLive ? LiveSeekThreshold : VodSeekThreshold
+    });
+    this._syncVisibleData(stateData);
+  };
 
   private _makeHighlightedMap = (cuepoints: any[]) => {
     const startTime = cuepoints[cuepoints.length - 1]?.startTime;
     const maxTime = startTime !== undefined ? startTime : -1;
-    const filtered = cuepoints.filter((item) => item.startTime === maxTime);
+    const filtered = cuepoints.filter(item => item.startTime === maxTime);
     const highlightedMap = filtered.reduce((acc, item) => {
       return {...acc, [item.id]: true};
     }, {});
@@ -197,26 +171,26 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     const {currentTime} = this.props;
     this.setState((state: NavigationState) => {
       const newState = {...state, ...stateData};
-    //   if (!this._engine) {
-    //     return {
-    //       ...newState,
-    //       highlightedMap: {},
-    //     };
-    //   }
-    //   const itemsUpdate = this._engine.updateTime(currentTime);
-    //   if (itemsUpdate.snapshot) {
-    //     return {
-    //       ...newState,
-    //       highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot),
-    //     };
-    //   }
-    //   if (!itemsUpdate.delta) {
-    //     return newState;
-    //   }
-    //   const {show} = itemsUpdate.delta;
-    //   if (show.length > 0) {
-    //     return {highlightedMap: this._makeHighlightedMap(show)};
-    //   }
+      if (!this._engine) {
+        return {
+          ...newState,
+          highlightedMap: {}
+        };
+      }
+      const itemsUpdate = this._engine.updateTime(currentTime);
+      if (itemsUpdate.snapshot) {
+        return {
+          ...newState,
+          highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot)
+        };
+      }
+      if (!itemsUpdate.delta) {
+        return newState;
+      }
+      const {show} = itemsUpdate.delta;
+      if (show.length > 0) {
+        return {highlightedMap: this._makeHighlightedMap(show)};
+      }
       return newState;
     });
   };
@@ -226,7 +200,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       const {width} = this._widgetRootRef.getBoundingClientRect();
       if (this.state.widgetWidth !== width) {
         this.setState({
-          widgetWidth: width,
+          widgetWidth: width
         });
       }
     }
@@ -243,12 +217,10 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return styles.smallWidth;
   };
 
-  private _handleSearchFilterChange = (property: string) => (
-    data: itemTypes | string | null
-  ) => {
+  private _handleSearchFilterChange = (property: string) => (data: itemTypes | string | null) => {
     const searchFilter: SearchFilter = {
       ...this.state.searchFilter,
-      [property]: data,
+      [property]: data
     };
     this._prepareNavigationData(searchFilter);
   };
@@ -260,8 +232,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return (
       <div className={styles.header}>
         {!hasError && (
-          <div
-            class={[styles.searchWrapper, this._getHeaderStyles()].join(' ')}>
+          <div class={[styles.searchWrapper, this._getHeaderStyles()].join(' ')}>
             <NavigationSearch
               onChange={this._handleSearchFilterChange('searchQuery')}
               searchQuery={searchFilter.searchQuery}
@@ -271,20 +242,13 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           </div>
         )}
         {hasError && <p className={styles.pluginName}>Navigation</p>}
-        <button
-          aria-label={'Close search in video'}
-          className={styles.closeButton}
-          tabIndex={0}
-          onClick={this.props.onClose}
-        />
+        <button aria-label={'Close search in video'} className={styles.closeButton} tabIndex={0} onClick={this.props.onClose} />
         {!hasError && (
           <NavigationFilter
             onChange={this._handleSearchFilterChange('activeTab')}
             activeTab={searchFilter.activeTab}
             availableTabs={searchFilter.availableTabs}
-            totalResults={
-              searchFilter.searchQuery.length > 0 ? convertedData.length : null
-            }
+            totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : null}
             listDataContainCaptions={listDataContainCaptions}
           />
         )}
@@ -311,13 +275,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderNavigation = () => {
-    const {
-      searchFilter,
-      widgetWidth,
-      highlightedMap,
-      listDataContainCaptions,
-      convertedData,
-    } = this.state;
+    const {searchFilter, widgetWidth, highlightedMap, listDataContainCaptions, convertedData} = this.state;
+    debugger;
     const {hasError, retry} = this.props;
     if (hasError) {
       return <Error onRetryLoad={retry} />;
@@ -342,9 +301,9 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _handleClose = (event: KeyboardEvent) => {
-    // if (event.keyCode === KeyboardKeys.Esc) {
-    //   this.props.onClose();
-    // }
+    if (event.keyCode === KeyboardKeys.Esc) {
+      this.props.onClose();
+    }
   };
 
   private _enableAutoScroll = (event: any) => {
@@ -354,30 +313,21 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     }
     this._preventScrollEvent = true;
     this.setState({
-      autoscroll: true,
+      autoscroll: true
     });
   };
 
   private _scrollTo = (selectedElementY: number) => {
     this._preventScrollEvent = true;
     if (this._listElementRef) {
-      this._listElementRef.scrollTop =
-        selectedElementY -
-        (this.state.searchFilter.searchQuery
-          ? HEADER_HEIGHT_WITH_AMOUNT
-          : HEADER_HEIGHT);
+      this._listElementRef.scrollTop = selectedElementY - (this.state.searchFilter.searchQuery ? HEADER_HEIGHT_WITH_AMOUNT : HEADER_HEIGHT);
     }
   };
 
   private _renderAutoscrollButton = () => {
     const {hasError} = this.props;
     const {autoscroll, searchFilter, convertedData} = this.state;
-    if (
-      autoscroll ||
-      searchFilter.searchQuery ||
-      !convertedData.length ||
-      hasError
-    ) {
+    if (autoscroll || searchFilter.searchQuery || !convertedData.length || hasError) {
       return null;
     }
     return (
@@ -394,10 +344,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return (
       <div
         className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
-        ref={(node) => {
+        ref={node => {
           this._widgetRootRef = node;
         }}
-        onKeyUp={this._handleClose}>
+        onKeyUp={this._handleClose}
+      >
         {isLoading ? (
           this._renderLoading()
         ) : (
@@ -406,9 +357,10 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             <div
               className={styles.body}
               onScroll={this._handleScroll}
-              ref={(node) => {
+              ref={node => {
                 this._listElementRef = node;
-              }}>
+              }}
+            >
               {this._renderNavigation()}
               {this._renderAutoscrollButton()}
             </div>

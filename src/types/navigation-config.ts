@@ -1,5 +1,8 @@
 export interface NavigationConfig {
-    position: string;
-    expandMode: string;
-    expandOnFirstPlay: boolean;
-  }
+  position: string;
+  expandMode: string;
+  expandOnFirstPlay: boolean;
+  forceChaptersThumb: boolean;
+  userRole: string;
+  itemsOrder: object;
+}

@@ -28,19 +28,12 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
     this._debouncedOnChange = debounce(props.onChange, DEBOUNCE_TIMEOUT);
     this.state = {
       active: false,
-      focused: false,
+      focused: false
     };
   }
-  shouldComponentUpdate(
-    nextProps: Readonly<SearchProps>,
-    nextState: Readonly<SearchState>
-  ) {
+  shouldComponentUpdate(nextProps: Readonly<SearchProps>, nextState: Readonly<SearchState>) {
     const {searchQuery, kitchenSinkActive} = this.props;
-    if (
-      searchQuery !== nextProps.searchQuery ||
-      kitchenSinkActive !== nextProps.kitchenSinkActive ||
-      this.state.active !== nextState.active
-    ) {
+    if (searchQuery !== nextProps.searchQuery || kitchenSinkActive !== nextProps.kitchenSinkActive || this.state.active !== nextState.active) {
       return true;
     }
     return false;
@@ -67,7 +60,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
   private _onFocus = () => {
     this.setState({
       active: true,
-      focused: !this._focusedByMouse,
+      focused: !this._focusedByMouse
     });
     this._focusedByMouse = false;
   };
@@ -75,7 +68,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
   private _onBlur = () => {
     this.setState({
       active: false,
-      focused: false,
+      focused: false
     });
   };
 
@@ -86,12 +79,7 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
   render() {
     const {searchQuery} = this.props;
     return (
-      <div
-        className={[
-          styles.searchRoot,
-          searchQuery || this.state.active ? styles.active : '',
-          this.state.focused ? styles.focused : '',
-        ].join(' ')}>
+      <div className={[styles.searchRoot, searchQuery || this.state.active ? styles.active : '', this.state.focused ? styles.focused : ''].join(' ')}>
         <input
           className={styles.searchInput}
           placeholder={'Search in video'}
@@ -101,18 +89,13 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
           onBlur={this._onBlur}
           onMouseDown={this._handleMouseDown}
           tabIndex={0}
-          ref={(node) => {
+          ref={node => {
             this._inputRef = node;
           }}
         />
         {searchQuery && (
           <div>
-            <button
-              aria-label={'Clear search'}
-              className={styles.clearIcon}
-              onClick={this._onClear}
-              tabIndex={0}
-            />
+            <button aria-label={'Clear search'} className={styles.clearIcon} onClick={this._onClear} tabIndex={0} />
           </div>
         )}
       </div>

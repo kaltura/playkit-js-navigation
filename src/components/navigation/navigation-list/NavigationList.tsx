@@ -24,10 +24,8 @@ export class NavigationList extends Component<Props> {
       !isMapEqual(this.props.highlightedMap, nextProps.highlightedMap) ||
       !isDataEqual(this.props.data, nextProps.data) ||
       nextProps.autoScroll !== this.props.autoScroll ||
-      nextProps.listDataContainCaptions !==
-        this.props.listDataContainCaptions ||
-      (nextProps.widgetWidth &&
-        nextProps.widgetWidth !== this.props.widgetWidth)
+      nextProps.listDataContainCaptions !== this.props.listDataContainCaptions ||
+      (nextProps.widgetWidth && nextProps.widgetWidth !== this.props.widgetWidth)
     ) {
       return true;
     }
@@ -48,21 +46,9 @@ export class NavigationList extends Component<Props> {
     }
   };
 
-  render({
-    data,
-    widgetWidth,
-    showItemsIcons,
-    onSeek,
-    highlightedMap,
-    listDataContainCaptions,
-    searchActive,
-  }: Props) {
+  render({data, widgetWidth, showItemsIcons, onSeek, highlightedMap, listDataContainCaptions, searchActive}: Props) {
     if (!data.length) {
-      return listDataContainCaptions ? (
-        <EmptyState />
-      ) : (
-        <EmptyList showNoResultsText={searchActive} />
-      );
+      return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
     }
     return (
       <div className={styles.navigationList}>

@@ -1,24 +1,17 @@
 import {xml2js} from 'xml-js';
 import {KalturaClient} from 'kaltura-typescript-client';
-import {
-  KalturaRequest,
-  KalturaRequestArgs,
-} from 'kaltura-typescript-client/api/kaltura-request';
+import {KalturaRequest, KalturaRequestArgs} from 'kaltura-typescript-client/api/kaltura-request';
 import {KalturaObjectMetadata} from 'kaltura-typescript-client/api/kaltura-object-base';
 import {KalturaCaptionAssetFilter} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetFilter';
 import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
 import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
-import {
-  Cuepoint,
-  ObjectUtils,
-  getContribLogger,
-} from '@playkit-js-contrib/common';
+import {Cuepoint, ObjectUtils, getContribLogger} from '@playkit-js-contrib/common';
 import {itemTypes} from './utils';
 const {get} = ObjectUtils;
 
 const logger = getContribLogger({
   class: 'NavigationPlugin',
-  module: 'captions',
+  module: 'captions'
 });
 
 export const HOUR = 3600; // seconds in 1 hour
@@ -29,9 +22,7 @@ export interface CaptionItem extends Cuepoint {
 }
 
 export const toSeconds = (val: any, vtt = false): number => {
-  const regex = vtt
-    ? /(\d+):(\d{2}):(\d{2}).(\d{2,3}|\d{2})/
-    : /(\d+):(\d{2}):(\d{2}),((\d{2,3}|\d{2}|\d{1}))?/;
+  const regex = vtt ? /(\d+):(\d{2}):(\d{2}).(\d{2,3}|\d{2})/ : /(\d+):(\d{2}):(\d{2}),((\d{2,3}|\d{2}|\d{1}))?/;
   const parts: any | null[] = regex.exec(val);
   if (parts === null) {
     return 0;
@@ -49,7 +40,7 @@ export const toSeconds = (val: any, vtt = false): number => {
 const fromVtt = (data: string): CaptionItem[] => {
   logger.debug('parsing VTT type of captions', {
     method: 'fromVtt',
-    data: {data},
+    data: {data}
   });
   let source: string | string[] = data.replace(/\r/g, '');
   const regex = /(\d+)?\n?(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3}).*\n/g;
@@ -62,7 +53,7 @@ const fromVtt = (data: string): CaptionItem[] => {
       id: result.length + 1,
       startTime: toSeconds(source[i + 1].trim(), true),
       endTime: toSeconds(source[i + 2].trim(), true),
-      text: source[i + 3].trim(),
+      text: source[i + 3].trim()
     });
   }
   return result;
@@ -71,7 +62,7 @@ const fromVtt = (data: string): CaptionItem[] => {
 const fromSrt = (data: string): CaptionItem[] => {
   logger.debug('parsing SRT type of captions', {
     method: 'fromSrt',
-    data: {data},
+    data: {data}
   });
   let source: string | string[] = data.replace(/\r/g, '');
   const regex = /(\d+)?\n?(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3}).*\n/g;
@@ -83,7 +74,7 @@ const fromSrt = (data: string): CaptionItem[] => {
       id: result.length + 1,
       startTime: toSeconds(source[i + 1].trim()),
       endTime: toSeconds(source[i + 2].trim()),
-      text: source[i + 3].trim(),
+      text: source[i + 3].trim()
     });
   }
   return result;
@@ -92,7 +83,7 @@ const fromSrt = (data: string): CaptionItem[] => {
 export const TTML2Obj = (ttml: any): CaptionItem[] => {
   logger.debug('parsing TTML type of captions', {
     method: 'TTML2Obj',
-    data: {ttml},
+    data: {ttml}
   });
   const data: any = xml2js(ttml, {compact: true});
   // need only captions for showing. they located in tt.body.div.p.
@@ -106,8 +97,7 @@ export const TTML2Obj = (ttml: any): CaptionItem[] => {
       id: index + 1,
       endTime: toSeconds(endTime),
       startTime: toSeconds(startTime),
-      text:
-        (Array.isArray(item._text) ? item._text.join(' ') : item._text) || '',
+      text: (Array.isArray(item._text) ? item._text.join(' ') : item._text) || ''
       // all non-required
       // otherAttributes: otherAttributes
     };
@@ -116,10 +106,7 @@ export const TTML2Obj = (ttml: any): CaptionItem[] => {
   return correctData;
 };
 
-export const getCaptionsByFormat = (
-  captions: any,
-  captionsFormat: string
-): CaptionItem[] => {
+export const getCaptionsByFormat = (captions: any, captionsFormat: string): CaptionItem[] => {
   const format = captionsFormat.toLowerCase();
   switch (format) {
     case '1':
@@ -151,7 +138,7 @@ export class CaptionAssetServeAction extends KalturaRequest<{url: string}> {
     super(data, {
       responseType: 'v',
       responseSubType: '',
-      responseConstructor: null,
+      responseConstructor: null
     } as any);
   }
   protected _getMetadata(): KalturaObjectMetadata {
@@ -159,28 +146,18 @@ export class CaptionAssetServeAction extends KalturaRequest<{url: string}> {
     Object.assign(result.properties, {
       service: {type: 'c', default: 'caption_captionasset'},
       action: {type: 'c', default: 'serve'},
-      captionAssetId: {type: 's'},
+      captionAssetId: {type: 's'}
     });
     return result;
   }
 }
 
-const getCaptionFormat = (
-  captionAsset: KalturaCaptionAsset,
-  captionAssetList: KalturaCaptionAsset[]
-): string => {
-  const selectedLanguage: Record<string, any> =
-    captionAssetList.find(
-      (item: KalturaCaptionAsset) => item.id === captionAsset.id
-    ) || {};
+const getCaptionFormat = (captionAsset: KalturaCaptionAsset, captionAssetList: KalturaCaptionAsset[]): string => {
+  const selectedLanguage: Record<string, any> = captionAssetList.find((item: KalturaCaptionAsset) => item.id === captionAsset.id) || {};
   return get(selectedLanguage, 'format', '');
 };
 
-const parseCaptions = (
-  data: string,
-  captionAsset: KalturaCaptionAsset,
-  captionAssetList: KalturaCaptionAsset[]
-): CaptionItem[] => {
+const parseCaptions = (data: string, captionAsset: KalturaCaptionAsset, captionAssetList: KalturaCaptionAsset[]): CaptionItem[] => {
   try {
     const captionFormat = getCaptionFormat(captionAsset, captionAssetList);
     if (data.toString().indexOf('Error: ') === 0) {
@@ -190,7 +167,7 @@ const parseCaptions = (
     return getCaptionsByFormat(data, captionFormat);
   } catch (err) {
     logger.error('Failed to parse the caption file', {
-      method: 'parseCaptions',
+      method: 'parseCaptions'
       // data: err,
     });
     throw new Error('Failed to parse the caption file');
@@ -198,46 +175,31 @@ const parseCaptions = (
   return [];
 };
 
-const getCaptionData = (
-  data: any,
-  captionAsset: KalturaCaptionAsset,
-  captionAssetList: KalturaCaptionAsset[]
-): CaptionItem[] => {
+const getCaptionData = (data: any, captionAsset: KalturaCaptionAsset, captionAssetList: KalturaCaptionAsset[]): CaptionItem[] => {
   if (!data || !captionAsset || !captionAssetList.length) {
     return [];
   }
   const rawCaptions = get(data, 'error.message', data);
-  return rawCaptions
-    ? parseCaptions(rawCaptions, captionAsset, captionAssetList)
-    : [];
+  return rawCaptions ? parseCaptions(rawCaptions, captionAsset, captionAssetList) : [];
 };
 
-export const makeCaptionAssetListRequest = (
-  entryId: string
-): CaptionAssetListAction => {
+export const makeCaptionAssetListRequest = (entryId: string): CaptionAssetListAction => {
   return new CaptionAssetListAction({
     filter: new KalturaCaptionAssetFilter({
-      entryIdEqual: entryId,
-    }),
+      entryIdEqual: entryId
+    })
   });
 };
 
-export const makeCaptionAssetServeRequest = (
-  captionAssetId: string
-): CaptionAssetServeAction => {
+export const makeCaptionAssetServeRequest = (captionAssetId: string): CaptionAssetServeAction => {
   return new CaptionAssetServeAction({captionAssetId});
 };
 
-export const fetchCaptionAsset = async (
-  kalturaClient: KalturaClient,
-  captionAssetId: string
-) => {
+export const fetchCaptionAsset = async (kalturaClient: KalturaClient, captionAssetId: string) => {
   let captionAssetServeData: any = null;
   const captionAssetServeRequest = makeCaptionAssetServeRequest(captionAssetId);
   try {
-    captionAssetServeData = await kalturaClient.request(
-      captionAssetServeRequest
-    );
+    captionAssetServeData = await kalturaClient.request(captionAssetServeRequest);
   } catch (err) {
     captionAssetServeData = err;
   }
@@ -251,64 +213,38 @@ export const getCaptions = async (
 ) => {
   logger.debug('trying to fetch caption asset', {
     method: 'getCaptions',
-    data: captionAsset,
+    data: captionAsset
   });
-  const captionContent = await fetchCaptionAsset(
-    kalturaClient,
-    captionAsset.id
-  );
-  const captionData = getCaptionData(
-    captionContent,
-    captionAsset,
-    captionAssetList
-  );
+  const captionContent = await fetchCaptionAsset(kalturaClient, captionAsset.id);
+  const captionData = getCaptionData(captionContent, captionAsset, captionAssetList);
   logger.debug('caption data parsed', {
     method: 'getCaptions',
-    data: captionData,
+    data: captionData
   });
   return captionData.map((caption: CaptionItem) => ({
     ...caption,
     startTime: caption.startTime * 1000,
-    cuePointType: itemTypes.Caption,
+    cuePointType: itemTypes.Caption
   }));
 };
 
-export const filterCaptionAssetsByProperty = (
-  list: KalturaCaptionAsset[],
-  match: string | null,
-  property: string
-): KalturaCaptionAsset[] => {
+export const filterCaptionAssetsByProperty = (list: KalturaCaptionAsset[], match: string | null, property: string): KalturaCaptionAsset[] => {
   return list.filter((kalturaCaptionAsset: KalturaCaptionAsset) => {
     return get(kalturaCaptionAsset, property, null) === match;
   });
 };
 
-export const findCaptionAsset = (
-  event: string | Record<string, any>,
-  captionAssetList: KalturaCaptionAsset[]
-): KalturaCaptionAsset => {
+export const findCaptionAsset = (event: string | Record<string, any>, captionAssetList: KalturaCaptionAsset[]): KalturaCaptionAsset => {
   if (typeof event === 'string') {
-    const filteredByLang = filterCaptionAssetsByProperty(
-      captionAssetList,
-      event,
-      'languageCode'
-    );
+    const filteredByLang = filterCaptionAssetsByProperty(captionAssetList, event, 'languageCode');
     // take first captions from caption-list when caption language is not defined
     return filteredByLang[0] ? filteredByLang[0] : captionAssetList[0];
   }
-  const filteredByLang = filterCaptionAssetsByProperty(
-    captionAssetList,
-    get(event, 'payload.selectedTextTrack._language', null),
-    'languageCode'
-  );
+  const filteredByLang = filterCaptionAssetsByProperty(captionAssetList, get(event, 'payload.selectedTextTrack._language', null), 'languageCode');
   if (filteredByLang.length === 1) {
     return filteredByLang[0];
   }
-  const filteredByLabel = filterCaptionAssetsByProperty(
-    filteredByLang,
-    get(event, 'payload.selectedTextTrack._label', null),
-    'label'
-  );
+  const filteredByLabel = filterCaptionAssetsByProperty(filteredByLang, get(event, 'payload.selectedTextTrack._label', null), 'label');
   if (filteredByLang.length === 1) {
     return filteredByLabel[0];
   }

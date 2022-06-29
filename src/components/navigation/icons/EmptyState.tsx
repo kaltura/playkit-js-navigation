@@ -4,22 +4,13 @@ export const EmptyState = () => {
   const style = {
     'text-align': 'center',
     'margin-top': '50%',
-    'margin-bottom': 'auto',
+    'margin-bottom': 'auto'
   };
   return (
     <div style={style}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="240"
-        height="257"
-        viewBox="0 0 240 257">
+      <svg xmlns="http://www.w3.org/2000/svg" width="240" height="257" viewBox="0 0 240 257">
         <g fill="none" fill-rule="evenodd">
-          <text
-            fill="#999"
-            font-family="Lato-Bold, Lato"
-            font-size="18"
-            font-weight="bold"
-            transform="translate(-1)">
+          <text fill="#999" font-family="Lato-Bold, Lato" font-size="18" font-weight="bold" transform="translate(-1)">
             <tspan x="2.276" y="218">
               Search in the video for results
             </tspan>
@@ -97,10 +88,7 @@ export const EmptyState = () => {
               transform="translate(12 76)"
             />
             <g fill="#01ACCD" opacity=".9">
-              <path
-                d="M5.5 2.5L8 2.5 8 5.5 5.5 5.5 5.5 8 2.5 8 2.5 5.5 0 5.5 0 2.5 2.5 2.5 2.5 0 5.5 0z"
-                transform="translate(71 164)"
-              />
+              <path d="M5.5 2.5L8 2.5 8 5.5 5.5 5.5 5.5 8 2.5 8 2.5 5.5 0 5.5 0 2.5 2.5 2.5 2.5 0 5.5 0z" transform="translate(71 164)" />
             </g>
             <g fill="#01ACCD" opacity=".8">
               <path

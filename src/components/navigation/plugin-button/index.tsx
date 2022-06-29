@@ -1,32 +1,29 @@
 import {h} from 'preact';
 import * as styles from './plugin-button.scss';
+import {icons} from '../../icons';
+import {A11yWrapper, OnClick} from '../../a11y-wrapper';
+
+const {Tooltip, Icon} = KalturaPlayer.ui.components;
 
 interface PluginButtonProps {
-  onClick: (event: MouseEvent) => void;
-  selected: boolean;
-  disabled?: boolean;
-  label: string;
+  onClick: OnClick;
+  label?: string;
 }
 
-export const PluginButton = ({
-  label,
-  onClick,
-  selected,
-  disabled,
-}: PluginButtonProps) => {
-    console.log(666888)
-  const iconStyles = [
-    styles.navigationPluginButton,
-    selected ? styles.selected : '',
-    disabled ? styles.disabled : '',
-  ].join(' ');
+export const PluginButton = ({onClick, label}: PluginButtonProps) => {
   return (
-    <button
-      aria-label={label}
-      className={iconStyles}
-      tabIndex={0}
-      onClick={onClick}>
-      <div className={styles.navigationPluginIcon} />
-    </button>
+    <Tooltip label={label} type="bottom">
+      <A11yWrapper onClick={onClick}>
+        <button aria-label={label} className={styles.pluginButton}>
+          <Icon
+            id="navigation-plugin-button"
+            height={icons.BigSize}
+            width={icons.BigSize}
+            viewBox={`0 0 ${icons.BigSize} ${icons.BigSize}`}
+            path={icons.PLUGIN_ICON}
+          />
+        </button>
+      </A11yWrapper>
+    </Tooltip>
   );
 };

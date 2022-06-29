@@ -6,11 +6,7 @@ export interface Props {
 
 export const AutoscrollIcon = (props: Props) => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
       <path
         fill={props.color}
         fill-rule="evenodd"
@@ -21,5 +17,5 @@ export const AutoscrollIcon = (props: Props) => {
 };
 
 AutoscrollIcon.defaultProps = {
-  color: '#FFFFFF',
+  color: '#FFFFFF'
 };

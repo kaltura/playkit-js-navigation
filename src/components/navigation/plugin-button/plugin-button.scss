@@ -4,28 +4,44 @@
   min-width: 36px;
 }
 
-.navigationPluginButton {
+.pluginButton {
+  display: flex;
+  width: 36px;
+  height: 36px;
   padding: 0;
+  background: transparent;
   border: none;
-  background: none;
   border-radius: 4px;
-  &.selected {
-    background-color: rgba(0, 0, 0, 0.8);
-    .navigationPluginIcon {
-      background-image: url("../../../assets/images/search-icon-over.svg");
-    }
-  }
-  &.disabled {
-    opacity: 0.4;
-  }
-  &:hover:not(.disabled) {
-    background-color: rgb(17, 50, 60);
-  }
-  .navigationPluginIcon {
-    top: 2px;
-    left: 2px;
-    position: relative;
-    background-image: url("../../../assets/images/search-icon.svg");
-    opacity: 0.8;
-  }
+  cursor: pointer;
 }
+
+// TODO: remove once core team fix alignment of plugin icons
+:global(.playkit-player .playkit-top-bar .playkit-right-controls) {
+  display: flex;
+}
+
+// .navigationPluginButton {
+//   padding: 0;
+//   border: none;
+//   background: none;
+//   border-radius: 4px;
+//   &.selected {
+//     background-color: rgba(0, 0, 0, 0.8);
+//     .navigationPluginIcon {
+//       background-image: url("../../../assets/images/search-icon-over.svg");
+//     }
+//   }
+//   &.disabled {
+//     opacity: 0.4;
+//   }
+//   &:hover:not(.disabled) {
+//     background-color: rgb(17, 50, 60);
+//   }
+//   .navigationPluginIcon {
+//     top: 2px;
+//     left: 2px;
+//     position: relative;
+//     background-image: url("../../../assets/images/search-icon.svg");
+//     opacity: 0.8;
+//   }
+// }

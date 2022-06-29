@@ -60,14 +60,10 @@ export class NavigationItem extends Component<Props, State> {
       // no point point calculate height of there is no mechanism of show-more button
       return;
     }
-    this._itemElementRef.style.minHeight =
-      this._textContainerRef.offsetHeight + 4 + 'px';
+    this._itemElementRef.style.minHeight = this._textContainerRef.offsetHeight + 4 + 'px';
   }
 
-  shouldComponentUpdate(
-    nextProps: Readonly<Props>,
-    nextState: Readonly<State>
-  ) {
+  shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>) {
     const {selectedItem, data, widgetWidth} = this.props;
     if (
       selectedItem !== nextProps.selectedItem ||
@@ -94,20 +90,16 @@ export class NavigationItem extends Component<Props, State> {
   private _getSelected = () => {
     const {selectedItem, data} = this.props;
     const {groupData, startTime, previewImage} = data;
-    if (
-      this._itemElementRef &&
-      selectedItem &&
-      (!groupData || groupData === groupTypes.first)
-    ) {
+    if (this._itemElementRef && selectedItem && (!groupData || groupData === groupTypes.first)) {
       if (previewImage && this.state.imageLoaded) {
         this.props.onSelected({
           time: startTime,
-          itemY: this._itemElementRef.offsetTop,
+          itemY: this._itemElementRef.offsetTop
         });
       } else if (!previewImage) {
         this.props.onSelected({
           time: startTime,
-          itemY: this._itemElementRef.offsetTop,
+          itemY: this._itemElementRef.offsetTop
         });
       }
     }
@@ -126,7 +118,7 @@ export class NavigationItem extends Component<Props, State> {
   private _handleExpandChange = (event: Event) => {
     event.stopPropagation();
     this.setState({
-      expandText: !this.state.expandText,
+      expandText: !this.state.expandText
     });
   };
 
@@ -145,7 +137,7 @@ export class NavigationItem extends Component<Props, State> {
       },
       onError: () => {
         this.setState({imageFailed: true});
-      },
+      }
     };
     return (
       <Fragment>
@@ -156,37 +148,20 @@ export class NavigationItem extends Component<Props, State> {
   };
 
   render({selectedItem, showIcon, data}: Props) {
-    const {
-      id,
-      previewImage,
-      itemType,
-      displayTime,
-      groupData,
-      displayTitle,
-      shorthandTitle,
-      hasShowMore,
-      displayDescription,
-    } = data;
+    const {id, previewImage, itemType, displayTime, groupData, displayTitle, shorthandTitle, hasShowMore, displayDescription} = data;
     return (
       <div
         tabIndex={0}
         role="button"
-        ref={(node) => {
+        ref={node => {
           this._itemElementRef = node;
         }}
-        className={[
-          styles[groupData ? groupData : 'single'],
-          styles.navigationItem,
-          selectedItem ? styles.selected : null,
-        ].join(' ')}
+        className={[styles[groupData ? groupData : 'single'], styles.navigationItem, selectedItem ? styles.selected : null].join(' ')}
         data-entry-id={id}
         onClick={this._handleClickHandler}
-        onKeyDown={this._handleKeyHandler}>
-        <div
-          className={[
-            styles.metadata,
-            displayTime ? styles.withTime : null,
-          ].join(' ')}>
+        onKeyDown={this._handleKeyHandler}
+      >
+        <div className={[styles.metadata, displayTime ? styles.withTime : null].join(' ')}>
           {displayTime && <span>{displayTime}</span>}
           {showIcon && (
             <div className={styles.iconWrapper}>
@@ -194,44 +169,33 @@ export class NavigationItem extends Component<Props, State> {
             </div>
           )}
         </div>
-        <div
-          className={[
-            styles.content,
-            previewImage ? styles.hasImage : null,
-          ].join(' ')}>
+        <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
           {previewImage && this._renderThumbnail()}
           <div
             className={styles.contentText}
-            ref={(node) => {
+            ref={node => {
               this._textContainerRef = node;
-            }}>
-            {shorthandTitle && !this.state.expandText && (
-              <span className={styles.title}>{shorthandTitle}</span>
-            )}
+            }}
+          >
+            {shorthandTitle && !this.state.expandText && <span className={styles.title}>{shorthandTitle}</span>}
 
-            {displayTitle && (!shorthandTitle || this.state.expandText) && (
-              <span className={styles.title}>{displayTitle}</span>
-            )}
+            {displayTitle && (!shorthandTitle || this.state.expandText) && <span className={styles.title}>{displayTitle}</span>}
 
-            {displayDescription && this.state.expandText && (
-              <div className={styles.description}>{displayDescription}</div>
-            )}
+            {displayDescription && this.state.expandText && <div className={styles.description}>{displayDescription}</div>}
             {hasShowMore && (
               <div
                 role={'button'}
                 tabIndex={0}
                 className={styles.showMoreButton}
-                onClick={(e) => {
+                onClick={e => {
                   this._handleExpandChange(e);
                 }}
-                onKeyDown={(e) => {
-                  if (
-                    e.keyCode === KeyMap.ENTER ||
-                    e.keyCode === KeyMap.SPACE
-                  ) {
+                onKeyDown={e => {
+                  if (e.keyCode === KeyMap.ENTER || e.keyCode === KeyMap.SPACE) {
                     this._handleExpandChange(e);
                   }
-                }}>
+                }}
+              >
                 {/* TODO - locale */}
                 {this.state.expandText ? 'Read Less' : 'Read More'}
               </div>

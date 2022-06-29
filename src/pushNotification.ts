@@ -3,14 +3,14 @@ import {
   PrepareRegisterRequestConfig,
   PushNotifications,
   PushNotificationsOptions,
-  PushNotificationsProvider,
+  PushNotificationsProvider
 } from '@playkit-js-contrib/push-notifications';
 
 export enum PushNotificationEventTypes {
   PublicNotifications = 'PUBLIC_QNA_NOTIFICATIONS',
   PushNotificationsError = 'PUSH_NOTIFICATIONS_ERROR',
   ThumbNotification = 'THUMB_CUE_POINT_READY_NOTIFICATION',
-  SlideNotification = 'SLIDE_VIEW_CHANGE_CODE_CUE_POINT',
+  SlideNotification = 'SLIDE_VIEW_CHANGE_CODE_CUE_POINT'
 }
 
 export interface PublicNotificationsEvent {
@@ -33,15 +33,11 @@ export interface SlideNotificationsEvent {
   slides: any[];
 }
 
-type Events =
-  | ThumbNotificationsEvent
-  | SlideNotificationsEvent
-  | PublicNotificationsEvent
-  | NotificationsErrorEvent;
+type Events = ThumbNotificationsEvent | SlideNotificationsEvent | PublicNotificationsEvent | NotificationsErrorEvent;
 
 const logger = getContribLogger({
   class: 'navigationPushNotification',
-  module: 'navigation-plugin',
+  module: 'navigation-plugin'
 });
 
 /**
@@ -62,10 +58,7 @@ export class PushNotification {
     if (this._initialized) return;
 
     this._initialized = true;
-    this._pushServerInstance = PushNotificationsProvider.get(
-      this._player,
-      pushServerOptions
-    );
+    this._pushServerInstance = PushNotificationsProvider.get(this._player, pushServerOptions);
   }
 
   /**
@@ -75,35 +68,26 @@ export class PushNotification {
     this._registeredToMessages = false;
   }
 
-  public registerToPushServer(
-    entryId: string,
-    userId: string,
-    onSuccess: () => void,
-    onError: () => void
-  ) {
+  public registerToPushServer(entryId: string, userId: string, onSuccess: () => void, onError: () => void) {
     if (this._registeredToMessages) {
       logger.error('Multiple registration error', {
-        method: 'registerToPushServer',
+        method: 'registerToPushServer'
       });
       throw new Error('Already register to push server');
     }
 
     logger.info('Registering for push notifications server', {
       method: 'registerToPushServer',
-      data: {entryId, userId},
+      data: {entryId, userId}
     });
 
     if (!this._pushServerInstance) {
-      logger.error(
-        "Can't register to notifications as _pushServerInstance doesn't exists",
-        {
-          method: 'registerToPushServer',
-        }
-      );
+      logger.error("Can't register to notifications as _pushServerInstance doesn't exists", {
+        method: 'registerToPushServer'
+      });
       this._events.emit({
         type: PushNotificationEventTypes.PushNotificationsError,
-        error:
-          "Can't register to notifications as _pushServerInstance doesn't exists",
+        error: "Can't register to notifications as _pushServerInstance doesn't exists"
       });
       return;
     }
@@ -112,18 +96,18 @@ export class PushNotification {
     const registrationConfigs = [
       this._createPublicRegistration(entryId),
       this._createThumbRegistration(entryId),
-      this._createSlideRegistration(entryId),
+      this._createSlideRegistration(entryId)
     ];
 
     this._pushServerInstance
       .registerNotifications({
         prepareRegisterRequestConfigs: registrationConfigs,
-        onSocketReconnect: () => {},
+        onSocketReconnect: () => {}
       })
       .then(
         () => {
           logger.info('Registered push notification service', {
-            method: 'registerToPushServer',
+            method: 'registerToPushServer'
           });
           this._registeredToMessages = true;
           onSuccess();
@@ -131,77 +115,71 @@ export class PushNotification {
         (err: any) => {
           logger.error('Registration for push notification error', {
             method: 'registerToPushServer',
-            data: err,
+            data: err
           });
           onError();
           this._events.emit({
             type: PushNotificationEventTypes.PushNotificationsError,
-            error: err,
+            error: err
           });
         }
       );
   }
 
-  private _createThumbRegistration(
-    entryId: string
-  ): PrepareRegisterRequestConfig {
+  private _createThumbRegistration(entryId: string): PrepareRegisterRequestConfig {
     logger.info('Register thumb notification', {
       method: '_createThumbRegistration',
-      data: {entryId},
+      data: {entryId}
     });
     return {
       eventName: PushNotificationEventTypes.ThumbNotification,
       eventParams: {
-        entryId: entryId,
+        entryId: entryId
       },
       onMessage: (response: any[]) => {
         this._events.emit({
           type: PushNotificationEventTypes.ThumbNotification,
-          thumbs: response,
+          thumbs: response
         });
-      },
+      }
     };
   }
 
-  private _createSlideRegistration(
-    entryId: string
-  ): PrepareRegisterRequestConfig {
+  private _createSlideRegistration(entryId: string): PrepareRegisterRequestConfig {
     logger.info('Register slide notification', {
       method: '_createSlideRegistration',
-      data: {entryId},
+      data: {entryId}
     });
     return {
       eventName: PushNotificationEventTypes.SlideNotification,
       eventParams: {
-        entryId: entryId,
+        entryId: entryId
       },
       onMessage: (response: any[]) => {
         this._events.emit({
           type: PushNotificationEventTypes.SlideNotification,
-          slides: response, // TODO: prepare slides
+          slides: response // TODO: prepare slides
         });
-      },
+      }
     };
   }
 
-  private _createPublicRegistration(
-    entryId: string
-  ): PrepareRegisterRequestConfig {
+  private _createPublicRegistration(entryId: string): PrepareRegisterRequestConfig {
     logger.info('Register public notification', {
       method: '_createPublicRegistration',
-      data: {entryId},
+      data: {entryId}
     });
     return {
       eventName: PushNotificationEventTypes.PublicNotifications,
       eventParams: {
-        entryId: entryId,
+        entryId: entryId
       },
       onMessage: (response: any[]) => {
         this._events.emit({
           type: PushNotificationEventTypes.PublicNotifications,
-          messages: response,
+          messages: response
         });
-      },
+      }
     };
   }
 }

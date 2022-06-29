@@ -5,21 +5,14 @@ interface EmptyListProps {
   showNoResultsText: boolean;
 }
 
-export const EmptyList = ({ showNoResultsText }: EmptyListProps) => {
+export const EmptyList = ({showNoResultsText}: EmptyListProps) => {
   return (
     <div className={styles.emptyStateWrapper}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="184"
-        height="184"
-        viewBox="0 0 184 184">
+      <svg xmlns="http://www.w3.org/2000/svg" width="184" height="184" viewBox="0 0 184 184">
         <g fill="none" fill-rule="evenodd">
           <circle cx="92" cy="92" r="92" fill="#333" />
           <g transform="translate(99 5)">
-            <path
-              fill="#4DA2B3"
-              d="M41.184 12.743c5.133 11.52 3.33 25.725-5.742 36.162-9.073 10.438-22.89 14.2-35.012 10.72z"
-            />
+            <path fill="#4DA2B3" d="M41.184 12.743c5.133 11.52 3.33 25.725-5.742 36.162-9.073 10.438-22.89 14.2-35.012 10.72z" />
             <path
               fill="#01ACCD"
               d="M18 59c3.095 1.394 6.5 2.165 10.074 2.165.536 0 1.068-.017 1.595-.052l2.325 7.161c.25.768-.153 1.595-.912 1.872l-2.227.814c-.778.284-1.639-.116-1.923-.895l-.018-.051-.26-.803c-.14.42-.463.773-.91.935l-2.226.814c-.778.284-1.64-.116-1.924-.895l-.018-.051z"
@@ -44,11 +37,7 @@ export const EmptyList = ({ showNoResultsText }: EmptyListProps) => {
               />
             </g>
           </g>
-          <path
-            fill="#01ACCD"
-            d="M92 184c-32.8 0-61.59-17.164-77.879-43h155.758c-16.29 25.836-45.08 43-77.879 43z"
-            opacity=".5"
-          />
+          <path fill="#01ACCD" d="M92 184c-32.8 0-61.59-17.164-77.879-43h155.758c-16.29 25.836-45.08 43-77.879 43z" opacity=".5" />
           <path
             fill="#01ACCD"
             d="M29.302 109.649c1.823 0 3.301-1.489 3.301-3.325S31.125 103 29.302 103c-1.824 0-3.302 1.488-3.302 3.324 0 1.836 1.478 3.325 3.302 3.325zm0-2c-.716 0-1.302-.59-1.302-1.325 0-.734.586-1.324 1.302-1.324.715 0 1.301.59 1.301 1.324 0 .735-.586 1.325-1.301 1.325z"
@@ -102,10 +91,7 @@ export const EmptyList = ({ showNoResultsText }: EmptyListProps) => {
           <ellipse cx="90" cy="161" fill="#222" opacity=".5" rx="19" ry="7" />
           <ellipse cx="90" cy="161" fill="#222" opacity=".5" rx="31" ry="11" />
           <g transform="translate(83 73)">
-            <path
-              fill="#4DA2B3"
-              d="M44.024 4C49.41 7.095 53 12.652 53 18.993c0 6.35-3.601 11.915-9 15.007l.022-.238.007-.241V4.218L44.024 4z"
-            />
+            <path fill="#4DA2B3" d="M44.024 4C49.41 7.095 53 12.652 53 18.993c0 6.35-3.601 11.915-9 15.007l.022-.238.007-.241V4.218L44.024 4z" />
             <path
               fill="#01ACCD"
               d="M41.001 7l-.945 24.56-19.585-3.2c-.144-.021-.29-.036-.436-.043l-.22-.006c-2.304 0-4.187 1.783-4.319 4.032l-.007.252v56.17C13.587 90.255 10.869 91 7.337 91c-3.364 0-5.742-.676-7.134-2.027L0 88.765V21.24c0-5.77 4.34-10.612 10.082-11.332l.368-.04L41.001 7z"

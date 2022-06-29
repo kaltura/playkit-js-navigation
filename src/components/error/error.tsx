@@ -13,9 +13,7 @@ export const Error = (props: ErrorProps) => {
       <div className={styles.iconWrapper}>
         <div className={styles.errorIcon} />
         <p className={styles.errorMainText}>{props.translates.whoops}</p>
-        <p className={styles.errorDescriptionText}>
-          {props.translates.errorMessage}
-        </p>
+        <p className={styles.errorDescriptionText}>{props.translates.errorMessage}</p>
         <button className={styles.retryButton} onClick={props.onRetryLoad}>
           {props.translates.retry}
         </button>
@@ -29,6 +27,6 @@ Error.defaultProps = {
   translates: {
     whoops: 'Whoops!',
     errorMessage: 'We couldn’t retrieve your Data.',
-    retry: 'Retry',
-  },
+    retry: 'Retry'
+  }
 };

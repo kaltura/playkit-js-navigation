@@ -1,15 +1,8 @@
-// import {ObjectUtils} from '@playkit-js-contrib/common';
-import {
-  ItemData,
-  RawItemData,
-} from '../components/navigation/navigation-item/NavigationItem';
-// const {get} = ObjectUtils;
+import {ObjectUtils} from '@playkit-js-contrib/common';
+import {ItemData, RawItemData} from '../components/navigation/navigation-item/NavigationItem';
+const {get} = ObjectUtils;
 
-export function getConfigValue( // TODO: consider move to contrib
-  value: any,
-  condition: (value: any) => boolean,
-  defaultValue: any
-) {
+export function getConfigValue(value: any, condition: (value: any) => boolean, defaultValue: any) { // TODO: consider move to contrib
   let result = defaultValue;
   if (typeof condition === 'function' && condition(value)) {
     result = value;
@@ -20,7 +13,7 @@ export function getConfigValue( // TODO: consider move to contrib
 export enum groupTypes {
   mid = 'mid',
   first = 'first',
-  last = 'last',
+  last = 'last'
 }
 
 // TODO: make the types plurals
@@ -30,7 +23,7 @@ export enum itemTypes {
   Chapter = 'Chapter',
   Slide = 'Slide',
   Hotspot = 'Hotspot',
-  Caption = 'Caption',
+  Caption = 'Caption'
 }
 
 export const itemTypesOrder: Record<string, number> = {
@@ -39,17 +32,17 @@ export const itemTypesOrder: Record<string, number> = {
   [itemTypes.Slide]: 2,
   [itemTypes.Hotspot]: 3,
   [itemTypes.AnswerOnAir]: 4,
-  [itemTypes.Caption]: 5,
+  [itemTypes.Caption]: 5
 };
 
 export enum cuePointTypes {
   Annotation = 'annotation.Annotation',
-  Thumb = 'thumbCuePoint.Thumb',
+  Thumb = 'thumbCuePoint.Thumb'
 }
 
 export enum cuePointTags {
   AnswerOnAir = 'qna',
-  Hotspot = 'hotspots',
+  Hotspot = 'hotspots'
 }
 
 // TODO: move to config
@@ -65,13 +58,7 @@ export const convertTime = (sec: number): string => {
     sec = sec - min * 60;
   }
   if (hours) {
-    return (
-      (hours < 10 ? '0' + hours : hours) +
-      ':' +
-      (min < 10 ? '0' + min : min) +
-      ':' +
-      (sec < 10 ? '0' + sec : sec)
-    );
+    return (hours < 10 ? '0' + hours : hours) + ':' + (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
   } else {
     return (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
   }
@@ -106,16 +93,8 @@ export function makeAssetUrl(baseThumbAssetUrl: string, assetId: string) {
   return assetUrl;
 }
 
-export function makeChapterThumb(
-  serviceUrl: string,
-  partnerId: number,
-  entryId: string,
-  startTime: number,
-  ks: string = ''
-) {
-  return `${
-    serviceUrl.split('api_v3')[0]
-  }/p/${partnerId}/sp/${partnerId}00/thumbnail/entry_id/${entryId}/width/400/vid_sec/${startTime}${
+export function makeChapterThumb(serviceUrl: string, partnerId: number, entryId: string, startTime: number, ks: string = '') {
+  return `${serviceUrl.split('api_v3')[0]}/p/${partnerId}/sp/${partnerId}00/thumbnail/entry_id/${entryId}/width/400/vid_sec/${startTime}${
     ks ? `/ks/${ks}` : ''
   }`;
 }
@@ -164,32 +143,18 @@ export const fillData = (
         case 2:
           item.itemType = itemTypes.Chapter;
           if (!item.previewImage && forceChaptersThumb) {
-            item.previewImage = makeChapterThumb(
-              serviceUrl,
-              item.partnerId,
-              item.entryId,
-              item.startTime,
-              ks
-            );
+            item.previewImage = makeChapterThumb(serviceUrl, item.partnerId, item.entryId, item.startTime, ks);
           }
           break;
       }
       break;
   }
-  if (
-    item.displayTitle &&
-    item.displayTitle.length > MAX_CHARACTERS &&
-    item.itemType !== itemTypes.Caption
-  ) {
+  if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS && item.itemType !== itemTypes.Caption) {
     let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
     item.shorthandTitle = elipsisString + '... ';
   }
-  if (
-    !item.displayTitle &&
-    item.displayDescription &&
-    item.displayDescription.length > 79
-  ) {
+  if (!item.displayTitle && item.displayDescription && item.displayDescription.length > 79) {
     let elipsisDescription = item.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisDescription = elipsisDescription.trim();
     item.shorthandDescription = elipsisDescription + '... ';
@@ -199,10 +164,7 @@ export const fillData = (
   return item;
 };
 
-export const sortItems = (
-  cuepoints: Array<ItemData>,
-  itemOrder: typeof itemTypesOrder
-): Array<ItemData> => {
+export const sortItems = (cuepoints: Array<ItemData>, itemOrder: typeof itemTypesOrder): Array<ItemData> => {
   return cuepoints.sort((item1: ItemData, item2: ItemData) => {
     if (item1.startTime === item2.startTime) {
       return itemOrder[item1.itemType] - itemOrder[item2.itemType];
@@ -252,7 +214,7 @@ export const prepareVodData = (
   const filledData = receivedCuepoints.map((cuepoint: RawItemData) => {
     return {
       ...fillData(cuepoint, ks, serviceUrl, baseThumbAssetUrl, forceChaptersThumb, false),
-      liveTypeCuepoint: false,
+      liveTypeCuepoint: false
     };
   });
   return sortItems(filledData, itemOrder);
@@ -261,14 +223,11 @@ export const prepareVodData = (
 const clearGroupData = (data: Array<ItemData>) => {
   return data.map((item: ItemData) => ({
     ...item,
-    groupData: null,
+    groupData: null
   }));
 };
 
-export const filterDataBySearchQuery = (
-  data: Array<ItemData> | undefined,
-  searchQuery: string
-) => {
+export const filterDataBySearchQuery = (data: Array<ItemData> | undefined, searchQuery: string) => {
   if (!data || !data.length) {
     return [];
   }
@@ -280,25 +239,15 @@ export const filterDataBySearchQuery = (
   const lowerQuery = searchQuery.toLowerCase();
   const filteredData = data.filter((item: ItemData) => {
     // search by title
-    if (
-      item.displayTitle &&
-      `${item.displayTitle}`.toLowerCase().indexOf(lowerQuery) > -1
-    ) {
+    if (item.displayTitle && `${item.displayTitle}`.toLowerCase().indexOf(lowerQuery) > -1) {
       return true;
     }
     // search by description
-    if (
-      item.displayDescription &&
-      `${item.displayDescription}`.toLowerCase().indexOf(lowerQuery) > -1
-    ) {
+    if (item.displayDescription && `${item.displayDescription}`.toLowerCase().indexOf(lowerQuery) > -1) {
       return true;
     }
     // search by time
-    if (
-      item.displayTime &&
-      /([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(lowerQuery) &&
-      item.displayTime.indexOf(lowerQuery) > -1
-    ) {
+    if (item.displayTime && /([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(lowerQuery) && item.displayTime.indexOf(lowerQuery) > -1) {
       return true;
     }
   });
@@ -306,38 +255,27 @@ export const filterDataBySearchQuery = (
   return clearGroupData(filteredData);
 };
 
-export const filterDataByActiveTab = (
-  data: Array<ItemData> | undefined,
-  activeTab: itemTypes
-) => {
+export const filterDataByActiveTab = (data: Array<ItemData> | undefined, activeTab: itemTypes) => {
   if (!data || !data.length) {
     return [];
   }
   if (activeTab === itemTypes.All) {
     return data;
   }
-  const filteredData = data.filter(
-    (item: ItemData) => item.itemType === activeTab
-  );
+  const filteredData = data.filter((item: ItemData) => item.itemType === activeTab);
   return clearGroupData(filteredData);
 };
 
-export const getAvailableTabs = (
-  data: ItemData[],
-  itemOrder: typeof itemTypesOrder
-): itemTypes[] => {
+export const getAvailableTabs = (data: ItemData[], itemOrder: typeof itemTypesOrder): itemTypes[] => {
   const localData = [...data];
   let totalResults = 0;
-  const ret: itemTypes[] = localData.reduce(
-    (acc: itemTypes[], item: ItemData) => {
-      totalResults = totalResults + 1;
-      if (item.itemType && acc.indexOf(item.itemType) === -1) {
-        acc.push(item.itemType);
-      }
-      return acc;
-    },
-    []
-  );
+  const ret: itemTypes[] = localData.reduce((acc: itemTypes[], item: ItemData) => {
+    totalResults = totalResults + 1;
+    if (item.itemType && acc.indexOf(item.itemType) === -1) {
+      acc.push(item.itemType);
+    }
+    return acc;
+  }, []);
   if (ret.length > 1) {
     ret.unshift(itemTypes.All);
   }
@@ -351,14 +289,11 @@ export const preparePendingCuepoints = (
   currentTimeLive: number
 ): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
   return currentData.reduce(
-    (
-      acc: {listData: Array<ItemData>; pendingData: Array<ItemData>},
-      item: ItemData
-    ) => {
+    (acc: {listData: Array<ItemData>; pendingData: Array<ItemData>}, item: ItemData) => {
       if (currentTimeLive < item.startTime) {
         return {
           listData: acc.listData,
-          pendingData: [...acc.pendingData, item],
+          pendingData: [...acc.pendingData, item]
         };
       }
       return {listData: [...acc.listData, item], pendingData: acc.pendingData};
@@ -374,20 +309,13 @@ export const preparePendingCuepoints = (
  * @param { Array<ItemData>} cues - the cues data
  * @returns {Array<ItemData>}
  */
-export function filterPreviewDuplications(
-  cues: Array<ItemData>
-): Array<ItemData> {
-  const isDuplicatedSlide = (
-    previousSlide: ItemData | null,
-    currentSlide: ItemData
-  ) => {
+export function filterPreviewDuplications(cues: Array<ItemData>): Array<ItemData> {
+  const isDuplicatedSlide = (previousSlide: ItemData | null, currentSlide: ItemData) => {
     return (
       previousSlide &&
       currentSlide.title === previousSlide.title &&
       currentSlide.partnerData === previousSlide.partnerData &&
-      [currentSlide.tags, previousSlide.tags].includes(
-        'select-a-thumb, __PREVIEW_CUEPOINT_TAG__'
-      )
+      [currentSlide.tags, previousSlide.tags].includes('select-a-thumb, __PREVIEW_CUEPOINT_TAG__')
     );
   };
 
@@ -422,13 +350,9 @@ export const prepareLiveData = (
     return {listData: currentData, pendingData};
   }
   // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
-  let receivedCuepoints: Array<ItemData> = newData.filter(
-    (newDataItem: ItemData) => {
-      return ![...currentData, ...pendingData].find(
-        (item: ItemData) => item.id === newDataItem.id
-      );
-    }
-  );
+  let receivedCuepoints: Array<ItemData> = newData.filter((newDataItem: ItemData) => {
+    return ![...currentData, ...pendingData].find((item: ItemData) => item.id === newDataItem.id);
+  });
   // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
   receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
     return fillData(cuepoint, ks, serviceUrl, baseThumbAssetUrl, forceChaptersThumb, true);
@@ -446,18 +370,16 @@ export const prepareLiveData = (
 };
 
 export const checkResponce = (response: any, type?: any): boolean => {
-  // if (get(response, 'result.objects', [])) {
-  //   if (type) {
-  //     return response.result instanceof type;
-  //   }
-  //   return true;
-  // }
+  if (get(response, 'result.objects', [])) {
+    if (type) {
+      return response.result instanceof type;
+    }
+    return true;
+  }
   return false;
 };
 
-export const prepareItemTypesOrder = (
-  itemsOrder: any
-): Record<string, number> => {
+export const prepareItemTypesOrder = (itemsOrder: any): Record<string, number> => {
   if (itemsOrder && typeof itemsOrder === 'object') {
     return {...itemTypesOrder, ...itemsOrder};
   }
@@ -470,10 +392,7 @@ export const isEmptyObject = (obj: Record<string, any>) => {
 };
 
 // TODO: consider move to contrib
-export const isDataEqual = (
-  prevData: ItemData[],
-  nextData: ItemData[]
-): boolean => {
+export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean => {
   if (prevData.length !== nextData.length) {
     return false;
   }
@@ -484,11 +403,7 @@ export const isDataEqual = (
     if (prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id) {
       return false;
     }
-    if (
-      prevData[0].text &&
-      nextData[0].text &&
-      prevData[0].text !== nextData[0].text
-    ) {
+    if (prevData[0].text && nextData[0].text && prevData[0].text !== nextData[0].text) {
       return false;
     }
     if (
@@ -509,23 +424,14 @@ export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
   return !(
     prevMapKeys.length !== nextMapaKeys.length ||
     prevMapKeys[0] !== nextMapaKeys[0] ||
-    prevMapKeys[prevMapKeys.length - 1] !==
-      nextMapaKeys[nextMapaKeys.length - 1]
+    prevMapKeys[prevMapKeys.length - 1] !== nextMapaKeys[nextMapaKeys.length - 1]
   );
 };
 
-export const findCuepointType = (
-  list: ItemData[],
-  cuePointType: itemTypes
-): boolean => {
-  return !!list.find(
-    (cuepoint: ItemData) => cuepoint.itemType === cuePointType
-  );
+export const findCuepointType = (list: ItemData[], cuePointType: itemTypes): boolean => {
+  return !!list.find((cuepoint: ItemData) => cuepoint.itemType === cuePointType);
 };
 
-export const filterCuepointsByStartTime = (
-  list: ItemData[],
-  startTime: number
-): ItemData[] => {
-  return list.filter((item) => item.startTime >= startTime);
+export const filterCuepointsByStartTime = (list: ItemData[], startTime: number): ItemData[] => {
+  return list.filter(item => item.startTime >= startTime);
 };
