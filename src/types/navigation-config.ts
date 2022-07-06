@@ -3,6 +3,5 @@ export interface NavigationConfig {
   expandMode: string;
   expandOnFirstPlay: boolean;
   forceChaptersThumb: boolean;
-  userRole: string;
   itemsOrder: object;
 }

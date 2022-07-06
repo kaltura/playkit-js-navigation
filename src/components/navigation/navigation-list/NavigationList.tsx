@@ -1,9 +1,10 @@
 import {Component, h} from 'preact';
 import * as styles from './NavigationList.scss';
-import {NavigationItem, ItemData} from '../navigation-item/NavigationItem';
+import {NavigationItem} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';
 import {EmptyState} from '../icons/EmptyState';
 import {isDataEqual, isMapEqual} from '../../../utils';
+import {ItemData} from '../../../types';
 
 export interface Props {
   data: Array<ItemData>;

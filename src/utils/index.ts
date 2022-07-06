@@ -1,52 +1,15 @@
-import {ObjectUtils} from '@playkit-js-contrib/common';
-import {ItemData, RawItemData} from '../components/navigation/navigation-item/NavigationItem';
-const {get} = ObjectUtils;
+import {GroupTypes, CuePoint, ItemData, ItemTypes} from '../types';
 
-export function getConfigValue(value: any, condition: (value: any) => boolean, defaultValue: any) { // TODO: consider move to contrib
-  let result = defaultValue;
-  if (typeof condition === 'function' && condition(value)) {
-    result = value;
-  }
-  return result;
-}
-
-export enum groupTypes {
-  mid = 'mid',
-  first = 'first',
-  last = 'last'
-}
-
-// TODO: make the types plurals
-export enum itemTypes {
-  All = 'All',
-  AnswerOnAir = 'AnswerOnAir',
-  Chapter = 'Chapter',
-  Slide = 'Slide',
-  Hotspot = 'Hotspot',
-  Caption = 'Caption'
-}
+const MAX_CHARACTERS = 77;
 
 export const itemTypesOrder: Record<string, number> = {
-  [itemTypes.All]: 0,
-  [itemTypes.Chapter]: 1,
-  [itemTypes.Slide]: 2,
-  [itemTypes.Hotspot]: 3,
-  [itemTypes.AnswerOnAir]: 4,
-  [itemTypes.Caption]: 5
+  [ItemTypes.All]: 0,
+  [ItemTypes.Chapter]: 1,
+  [ItemTypes.Slide]: 2,
+  [ItemTypes.Hotspot]: 3,
+  [ItemTypes.AnswerOnAir]: 4,
+  [ItemTypes.Caption]: 5
 };
-
-export enum cuePointTypes {
-  Annotation = 'annotation.Annotation',
-  Thumb = 'thumbCuePoint.Thumb'
-}
-
-export enum cuePointTags {
-  AnswerOnAir = 'qna',
-  Hotspot = 'hotspots'
-}
-
-// TODO: move to config
-const MAX_CHARACTERS = 77;
 
 export const convertTime = (sec: number): string => {
   const hours = Math.floor(sec / 3600);
@@ -64,7 +27,6 @@ export const convertTime = (sec: number): string => {
   }
 };
 
-// TODO: consider move to contrib
 export const decodeString = (content: any): string => {
   if (typeof content !== 'string') {
     return content;
@@ -77,91 +39,50 @@ export const decodeString = (content: any): string => {
     .replace(/&quot;/gi, '"');
 };
 
-export function getKs(player: any): string {
-  if (player.shouldAddKs && player.shouldAddKs() && player.config.session?.ks) {
-    return player.config.session.ks;
+export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, forceChaptersThumb = false): ItemData => {
+  const {metadata} = cuePoint;
+  const itemData: ItemData = {
+    cuePointType,
+    id: cuePoint.id,
+    startTime: cuePoint.startTime,
+    displayTime: convertTime(Math.floor(cuePoint.startTime)),
+    itemType: cuePointType,
+    displayTitle: '',
+    displayDescription: [ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType) ? decodeString(metadata.description) : null,
+    previewImage: null,
+    hasShowMore: false,
+    groupData: null
+  };
+  if (cuePointType === ItemTypes.Hotspot) {
+    itemData.displayTitle = decodeString(metadata.text);
+  } else if (cuePointType === ItemTypes.Caption && cuePoint.text) {
+    itemData.displayTitle = cuePoint.text;
+  } else if ([ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType)) {
+    itemData.displayTitle = decodeString(metadata.title);
+    if (cuePointType === ItemTypes.Slide || forceChaptersThumb) {
+      itemData.previewImage = metadata.assetUrl || null;
+    }
   }
-  return '';
-}
-
-export function makeAssetUrl(baseThumbAssetUrl: string, assetId: string) {
-  let assetUrl = '';
-  // for some thumb cue points, assetId may be undefined from the API.
-  if (typeof assetId !== 'undefined') {
-    assetUrl = baseThumbAssetUrl.replace(/thumbAssetId\/([^\/]+)/, '/thumbAssetId/' + assetId);
-  }
-  return assetUrl;
-}
-
-export function makeChapterThumb(serviceUrl: string, partnerId: number, entryId: string, startTime: number, ks: string = '') {
-  return `${serviceUrl.split('api_v3')[0]}/p/${partnerId}/sp/${partnerId}00/thumbnail/entry_id/${entryId}/width/400/vid_sec/${startTime}${
-    ks ? `/ks/${ks}` : ''
-  }`;
-}
-
-// normlise time, extract description and title, find thumbnail if exist etc'
-export const fillData = (
-  originalItem: any,
-  ks: string,
-  serviceUrl: string,
-  baseThumbAssetUrl = '',
-  forceChaptersThumb = false,
-  isLiveEntry = false
-) => {
-  const item: any = {...originalItem};
-  item.liveType = isLiveEntry;
-  if (isLiveEntry) {
-    item.startTime = item.createdAt;
-  } else {
-    item.startTime = item.startTime / 1000;
-    item.displayTime = convertTime(Math.floor(item.startTime));
-  }
-  switch (item.cuePointType) {
-    case itemTypes.Caption:
-      item.itemType = itemTypes.Caption;
-    case cuePointTypes.Annotation: // hotspot and AoA
-      item.displayTitle = decodeString(item.text);
-      switch (item.tags) {
-        case cuePointTags.Hotspot:
-          item.itemType = itemTypes.Hotspot;
-          break;
-        case cuePointTags.AnswerOnAir:
-          item.itemType = itemTypes.AnswerOnAir;
-          break;
-      }
-      break;
-    case cuePointTypes.Thumb: // chapters and slides
-      item.displayDescription = decodeString(item.description);
-      item.displayTitle = decodeString(item.title);
-      if (item.assetId) {
-        item.previewImage = makeAssetUrl(baseThumbAssetUrl, item.assetId);
-      }
-      switch (item.subType) {
-        case 1:
-          item.itemType = itemTypes.Slide;
-          break;
-        case 2:
-          item.itemType = itemTypes.Chapter;
-          if (!item.previewImage && forceChaptersThumb) {
-            item.previewImage = makeChapterThumb(serviceUrl, item.partnerId, item.entryId, item.startTime, ks);
-          }
-          break;
-      }
-      break;
-  }
-  if (item.displayTitle && item.displayTitle.length > MAX_CHARACTERS && item.itemType !== itemTypes.Caption) {
-    let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
+  if (itemData.displayTitle && itemData.displayTitle.length > MAX_CHARACTERS && itemData.itemType !== ItemTypes.Caption) {
+    let elipsisString = itemData.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
-    item.shorthandTitle = elipsisString + '... ';
+    itemData.shorthandTitle = elipsisString + '... ';
   }
-  if (!item.displayTitle && item.displayDescription && item.displayDescription.length > 79) {
-    let elipsisDescription = item.displayTitle.slice(0, MAX_CHARACTERS);
+  if (!itemData.displayTitle && itemData.displayDescription && itemData.displayDescription.length > 79) {
+    let elipsisDescription = itemData.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisDescription = elipsisDescription.trim();
-    item.shorthandDescription = elipsisDescription + '... ';
+    itemData.shorthandDescription = elipsisDescription + '... ';
   }
+  itemData.hasShowMore = Boolean(itemData.displayDescription || itemData.shorthandDescription);
 
-  item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
-  return item;
+  return itemData;
+};
+
+export const addOrReplaceCaptions = (data: Array<ItemData>, captions: Array<ItemData>): Array<ItemData> => {
+  const filteredData = data.filter(item => {
+    return item.cuePointType !== ItemTypes.Caption;
+  });
+  return [...filteredData, ...captions];
 };
 
 export const sortItems = (cuepoints: Array<ItemData>, itemOrder: typeof itemTypesOrder): Array<ItemData> => {
@@ -184,13 +105,13 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
       const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
       if (prevItem && currentCuepoint.startTime === prevItem.startTime) {
         if (prevPrevItem.startTime === prevItem.startTime) {
-          prevItem.groupData = groupTypes.mid;
+          prevItem.groupData = GroupTypes.mid;
         }
         // found a previous item that has the same time value
         if (!prevItem.groupData && !prevItem.groupData) {
-          prevItem.groupData = groupTypes.first;
+          prevItem.groupData = GroupTypes.first;
         }
-        currentCuepoint.groupData = groupTypes.last;
+        currentCuepoint.groupData = GroupTypes.last;
       }
       // TODO - enforce order
       prevArr.push(currentCuepoint);
@@ -198,26 +119,6 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
     },
     []
   );
-};
-
-// main function for data handel. This sorts the cuepoints by startTime, and enriches the items with data so that the
-// items component will not contain too much logic in it and mostly will be a
-// dumb display-component (no offence - NavigationItem...)
-export const prepareVodData = (
-  receivedCuepoints: Array<RawItemData>,
-  ks: string,
-  serviceUrl: string,
-  forceChaptersThumb: boolean,
-  itemOrder: typeof itemTypesOrder,
-  baseThumbAssetUrl?: string
-): Array<ItemData> => {
-  const filledData = receivedCuepoints.map((cuepoint: RawItemData) => {
-    return {
-      ...fillData(cuepoint, ks, serviceUrl, baseThumbAssetUrl, forceChaptersThumb, false),
-      liveTypeCuepoint: false
-    };
-  });
-  return sortItems(filledData, itemOrder);
 };
 
 const clearGroupData = (data: Array<ItemData>) => {
@@ -233,7 +134,7 @@ export const filterDataBySearchQuery = (data: Array<ItemData> | undefined, searc
   }
   if (!searchQuery) {
     return data.filter((item: ItemData) => {
-      return item.itemType !== itemTypes.Caption;
+      return item.itemType !== ItemTypes.Caption;
     });
   }
   const lowerQuery = searchQuery.toLowerCase();
@@ -255,21 +156,21 @@ export const filterDataBySearchQuery = (data: Array<ItemData> | undefined, searc
   return clearGroupData(filteredData);
 };
 
-export const filterDataByActiveTab = (data: Array<ItemData> | undefined, activeTab: itemTypes) => {
+export const filterDataByActiveTab = (data: Array<ItemData> | undefined, activeTab: ItemTypes) => {
   if (!data || !data.length) {
     return [];
   }
-  if (activeTab === itemTypes.All) {
+  if (activeTab === ItemTypes.All) {
     return data;
   }
   const filteredData = data.filter((item: ItemData) => item.itemType === activeTab);
   return clearGroupData(filteredData);
 };
 
-export const getAvailableTabs = (data: ItemData[], itemOrder: typeof itemTypesOrder): itemTypes[] => {
+export const getAvailableTabs = (data: ItemData[], itemOrder: typeof itemTypesOrder): ItemTypes[] => {
   const localData = [...data];
   let totalResults = 0;
-  const ret: itemTypes[] = localData.reduce((acc: itemTypes[], item: ItemData) => {
+  const ret: ItemTypes[] = localData.reduce((acc: ItemTypes[], item: ItemData) => {
     totalResults = totalResults + 1;
     if (item.itemType && acc.indexOf(item.itemType) === -1) {
       acc.push(item.itemType);
@@ -277,29 +178,11 @@ export const getAvailableTabs = (data: ItemData[], itemOrder: typeof itemTypesOr
     return acc;
   }, []);
   if (ret.length > 1) {
-    ret.unshift(itemTypes.All);
+    ret.unshift(ItemTypes.All);
   }
-  return ret.sort((itemType1: itemTypes, itemType2: itemTypes) => {
+  return ret.sort((itemType1: ItemTypes, itemType2: ItemTypes) => {
     return itemOrder[itemType1] - itemOrder[itemType2];
   });
-};
-
-export const preparePendingCuepoints = (
-  currentData: Array<ItemData>,
-  currentTimeLive: number
-): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
-  return currentData.reduce(
-    (acc: {listData: Array<ItemData>; pendingData: Array<ItemData>}, item: ItemData) => {
-      if (currentTimeLive < item.startTime) {
-        return {
-          listData: acc.listData,
-          pendingData: [...acc.pendingData, item]
-        };
-      }
-      return {listData: [...acc.listData, item], pendingData: acc.pendingData};
-    },
-    {listData: [], pendingData: []}
-  );
 };
 
 /**
@@ -322,7 +205,7 @@ export function filterPreviewDuplications(cues: Array<ItemData>): Array<ItemData
   const filteredArr: Array<ItemData> = [];
   let previousSlide: ItemData | null = null;
   for (let i = 0; i < cues.length; i++) {
-    if (cues[i].itemType !== itemTypes.Slide) {
+    if (cues[i].itemType !== ItemTypes.Slide) {
       filteredArr.push(cues[i]);
     } else {
       if (!isDuplicatedSlide(previousSlide, cues[i])) {
@@ -334,47 +217,9 @@ export function filterPreviewDuplications(cues: Array<ItemData>): Array<ItemData
   return filteredArr;
 }
 
-export const prepareLiveData = (
-  currentData: Array<ItemData>,
-  pendingData: Array<ItemData>,
-  newData: Array<ItemData>,
-  ks: string,
-  serviceUrl: string,
-  forceChaptersThumb: boolean,
-  itemOrder: typeof itemTypesOrder,
-  currentTimeLive: number,
-  baseThumbAssetUrl?: string
-): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
-  if (!newData || newData.length === 0) {
-    // Wrong or empty data
-    return {listData: currentData, pendingData};
-  }
-  // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
-  let receivedCuepoints: Array<ItemData> = newData.filter((newDataItem: ItemData) => {
-    return ![...currentData, ...pendingData].find((item: ItemData) => item.id === newDataItem.id);
-  });
-  // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
-    return fillData(cuepoint, ks, serviceUrl, baseThumbAssetUrl, forceChaptersThumb, true);
-  });
-  const result: {
-    listData: Array<ItemData>;
-    pendingData: Array<ItemData>;
-  } = preparePendingCuepoints(receivedCuepoints, currentTimeLive);
-  const filteredPendingData = pendingData.filter((cuepoint: ItemData) => {
-    return !result.listData.find((item: ItemData) => item.id === cuepoint.id);
-  });
-  result.listData = sortItems(currentData.concat(result.listData), itemOrder);
-  result.pendingData = filteredPendingData.concat(result.pendingData);
-  return result;
-};
-
-export const checkResponce = (response: any, type?: any): boolean => {
-  if (get(response, 'result.objects', [])) {
-    if (type) {
-      return response.result instanceof type;
-    }
-    return true;
+export const checkType = (data: any, type?: any): boolean => {
+  if (data && type) {
+    return data instanceof type;
   }
   return false;
 };
@@ -386,12 +231,10 @@ export const prepareItemTypesOrder = (itemsOrder: any): Record<string, number> =
   return itemTypesOrder;
 };
 
-// TODO: consider move to contrib
 export const isEmptyObject = (obj: Record<string, any>) => {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 };
 
-// TODO: consider move to contrib
 export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean => {
   if (prevData.length !== nextData.length) {
     return false;
@@ -417,7 +260,6 @@ export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean
   return true;
 };
 
-// TODO: consider move to contrib
 export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
   const prevMapKeys = Object.keys(prevMap);
   const nextMapaKeys = Object.keys(nextMap);
@@ -428,10 +270,42 @@ export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
   );
 };
 
-export const findCuepointType = (list: ItemData[], cuePointType: itemTypes): boolean => {
+export const findCuepointType = (list: ItemData[], cuePointType: ItemTypes): boolean => {
   return !!list.find((cuepoint: ItemData) => cuepoint.itemType === cuePointType);
 };
 
 export const filterCuepointsByStartTime = (list: ItemData[], startTime: number): ItemData[] => {
   return list.filter(item => item.startTime >= startTime);
 };
+
+type Procedure = (...args: any[]) => void;
+export function debounce<F extends Procedure>(
+  func: F,
+  waitMilliseconds = 50,
+  options = {
+    isImmediate: false
+  }
+): F {
+  let timeoutId: any;
+
+  return function (this: any, ...args: any[]) {
+    const doLater = () => {
+      timeoutId = undefined;
+      if (!options.isImmediate) {
+        func.apply(this, args);
+      }
+    };
+
+    const shouldCallNow = options.isImmediate && timeoutId === undefined;
+
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(doLater, waitMilliseconds);
+
+    if (shouldCallNow) {
+      func.apply(this, args);
+    }
+  } as any;
+}

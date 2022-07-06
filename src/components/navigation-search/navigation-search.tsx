@@ -1,8 +1,6 @@
 import {h, Component, Fragment} from 'preact';
 import * as styles from './navigation-search.scss';
-import {debounce} from '@playkit-js-contrib/common';
-
-const {Tooltip} = KalturaPlayer.ui.components;
+import {debounce} from '../../utils';
 
 export interface SearchProps {
   onChange(value: string): void;

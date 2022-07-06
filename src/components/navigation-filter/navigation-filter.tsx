@@ -1,20 +1,20 @@
 import {h, Component, Fragment} from 'preact';
 import * as styles from './navigation-filter.scss';
-import {itemTypes} from '../../utils';
+import {ItemTypes} from '../../types';
 import {IconsFactory, IconColors, BackgroundColors} from '../navigation/icons/IconsFactory';
 const {Tooltip} = KalturaPlayer.ui.components;
 
 export interface FilterProps {
-  onChange(value: itemTypes): void;
-  activeTab: itemTypes;
-  availableTabs: itemTypes[];
+  onChange(value: ItemTypes): void;
+  activeTab: ItemTypes;
+  availableTabs: ItemTypes[];
   totalResults: number | null;
   translates: Record<string, string>;
   listDataContainCaptions: boolean;
 }
 
 export interface TabData {
-  type: itemTypes;
+  type: ItemTypes;
   isActive: boolean;
   label: string;
 }
@@ -22,12 +22,12 @@ export interface TabData {
 export class NavigationFilter extends Component<FilterProps> {
   static defaultProps = {
     translates: {
-      [itemTypes.All]: 'All',
-      [itemTypes.AnswerOnAir]: 'Answer On Air',
-      [itemTypes.Chapter]: 'Chapters',
-      [itemTypes.Slide]: 'Slides',
-      [itemTypes.Hotspot]: 'Hotspots',
-      [itemTypes.Caption]: 'Captions'
+      [ItemTypes.All]: 'All',
+      [ItemTypes.AnswerOnAir]: 'Answer On Air',
+      [ItemTypes.Chapter]: 'Chapters',
+      [ItemTypes.Slide]: 'Slides',
+      [ItemTypes.Hotspot]: 'Hotspots',
+      [ItemTypes.Caption]: 'Captions'
     }
   };
 
@@ -39,11 +39,11 @@ export class NavigationFilter extends Component<FilterProps> {
     return false;
   }
 
-  public _handleChange = (type: itemTypes) => {
+  public _handleChange = (type: ItemTypes) => {
     this.props.onChange(type);
   };
 
-  public _renderTab = (tab: {isActive: boolean; type: itemTypes; label: string}) => {
+  public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label: string}) => {
     const style = {
       borderColor: IconColors[tab.type],
       backgroundColor: BackgroundColors[tab.type]
@@ -58,8 +58,8 @@ export class NavigationFilter extends Component<FilterProps> {
           style={style}
           onClick={() => this._handleChange(tab.type)}
         >
-          {tab.type === itemTypes.All ? (
-            <span>{this.props.translates[itemTypes.All]}</span>
+          {tab.type === ItemTypes.All ? (
+            <span>{this.props.translates[ItemTypes.All]}</span>
           ) : (
             <Fragment>
               <IconsFactory iconType={tab.type} color={tab.isActive ? null : '#cccccc'} />
@@ -73,7 +73,7 @@ export class NavigationFilter extends Component<FilterProps> {
 
   private _getTabsData = (): TabData[] => {
     const {availableTabs, activeTab, translates} = this.props;
-    const tabs: TabData[] = availableTabs.map((tab: itemTypes) => {
+    const tabs: TabData[] = availableTabs.map((tab: ItemTypes) => {
       return {
         type: tab,
         isActive: activeTab === tab,
@@ -88,7 +88,7 @@ export class NavigationFilter extends Component<FilterProps> {
     // TODO: add locale (i18n)
     // TODO: look how player translates plural and single
     return `${totalResults} result${totalResults && totalResults > 1 ? 's' : ''} in ${
-      activeTab === itemTypes.All ? `all content${listDataContainCaptions ? ' including captions' : ''}` : translates[activeTab].toLowerCase()
+      activeTab === ItemTypes.All ? `all content${listDataContainCaptions ? ' including captions' : ''}` : translates[activeTab].toLowerCase()
     }`;
   };
 

@@ -1,5 +1,5 @@
 import {h, Component, Fragment} from 'preact';
-import {itemTypes} from '../../../utils';
+import {ItemTypes} from '../../../types';
 import {HotspotIcon} from './HotspotIcon';
 import {AnswerOnAirIcon} from './AnswerOnAirIcon';
 import {ChapterIcon} from './ChapterIcon';
@@ -7,7 +7,7 @@ import {SlideIcon} from './SlideIcon';
 import {CaptionIcon} from './CaptionIcon';
 import * as styles from './IconsFactory.scss';
 export interface Props {
-  iconType: itemTypes;
+  iconType: ItemTypes;
   color?: any;
   hoverColor?: any;
 }
@@ -34,11 +34,11 @@ export enum BackgroundColors {
 export const IconsFactory = (props: Props) => {
   return (
     <div className={styles.icon}>
-      {props.iconType === itemTypes.Hotspot && <HotspotIcon color={props.color ? props.color : IconColors.Hotspot} />}
-      {props.iconType === itemTypes.AnswerOnAir && <AnswerOnAirIcon color={props.color ? props.color : IconColors.AnswerOnAir} />}
-      {props.iconType === itemTypes.Chapter && <ChapterIcon color={props.color ? props.color : IconColors.Chapter} />}
-      {props.iconType === itemTypes.Slide && <SlideIcon color={props.color ? props.color : IconColors.Slide} />}
-      {props.iconType === itemTypes.Caption && <CaptionIcon color={props.color ? props.color : IconColors.Caption} />}
+      {props.iconType === ItemTypes.Hotspot && <HotspotIcon color={props.color ? props.color : IconColors.Hotspot} />}
+      {props.iconType === ItemTypes.AnswerOnAir && <AnswerOnAirIcon color={props.color ? props.color : IconColors.AnswerOnAir} />}
+      {props.iconType === ItemTypes.Chapter && <ChapterIcon color={props.color ? props.color : IconColors.Chapter} />}
+      {props.iconType === ItemTypes.Slide && <SlideIcon color={props.color ? props.color : IconColors.Slide} />}
+      {props.iconType === ItemTypes.Caption && <CaptionIcon color={props.color ? props.color : IconColors.Caption} />}
     </div>
   );
 };

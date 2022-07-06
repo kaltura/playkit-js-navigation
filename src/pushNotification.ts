@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {EventsManager, getContribLogger} from '@playkit-js-contrib/common';
 import {
   PrepareRegisterRequestConfig,

@@ -1,29 +1,21 @@
 import {h, Component} from 'preact';
-import {KeyboardKeys} from '@playkit-js-contrib/ui';
-import {getContribLogger, CuepointEngine, Cuepoint} from '@playkit-js-contrib/common';
+import {CuepointEngine, Cuepoint} from '../../contrib-related/cuepoint-engine';
 import * as styles from './navigaton.scss';
 import {NavigationList} from './navigation-list/NavigationList';
 import {NavigationSearch} from '../navigation-search/navigation-search';
 import {NavigationFilter} from '../navigation-filter';
 import {Error} from '../error';
 import {Loading} from '../loading';
-import {
-  itemTypes,
-  getAvailableTabs,
-  filterDataBySearchQuery,
-  filterDataByActiveTab,
-  addGroupData,
-  itemTypesOrder,
-  findCuepointType
-} from '../../utils';
-import {ItemData} from './navigation-item/NavigationItem';
+import {getAvailableTabs, filterDataBySearchQuery, filterDataByActiveTab, addGroupData, itemTypesOrder, findCuepointType} from '../../utils';
 import {AutoscrollButton} from './autoscroll-button';
+import {ItemTypes, ItemData} from '../../types';
 const {Tooltip} = KalturaPlayer.ui.components;
+const {KeyMap} = KalturaPlayer.ui.utils;
 
 export interface SearchFilter {
   searchQuery: string;
-  activeTab: itemTypes;
-  availableTabs: itemTypes[];
+  activeTab: ItemTypes;
+  availableTabs: ItemTypes[];
   totalResults: number;
 }
 
@@ -55,15 +47,10 @@ const HEADER_HEIGHT_WITH_AMOUNT = 120;
 const LiveSeekThreshold: number = 7 * 1000; // use 7sec (same as QnA) as SeekThreshold configuration for live entries
 const VodSeekThreshold: number = 2 * 1000;
 
-// const logger = getContribLogger({
-//   class: 'Navigation',
-//   module: 'navigation-plugin',
-// });
-
 const initialSearchFilter = {
   searchQuery: '',
-  activeTab: itemTypes.All,
-  availableTabs: [itemTypes.All, itemTypes.Chapter, itemTypes.Slide, itemTypes.Hotspot, itemTypes.AnswerOnAir],
+  activeTab: ItemTypes.All,
+  availableTabs: [ItemTypes.All, ItemTypes.Chapter, ItemTypes.Slide, ItemTypes.Hotspot, ItemTypes.AnswerOnAir],
   totalResults: 0
 };
 
@@ -72,12 +59,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _engine: CuepointEngine<Cuepoint> | null = null;
   private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
-
-  private _log = (msg: string, method: string) => {
-    // logger.trace(msg, {
-    //   method: method || 'Method not defined',
-    // });
-  };
 
   constructor(props: NavigationProps) {
     super(props);
@@ -92,14 +73,12 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   }
 
   componentDidMount(): void {
-    this._log('Create navigation data', 'componentDidMount');
     this._prepareNavigationData(this.state.searchFilter);
   }
 
-  componentDidUpdate(previousProps: Readonly<NavigationProps>, previousState: Readonly<NavigationState>): void {
+  componentDidUpdate(previousProps: Readonly<NavigationProps>): void {
     this._setWidgetSize();
     if (previousProps.data !== this.props.data) {
-      this._log('Prepare navigation data', 'componentDidUpdate');
       this._prepareNavigationData(this.state.searchFilter);
       return;
     }
@@ -109,16 +88,15 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   }
 
   componentWillUnmount(): void {
-    this._log('Removing engine', 'componentWillUnmount');
-    // this._engine = null;
+    this._engine = null;
   }
 
   private _prepareNavigationData = (searchFilter: SearchFilter) => {
     const {searchQuery, activeTab} = searchFilter;
     const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
     const listDataContainCaptions = searchQuery
-      ? findCuepointType(filteredBySearchQuery, itemTypes.Caption)
-      : findCuepointType(this.props.data, itemTypes.Caption);
+      ? findCuepointType(filteredBySearchQuery, ItemTypes.Caption)
+      : findCuepointType(this.props.data, ItemTypes.Caption);
     const stateData: NavigationState = {
       ...this.state,
       listDataContainCaptions,
@@ -217,7 +195,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return styles.smallWidth;
   };
 
-  private _handleSearchFilterChange = (property: string) => (data: itemTypes | string | null) => {
+  private _handleSearchFilterChange = (property: string) => (data: ItemTypes | string | null) => {
     const searchFilter: SearchFilter = {
       ...this.state.searchFilter,
       [property]: data
@@ -289,7 +267,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         onScroll={this._scrollTo}
         data={convertedData}
         highlightedMap={highlightedMap}
-        showItemsIcons={searchFilter.activeTab === itemTypes.All}
+        showItemsIcons={searchFilter.activeTab === ItemTypes.All}
         listDataContainCaptions={listDataContainCaptions}
       />
     );
@@ -300,7 +278,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _handleClose = (event: KeyboardEvent) => {
-    if (event.keyCode === KeyboardKeys.Esc) {
+    if (event.keyCode === KeyMap.ESC) {
       this.props.onClose();
     }
   };
@@ -346,8 +324,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         ref={node => {
           this._widgetRootRef = node;
         }}
-        onKeyUp={this._handleClose}
-      >
+        onKeyUp={this._handleClose}>
         {isLoading ? (
           this._renderLoading()
         ) : (
@@ -358,8 +335,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
               onScroll={this._handleScroll}
               ref={node => {
                 this._listElementRef = node;
-              }}
-            >
+              }}>
               {this._renderNavigation()}
               {this._renderAutoscrollButton()}
             </div>

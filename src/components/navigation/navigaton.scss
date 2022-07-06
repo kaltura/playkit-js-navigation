@@ -80,4 +80,10 @@
       right: 16px;
     }
   }
+
+  // TODO: remove once player fix the font
+  * {
+    font-family: sans-serif;
+    font-style: normal;
+  }
 }
