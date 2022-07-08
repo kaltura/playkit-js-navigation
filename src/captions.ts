@@ -5,12 +5,12 @@ import {KalturaObjectMetadata} from 'kaltura-typescript-client/api/kaltura-objec
 import {KalturaCaptionAssetFilter} from 'kaltura-typescript-client/api/types/KalturaCaptionAssetFilter';
 import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
 import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
-import {Cuepoint} from './contrib-related/cuepoint-engine';
 import {ItemTypes} from './types';
 
 export const HOUR = 3600; // seconds in 1 hour
 
-export interface CaptionItem extends Cuepoint {
+export interface CaptionItem {
+  startTime: number;
   text: string;
   id: number;
 }

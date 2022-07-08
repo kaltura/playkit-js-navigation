@@ -47,3 +47,5 @@ export interface ItemData extends RawItemData {
   shorthandDescription?: string;
   hasShowMore: boolean;
 }
+
+export type HighlightedMap = Map<string, true>;

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "target": "ES5",
+    "target": "es2017",
     "module": "commonjs",
     "allowJs": false,
     "jsx": "react",

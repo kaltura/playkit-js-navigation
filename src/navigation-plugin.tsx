@@ -3,14 +3,16 @@ import {core} from 'kaltura-player-js';
 import {h} from 'preact';
 import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
 import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
-import {KalturaClient, KalturaRequest} from 'kaltura-typescript-client';
+import {KalturaClient} from 'kaltura-typescript-client';
 import {
   itemTypesOrder,
   sortItems,
   checkType,
   filterPreviewDuplications,
   prepareCuePoint,
-  addOrReplaceCaptions
+  addOrReplaceCaptions,
+  prepareItemTypesOrder,
+  isEmptyObject
 } from './utils';
 import {getCaptions, makeCaptionAssetListRequest, findCaptionAsset} from './captions';
 import {Navigation} from './components/navigation';
@@ -20,7 +22,7 @@ const {Tooltip} = KalturaPlayer.ui.components;
 const {TimedMetadata} = core;
 
 import {ui} from 'kaltura-player-js';
-import {NavigationConfig, PluginPositions, PluginStates, ItemTypes, ItemData, CuePoint} from './types';
+import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap} from './types';
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
 
 interface TimedMetadataEvent {
@@ -38,6 +40,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _hasError = false;
   private _itemsOrder = itemTypesOrder;
   private _itemsFilter = itemTypesOrder;
+  private _activeCuePointsMap: HighlightedMap = new Map();
 
   private _player: KalturaPlayerTypes.Player;
   private _navigationPanel = null;
@@ -54,7 +57,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   constructor(name: string, player: KalturaPlayerTypes.Player, config: NavigationConfig) {
     super(name, player, config);
     this._player = player;
-    this._itemsFilter = itemTypesOrder;
+    this._itemsOrder = prepareItemTypesOrder(this.config.itemsOrder);
+    this._itemsFilter = isEmptyObject(this.config.itemsOrder) ? itemTypesOrder : config.itemsOrder;
     this._kalturaClient.setOptions({
       clientTag: 'playkit-js-navigation',
       endpointUrl: player.provider.env.serviceUrl
@@ -120,10 +124,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
   };
 
-  private _onTimedMetadataChange = ({payload}: TimedMetadataEvent) => {
-    console.log('>> _onTimedMetadataChange payload', payload);
-  };
-
   private _addNavigationData = (data: ItemData[]) => {
     this._data = sortItems([...this._data, ...data], this._itemsOrder);
   };
@@ -132,21 +132,34 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._data = sortItems(data, this._itemsOrder);
   };
 
+  private _getCuePointType = (cue: CuePoint): ItemTypes | null => {
+    const {metadata} = cue;
+    const {KalturaCuePointType, KalturaThumbCuePointSubType, KalturaCuePointTags} = this.cuePointManager;
+    if (cue?.type !== TimedMetadata.TYPE.CUE_POINT) {
+      return null;
+    }
+    if (metadata?.cuePointType === KalturaCuePointType.THUMB && metadata?.subType === KalturaThumbCuePointSubType.SLIDE) {
+      return ItemTypes.Slide;
+    }
+    if (metadata?.cuePointType === KalturaCuePointType.THUMB && metadata?.subType === KalturaThumbCuePointSubType.CHAPTER) {
+      return ItemTypes.Chapter;
+    }
+    if (metadata?.cuePointType === KalturaCuePointType.ANNOTATION && metadata?.tags === KalturaCuePointTags.HOTSPOT) {
+      return ItemTypes.Hotspot;
+    }
+    return null;
+  };
+
   private _onTimedMetadataAdded = ({payload}: TimedMetadataEvent) => {
     const navigationData: ItemData[] = [];
     payload.cues.forEach((cue: CuePoint) => {
-      const {metadata} = cue;
-      const {KalturaCuePointType, KalturaThumbCuePointSubType, KalturaCuePointTags} = this.cuePointManager;
-      if (cue?.type !== TimedMetadata.TYPE.CUE_POINT) {
-        return;
-      }
-      if (metadata?.cuePointType === KalturaCuePointType.THUMB && metadata?.subType === KalturaThumbCuePointSubType.SLIDE) {
+      if (this._getCuePointType(cue) === ItemTypes.Slide) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Slide));
       }
-      if (metadata?.cuePointType === KalturaCuePointType.THUMB && metadata?.subType === KalturaThumbCuePointSubType.CHAPTER) {
+      if (this._getCuePointType(cue) === ItemTypes.Chapter) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Chapter, this.config.forceChaptersThumb));
       }
-      if (metadata?.cuePointType === KalturaCuePointType.ANNOTATION && metadata?.tags === KalturaCuePointTags.HOTSPOT) {
+      if (this._getCuePointType(cue) === ItemTypes.Hotspot) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Hotspot));
       }
     });
@@ -156,6 +169,29 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._updateNavigationPlugin();
     } else {
       this._addNavigationPlugin();
+    }
+  };
+
+  private _onTimedMetadataChange = ({payload}: TimedMetadataEvent) => {
+    const navigationCuePoints: Array<CuePoint> = payload.cues.filter((cue: CuePoint) => {
+      const cuePointType = this._getCuePointType(cue);
+      return cuePointType && [ItemTypes.Slide, ItemTypes.Chapter, ItemTypes.Hotspot].includes(cuePointType);
+    });
+    if (navigationCuePoints.length) {
+      const latestNavigationCuePoint = navigationCuePoints[navigationCuePoints.length - 1];
+      const relevantNavigationItem = this._data.find(item => item.id === latestNavigationCuePoint.id);
+      if (relevantNavigationItem) {
+        const highlightedGroup = this._data.filter(item => {
+          return item.displayTime === relevantNavigationItem.displayTime;
+        });
+        if (highlightedGroup.length) {
+          this._activeCuePointsMap = new Map();
+          highlightedGroup.forEach(item => {
+            this._activeCuePointsMap.set(item.id, true);
+          });
+          this._updateNavigationPlugin();
+        }
+      }
     }
   };
 
@@ -191,31 +227,24 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
     const buttonLabel = 'Navigation Menu';
     const isLive = this.player.isLive();
-    const pluginMode: PluginPositions = [SidePanelPositions.RIGHT, SidePanelPositions.LEFT].includes(this.config.position)
-      ? PluginPositions.VERTICAL
-      : PluginPositions.HORIZONTAL;
 
     this._navigationPanel = this.sidePanelsManager.addItem({
       label: 'Navigation',
       panelComponent: () => {
-        let props = {} as any;
         return (
           <Navigation
-            {...props}
             onClose={() => {
               this.sidePanelsManager.deactivateItem(this._navigationPanel);
               this._pluginState = PluginStates.CLOSED;
             }}
-            player={this._player}
-            pluginMode={pluginMode}
             data={this._data}
             onItemClicked={this._seekTo}
             isLoading={this._isLoading}
             hasError={this._hasError}
             retry={this._retryFetchData}
-            currentTime={this._player.currentTime} // TODO: remove
+            highlightedMap={this._activeCuePointsMap}
             kitchenSinkActive={!!this.sidePanelsManager.isItemActive(this._navigationPanel)}
-            toggledWithEnter={this._triggeredByKeyboard}
+            toggledWithEnter={this._triggeredByKeyboard} // TODO: handle
             itemsOrder={this._itemsOrder}
             isLive={isLive}
           />
@@ -323,6 +352,12 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
   reset(): void {
     this._navigationPanel = null;
+    this._activeCuePointsMap = new Map();
+    this._navigationData = [];
+    this._captionAssetList = [];
+    this._isLoading = false;
+    this._hasError = false;
+    this._triggeredByKeyboard = false;
     this.eventManager.removeAll();
   }
 

@@ -3,5 +3,5 @@ export interface NavigationConfig {
   expandMode: string;
   expandOnFirstPlay: boolean;
   forceChaptersThumb: boolean;
-  itemsOrder: object;
+  itemsOrder: Record<string, number>;
 }

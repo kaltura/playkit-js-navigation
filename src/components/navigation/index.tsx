@@ -1,5 +1,4 @@
 import {h, Component} from 'preact';
-import {CuepointEngine, Cuepoint} from '../../contrib-related/cuepoint-engine';
 import * as styles from './navigaton.scss';
 import {NavigationList} from './navigation-list/NavigationList';
 import {NavigationSearch} from '../navigation-search/navigation-search';
@@ -8,7 +7,7 @@ import {Error} from '../error';
 import {Loading} from '../loading';
 import {getAvailableTabs, filterDataBySearchQuery, filterDataByActiveTab, addGroupData, itemTypesOrder, findCuepointType} from '../../utils';
 import {AutoscrollButton} from './autoscroll-button';
-import {ItemTypes, ItemData} from '../../types';
+import {ItemTypes, ItemData, HighlightedMap} from '../../types';
 const {Tooltip} = KalturaPlayer.ui.components;
 const {KeyMap} = KalturaPlayer.ui.utils;
 
@@ -26,7 +25,7 @@ export interface NavigationProps {
   retry: () => void;
   isLoading: boolean;
   hasError: boolean;
-  currentTime: number;
+  highlightedMap: HighlightedMap;
   kitchenSinkActive: boolean;
   toggledWithEnter: boolean;
   itemsOrder: typeof itemTypesOrder;
@@ -37,15 +36,12 @@ interface NavigationState {
   widgetWidth: number;
   searchFilter: SearchFilter;
   autoscroll: boolean;
-  highlightedMap: Record<number, true>;
   convertedData: ItemData[];
   listDataContainCaptions: boolean;
 }
 
 const HEADER_HEIGHT = 94; // TODO: calculate Header height in runtime (only once);
 const HEADER_HEIGHT_WITH_AMOUNT = 120;
-const LiveSeekThreshold: number = 7 * 1000; // use 7sec (same as QnA) as SeekThreshold configuration for live entries
-const VodSeekThreshold: number = 2 * 1000;
 
 const initialSearchFilter = {
   searchQuery: '',
@@ -56,7 +52,6 @@ const initialSearchFilter = {
 
 export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
-  private _engine: CuepointEngine<Cuepoint> | null = null;
   private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
 
@@ -65,7 +60,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     this.state = {
       autoscroll: true,
       widgetWidth: 0,
-      highlightedMap: {},
       searchFilter: {...initialSearchFilter},
       convertedData: [],
       listDataContainCaptions: false
@@ -82,13 +76,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       this._prepareNavigationData(this.state.searchFilter);
       return;
     }
-    if (previousProps.currentTime !== this.props.currentTime) {
-      this._syncVisibleData();
-    }
-  }
-
-  componentWillUnmount(): void {
-    this._engine = null;
   }
 
   private _prepareNavigationData = (searchFilter: SearchFilter) => {
@@ -111,7 +98,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       // if the user erases all the chars in the input field, the auto-scroll functionality will be kept
       stateData.autoscroll = true;
     }
-    this._updateEngine(stateData);
+    this.setState(stateData);
   };
 
   private _prepareSearchFilter = (data: ItemData[], searchFilter: SearchFilter): SearchFilter => {
@@ -120,57 +107,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       ...searchFilter,
       availableTabs
     };
-  };
-
-  private _updateEngine = (stateData: NavigationState) => {
-    const {convertedData} = stateData;
-    if (!convertedData || convertedData.length === 0) {
-      this._engine = null;
-      this.setState(stateData);
-      return;
-    }
-    this._engine = new CuepointEngine<Cuepoint>(convertedData, {
-      reasonableSeekThreshold: this.props.isLive ? LiveSeekThreshold : VodSeekThreshold
-    });
-    this._syncVisibleData(stateData);
-  };
-
-  private _makeHighlightedMap = (cuepoints: any[]) => {
-    const startTime = cuepoints[cuepoints.length - 1]?.startTime;
-    const maxTime = startTime !== undefined ? startTime : -1;
-    const filtered = cuepoints.filter(item => item.startTime === maxTime);
-    const highlightedMap = filtered.reduce((acc, item) => {
-      return {...acc, [item.id]: true};
-    }, {});
-    return highlightedMap;
-  };
-
-  private _syncVisibleData = (stateData: NavigationState = this.state) => {
-    const {currentTime} = this.props;
-    this.setState((state: NavigationState) => {
-      const newState = {...state, ...stateData};
-      if (!this._engine) {
-        return {
-          ...newState,
-          highlightedMap: {}
-        };
-      }
-      const itemsUpdate = this._engine.updateTime(currentTime);
-      if (itemsUpdate.snapshot) {
-        return {
-          ...newState,
-          highlightedMap: this._makeHighlightedMap(itemsUpdate.snapshot)
-        };
-      }
-      if (!itemsUpdate.delta) {
-        return newState;
-      }
-      const {show} = itemsUpdate.delta;
-      if (show.length > 0) {
-        return {highlightedMap: this._makeHighlightedMap(show)};
-      }
-      return newState;
-    });
   };
 
   private _setWidgetSize = () => {
@@ -253,8 +189,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderNavigation = () => {
-    const {searchFilter, widgetWidth, highlightedMap, listDataContainCaptions, convertedData} = this.state;
-    const {hasError, retry} = this.props;
+    const {searchFilter, widgetWidth, listDataContainCaptions, convertedData} = this.state;
+    const {hasError, retry, highlightedMap} = this.props;
     if (hasError) {
       return <Error onRetryLoad={retry} />;
     }

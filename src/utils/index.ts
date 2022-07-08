@@ -1,5 +1,6 @@
-import {GroupTypes, CuePoint, ItemData, ItemTypes} from '../types';
-const {toHHMMSS}  = KalturaPlayer.ui.utils
+import {GroupTypes, CuePoint, ItemData, ItemTypes, HighlightedMap} from '../types';
+const {toHHMMSS} = KalturaPlayer.ui.utils;
+
 const MAX_CHARACTERS = 77;
 
 export const itemTypesOrder: Record<string, number> = {
@@ -9,22 +10,6 @@ export const itemTypesOrder: Record<string, number> = {
   [ItemTypes.Hotspot]: 3,
   [ItemTypes.AnswerOnAir]: 4,
   [ItemTypes.Caption]: 5
-};
-
-export const convertTime = (sec: number): string => {
-  const hours = Math.floor(sec / 3600);
-  if (hours >= 1) {
-    sec = sec - hours * 3600;
-  }
-  const min = Math.floor(sec / 60);
-  if (min >= 1) {
-    sec = sec - min * 60;
-  }
-  if (hours) {
-    return toHHMMSS(hours);
-  } else {
-    return (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
-  }
 };
 
 export const decodeString = (content: any): string => {
@@ -45,7 +30,7 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, for
     cuePointType,
     id: cuePoint.id,
     startTime: cuePoint.startTime,
-    displayTime: convertTime(Math.floor(cuePoint.startTime)),
+    displayTime: toHHMMSS(Math.floor(cuePoint.startTime)),
     itemType: cuePointType,
     displayTitle: '',
     displayDescription: [ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType) ? decodeString(metadata.description) : null,
@@ -103,8 +88,8 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
     (prevArr: Array<any>, currentCuepoint: ItemData) => {
       const prevItem = prevArr.length > 0 && prevArr[prevArr.length - 1];
       const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
-      if (prevItem && currentCuepoint.startTime === prevItem.startTime) {
-        if (prevPrevItem.startTime === prevItem.startTime) {
+      if (prevItem && currentCuepoint.displayTime === prevItem.displayTime) {
+        if (prevPrevItem.displayTime === prevItem.displayTime) {
           prevItem.groupData = GroupTypes.mid;
         }
         // found a previous item that has the same time value
@@ -260,14 +245,17 @@ export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean
   return true;
 };
 
-export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
-  const prevMapKeys = Object.keys(prevMap);
-  const nextMapaKeys = Object.keys(nextMap);
-  return !(
-    prevMapKeys.length !== nextMapaKeys.length ||
-    prevMapKeys[0] !== nextMapaKeys[0] ||
-    prevMapKeys[prevMapKeys.length - 1] !== nextMapaKeys[nextMapaKeys.length - 1]
-  );
+export const isMapsEqual = (map1: HighlightedMap, map2: HighlightedMap) => {
+  if (map1.size !== map2.size) {
+    return false;
+  }
+  for (let [key, val] of map1) {
+    const testVal = map2.get(key);
+    if (testVal !== val || (testVal === undefined && !map2.has(key))) {
+      return false;
+    }
+  }
+  return true;
 };
 
 export const findCuepointType = (list: ItemData[], cuePointType: ItemTypes): boolean => {
