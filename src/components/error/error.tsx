@@ -9,7 +9,6 @@ export interface ErrorProps {
 }
 
 const translates = () => {
-  // @ts-ignore
   return {
     whoops: <Text>Whoops!</Text>,
     errorMessage: <Text>We couldn’t retrieve your Data.</Text>,

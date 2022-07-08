@@ -78,7 +78,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   }
 
   loadMedia(): void {
-    if (!this.cuePointManager || !this.cuePointManager) {
+    if (!this.cuePointManager) {
       this.logger.warn("kalturaCuepoints or sidePanelsManager haven't registered");
       return;
     }
@@ -247,7 +247,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     });
 
     if (this._shouldExpandOnFirstPlay()) {
-// @ts-ignore
       this.ready.then(() => {
         this.sidePanelsManager.activateItem(this._navigationPanel);
       });
