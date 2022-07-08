@@ -1,5 +1,5 @@
 import {GroupTypes, CuePoint, ItemData, ItemTypes} from '../types';
-
+const {toHHMMSS}  = KalturaPlayer.ui.utils
 const MAX_CHARACTERS = 77;
 
 export const itemTypesOrder: Record<string, number> = {
@@ -21,7 +21,7 @@ export const convertTime = (sec: number): string => {
     sec = sec - min * 60;
   }
   if (hours) {
-    return (hours < 10 ? '0' + hours : hours) + ':' + (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
+    return toHHMMSS(hours);
   } else {
     return (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
   }

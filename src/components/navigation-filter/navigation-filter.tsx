@@ -85,8 +85,6 @@ export class NavigationFilter extends Component<FilterProps> {
 
   private _getResultLabel = (): string => {
     const {activeTab, translates, totalResults, listDataContainCaptions} = this.props;
-    // TODO: add locale (i18n)
-    // TODO: look how player translates plural and single
     return `${totalResults} result${totalResults && totalResults > 1 ? 's' : ''} in ${
       activeTab === ItemTypes.All ? `all content${listDataContainCaptions ? ' including captions' : ''}` : translates[activeTab].toLowerCase()
     }`;

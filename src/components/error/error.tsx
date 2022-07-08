@@ -1,17 +1,28 @@
 import {h} from 'preact';
 import * as styles from './error.scss';
+import {ErrorIconSVG} from '../icons/error-icon';
+const {withText, Text} = KalturaPlayer.ui.preacti18n;
 
 export interface ErrorProps {
   onRetryLoad: () => void;
   translates: Record<string, string>;
 }
 
-export const Error = (props: ErrorProps) => {
+const translates = () => {
+  // @ts-ignore
+  return {
+    whoops: <Text>Whoops!</Text>,
+    errorMessage: <Text>We couldn’t retrieve your Data.</Text>,
+    retry: <Text>Retry</Text>
+  };
+};
+
+export const Error = withText(translates)((props: ErrorProps) => {
   return (
     <div className={styles.errorWrapper}>
       <div className={styles.devider} />
       <div className={styles.iconWrapper}>
-        <div className={styles.errorIcon} />
+        <div className={styles.errorIcon}><ErrorIconSVG /></div>
         <p className={styles.errorMainText}>{props.translates.whoops}</p>
         <p className={styles.errorDescriptionText}>{props.translates.errorMessage}</p>
         <button className={styles.retryButton} onClick={props.onRetryLoad}>
@@ -20,13 +31,12 @@ export const Error = (props: ErrorProps) => {
       </div>
     </div>
   );
-};
+});
 
 Error.defaultProps = {
-  // TODO: add locale (i18n)
   translates: {
-    whoops: 'Whoops!',
-    errorMessage: 'We couldn’t retrieve your Data.',
-    retry: 'Retry'
+    whoops: <Text>Whoops!</Text>,
+    errorMessage: <Text>We couldn’t retrieve your Data.</Text>,
+    retry: <Text>Retry</Text>
   }
 };

@@ -247,6 +247,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     });
 
     if (this._shouldExpandOnFirstPlay()) {
+// @ts-ignore
       this.ready.then(() => {
         this.sidePanelsManager.activateItem(this._navigationPanel);
       });

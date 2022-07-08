@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {EventsManager, getContribLogger} from '@playkit-js-contrib/common';
+import {EventsManager} from '@playkit-js-contrib/common';
 import {
   PrepareRegisterRequestConfig,
   PushNotifications,
@@ -36,11 +36,6 @@ export interface SlideNotificationsEvent {
 
 type Events = ThumbNotificationsEvent | SlideNotificationsEvent | PublicNotificationsEvent | NotificationsErrorEvent;
 
-const logger = getContribLogger({
-  class: 'navigationPushNotification',
-  module: 'navigation-plugin'
-});
-
 /**
  * handles push notification registration and results.
  */
@@ -71,21 +66,15 @@ export class PushNotification {
 
   public registerToPushServer(entryId: string, userId: string, onSuccess: () => void, onError: () => void) {
     if (this._registeredToMessages) {
-      logger.error('Multiple registration error', {
-        method: 'registerToPushServer'
-      });
+      this.logger.warn("Multiple registration errord");
       throw new Error('Already register to push server');
     }
+    this.logger.warn("Registering for push notifications server");
 
-    logger.info('Registering for push notifications server', {
-      method: 'registerToPushServer',
-      data: {entryId, userId}
-    });
 
     if (!this._pushServerInstance) {
-      logger.error("Can't register to notifications as _pushServerInstance doesn't exists", {
-        method: 'registerToPushServer'
-      });
+      this.logger.error("Can't register to notifications as _pushServerInstance doesn't exists");
+      
       this._events.emit({
         type: PushNotificationEventTypes.PushNotificationsError,
         error: "Can't register to notifications as _pushServerInstance doesn't exists"
