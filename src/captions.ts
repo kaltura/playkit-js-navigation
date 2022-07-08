@@ -1,4 +1,4 @@
-import {xml2js} from 'xml-js';
+import {XMLParser} from 'fast-xml-parser';
 import {KalturaClient} from 'kaltura-typescript-client';
 import {KalturaRequest, KalturaRequestArgs} from 'kaltura-typescript-client/api/kaltura-request';
 import {KalturaObjectMetadata} from 'kaltura-typescript-client/api/kaltura-object-base';
@@ -6,6 +6,12 @@ import {KalturaCaptionAssetFilter} from 'kaltura-typescript-client/api/types/Kal
 import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
 import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
 import {ItemTypes} from './types';
+
+const options = {
+  ignoreAttributes: false,
+  attributeNamePrefix: '@_'
+};
+const parser = new XMLParser(options);
 
 export const HOUR = 3600; // seconds in 1 hour
 
@@ -67,25 +73,21 @@ const fromSrt = (data: string): CaptionItem[] => {
 };
 
 export const TTML2Obj = (ttml: any): CaptionItem[] => {
-  const data: any = xml2js(ttml, {compact: true});
+  const data: any = parser.parse(ttml);
   // need only captions for showing. they located in tt.body.div.p.
-  const chapters = data.tt.body.div.p;
-  const correctData = chapters.map((item: any, index: number) => {
-    const {begin, end, ...otherAttributes} = item._attributes;
+  const chapters = data?.tt?.body?.div?.p || [];
+  return chapters.map((item: any, index: number) => {
     // convert time to 00:00:00.000 to 00:00:00,000
-    const endTime = end.replace(/\./g, ',');
-    const startTime = begin.replace(/\./g, ',');
+    const endTime = item['@_end'].replace(/\./g, ',');
+    const startTime = item['@_begin'].replace(/\./g, ',');
     const prepareObj = {
-      id: index + 1,
+      id: item['xml:id'] || index + 1,
       endTime: toSeconds(endTime),
       startTime: toSeconds(startTime),
-      text: (Array.isArray(item._text) ? item._text.join(' ') : item._text) || ''
-      // all non-required
-      // otherAttributes: otherAttributes
+      text: (Array.isArray(item['#text']) ? item._text.join(' ') : item['#text']) || ''
     };
     return prepareObj;
   });
-  return correctData;
 };
 
 export const getCaptionsByFormat = (captions: any, captionsFormat: string): CaptionItem[] => {
