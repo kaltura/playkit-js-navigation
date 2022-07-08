@@ -8,6 +8,7 @@ import {Loading} from '../loading';
 import {getAvailableTabs, filterDataBySearchQuery, filterDataByActiveTab, addGroupData, itemTypesOrder, findCuepointType} from '../../utils';
 import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap} from '../../types';
+import { CloseButton } from '../close-button';
 const {Tooltip} = KalturaPlayer.ui.components;
 const {KeyMap} = KalturaPlayer.ui.utils;
 
@@ -156,7 +157,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           </div>
         )}
         {hasError && <p className={styles.pluginName}>Navigation</p>}
-        <button aria-label={'Close search in video'} className={styles.closeButton} tabIndex={0} onClick={this.props.onClose} />
+        <CloseButton onClick={this.props.onClose}/>
+
         {!hasError && (
           <NavigationFilter
             onChange={this._handleSearchFilterChange('activeTab')}
