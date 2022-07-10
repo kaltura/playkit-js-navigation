@@ -10,7 +10,7 @@ interface CloseButtonProps {
 
 export const CloseButton = (props: CloseButtonProps) => (
   <A11yWrapper onClick={props.onClick}>
-    <button className={[styles.closeButton, 'kaltura-navigation__close-button'].join(' ')} tabIndex={0}>
+    <button className={[styles.closeButton, 'kaltura-navigation__close-button'].join(' ')} style={{'top': '20px', 'right': '10px'}} tabIndex={0}>
       <Icon
         id="navigation-plugin-close-button"
         height={icons.BigSize}
