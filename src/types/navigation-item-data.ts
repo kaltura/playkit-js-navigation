@@ -32,6 +32,11 @@ export interface RawItemData {
   partnerData?: string;
   tags?: string;
   assetUrl?: string;
+  relatedObjects?: {
+    QandA_ResponseProfile?: {
+      objects: Array<{xml: string}>;
+    };
+  };
 }
 
 export interface ItemData extends RawItemData {

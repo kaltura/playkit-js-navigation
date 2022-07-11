@@ -8,7 +8,7 @@ import {Loading} from '../loading';
 import {getAvailableTabs, filterDataBySearchQuery, filterDataByActiveTab, addGroupData, itemTypesOrder, findCuepointType} from '../../utils';
 import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap} from '../../types';
-import { CloseButton } from '../close-button';
+import {CloseButton} from '../close-button';
 const {Tooltip} = KalturaPlayer.ui.components;
 const {KeyMap} = KalturaPlayer.ui.utils;
 
@@ -30,7 +30,6 @@ export interface NavigationProps {
   kitchenSinkActive: boolean;
   toggledWithEnter: boolean;
   itemsOrder: typeof itemTypesOrder;
-  isLive: boolean;
 }
 
 interface NavigationState {
@@ -157,7 +156,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
           </div>
         )}
         {hasError && <p className={styles.pluginName}>Navigation</p>}
-        <CloseButton onClick={this.props.onClose}/>
+        <CloseButton onClick={this.props.onClose} />
 
         {!hasError && (
           <NavigationFilter

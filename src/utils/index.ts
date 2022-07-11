@@ -24,13 +24,13 @@ export const decodeString = (content: any): string => {
     .replace(/&quot;/gi, '"');
 };
 
-export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, forceChaptersThumb = false): ItemData => {
+export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isLive: boolean, forceChaptersThumb = false): ItemData => {
   const {metadata} = cuePoint;
   const itemData: ItemData = {
     cuePointType,
     id: cuePoint.id,
     startTime: cuePoint.startTime,
-    displayTime: toHHMMSS(Math.floor(cuePoint.startTime)),
+    displayTime: isLive ? '' : toHHMMSS(Math.floor(cuePoint.startTime)),
     itemType: cuePointType,
     displayTitle: '',
     displayDescription: [ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType) ? decodeString(metadata.description) : null,
@@ -38,7 +38,7 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, for
     hasShowMore: false,
     groupData: null
   };
-  if (cuePointType === ItemTypes.Hotspot) {
+  if ([ItemTypes.Hotspot, ItemTypes.AnswerOnAir].includes(cuePointType)) {
     itemData.displayTitle = decodeString(metadata.text);
   } else if (cuePointType === ItemTypes.Caption && cuePoint.text) {
     itemData.displayTitle = cuePoint.text;
@@ -170,37 +170,41 @@ export const getAvailableTabs = (data: ItemData[], itemOrder: typeof itemTypesOr
   });
 };
 
-/**
- * @function filterPreviewDuplications
- * filter out all slides which are duplication of their adjacent previous slides
- * (happens while switching from preview to live mode on the webcast app)
- * @param { Array<ItemData>} cues - the cues data
- * @returns {Array<ItemData>}
- */
-export function filterPreviewDuplications(cues: Array<ItemData>): Array<ItemData> {
-  const isDuplicatedSlide = (previousSlide: ItemData | null, currentSlide: ItemData) => {
-    return (
-      previousSlide &&
-      currentSlide.title === previousSlide.title &&
-      currentSlide.partnerData === previousSlide.partnerData &&
-      [currentSlide.tags, previousSlide.tags].includes('select-a-thumb, __PREVIEW_CUEPOINT_TAG__')
-    );
-  };
+const isDuplicatedSlide = (previousSlide: ItemData | null, currentSlide: ItemData) => {
+  return (
+    previousSlide &&
+    currentSlide.title === previousSlide.title &&
+    currentSlide.partnerData === previousSlide.partnerData &&
+    [currentSlide.tags, previousSlide.tags].includes('select-a-thumb, __PREVIEW_CUEPOINT_TAG__')
+  );
+};
 
-  const filteredArr: Array<ItemData> = [];
+const filterCuesById = (cues: Array<ItemData>) => {
+  const cuesMap = new Map<string, ItemData>();
+  cues.forEach(cue => {
+    cuesMap.set(cue.id, cue);
+  });
+  return [...cuesMap.values()];
+};
+
+// filter out all slides which are duplication of their adjacent previous slides
+// (happens while switching from preview to live mode on the webcast app)
+export const filterDuplications = (cues: Array<ItemData>): Array<ItemData> => {
+  const filteredById = filterCuesById(cues);
+  const filteredByContent: Array<ItemData> = [];
   let previousSlide: ItemData | null = null;
-  for (let i = 0; i < cues.length; i++) {
-    if (cues[i].itemType !== ItemTypes.Slide) {
-      filteredArr.push(cues[i]);
+  for (let i = 0; i < filteredById.length; i++) {
+    if (filteredById[i].itemType !== ItemTypes.Slide) {
+      filteredByContent.push(filteredById[i]);
     } else {
-      if (!isDuplicatedSlide(previousSlide, cues[i])) {
-        filteredArr.push(cues[i]);
+      if (!isDuplicatedSlide(previousSlide, filteredById[i])) {
+        filteredByContent.push(filteredById[i]);
       }
-      previousSlide = cues[i];
+      previousSlide = filteredById[i];
     }
   }
-  return filteredArr;
-}
+  return filteredByContent;
+};
 
 export const checkType = (data: any, type?: any): boolean => {
   if (data && type) {
