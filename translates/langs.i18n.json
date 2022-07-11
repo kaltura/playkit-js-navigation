@@ -1,5 +1,8 @@
 {
   "en": {
-    "navigation": {}
+    "navigation": {
+      "hide_plugin": "Hide Navigation",
+      "show_plugin": "Show Navigation"
+    }
   }
 }

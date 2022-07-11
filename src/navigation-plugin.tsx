@@ -17,8 +17,8 @@ import {
 import {getCaptions, makeCaptionAssetListRequest, findCaptionAsset} from './captions';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
+import {OnClickEvent} from './components/a11y-wrapper';
 
-const {Tooltip} = KalturaPlayer.ui.components;
 const {TimedMetadata} = core;
 
 import {ui} from 'kaltura-player-js';
@@ -194,9 +194,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._activeCuePointsMap = new Map();
     if (navigationCuePoints.length) {
       if (this._player.isLive()) {
-        navigationCuePoints.forEach(item => {
-          this._activeCuePointsMap.set(item.id, true);
-        });
+        const latestNavigationCuePoint = navigationCuePoints[navigationCuePoints.length - 1];
+        this._activeCuePointsMap.set(latestNavigationCuePoint.id, true);
         this._updateNavigationPlugin();
       } else {
         const latestNavigationCuePoint = navigationCuePoints[navigationCuePoints.length - 1];
@@ -246,7 +245,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (this._navigationPanel) {
       return;
     }
-    const buttonLabel = 'Navigation Menu';
 
     this._navigationPanel = this.sidePanelsManager.addItem({
       label: 'Navigation',
@@ -264,26 +262,26 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
             retry={this._retryFetchData}
             highlightedMap={this._activeCuePointsMap}
             kitchenSinkActive={!!this.sidePanelsManager.isItemActive(this._navigationPanel)}
-            toggledWithEnter={this._triggeredByKeyboard} // TODO: handle
+            toggledWithEnter={this._triggeredByKeyboard}
             itemsOrder={this._itemsOrder}
           />
         );
       },
-      iconComponent: () => {
+      iconComponent: ({isActive}: {isActive: boolean}) => {
         return (
-          <Tooltip label={buttonLabel} type="bottom">
-            <PluginButton
-              onClick={() => {
-                if (this.sidePanelsManager.isItemActive(this._navigationPanel)) {
-                  this._pluginState = PluginStates.CLOSED;
-                  this.sidePanelsManager.deactivateItem(this._navigationPanel);
-                } else {
-                  this.sidePanelsManager.activateItem(this._navigationPanel);
-                }
-              }}
-              label={buttonLabel}
-            />
-          </Tooltip>
+          <PluginButton
+            isActive={isActive}
+            onClick={(e: OnClickEvent, byKeyboard?: boolean) => {
+              if (this.sidePanelsManager.isItemActive(this._navigationPanel)) {
+                this._triggeredByKeyboard = false;
+                this._pluginState = PluginStates.CLOSED;
+                this.sidePanelsManager.deactivateItem(this._navigationPanel);
+              } else {
+                this._triggeredByKeyboard = Boolean(byKeyboard);
+                this.sidePanelsManager.activateItem(this._navigationPanel);
+              }
+            }}
+          />
         );
       },
       presets: [ReservedPresetNames.Playback, ReservedPresetNames.Live, ReservedPresetNames.Ads],
