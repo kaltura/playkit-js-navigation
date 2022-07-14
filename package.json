@@ -11,10 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/kaltura/playkit-js-navigation.git"
   },
-  "dependencies": {
-    "fast-xml-parser": "^4.0.8",
-    "kaltura-typescript-client": "file:libs/kaltura-typescript-client-7.0.0-v20190324-101134.tgz"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",

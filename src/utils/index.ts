@@ -38,10 +38,8 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
     hasShowMore: false,
     groupData: null
   };
-  if ([ItemTypes.Hotspot, ItemTypes.AnswerOnAir].includes(cuePointType)) {
+  if ([ItemTypes.Hotspot, ItemTypes.AnswerOnAir, ItemTypes.Caption].includes(cuePointType)) {
     itemData.displayTitle = decodeString(metadata.text);
-  } else if (cuePointType === ItemTypes.Caption && cuePoint.text) {
-    itemData.displayTitle = cuePoint.text;
   } else if ([ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType)) {
     itemData.displayTitle = decodeString(metadata.title);
     if (cuePointType === ItemTypes.Slide || forceChaptersThumb) {
@@ -61,13 +59,6 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
   itemData.hasShowMore = Boolean(itemData.displayDescription || itemData.shorthandDescription);
 
   return itemData;
-};
-
-export const addOrReplaceCaptions = (data: Array<ItemData>, captions: Array<ItemData>): Array<ItemData> => {
-  const filteredData = data.filter(item => {
-    return item.cuePointType !== ItemTypes.Caption;
-  });
-  return [...filteredData, ...captions];
 };
 
 export const sortItems = (cuepoints: Array<ItemData>, itemOrder: typeof itemTypesOrder): Array<ItemData> => {
@@ -204,13 +195,6 @@ export const filterDuplications = (cues: Array<ItemData>): Array<ItemData> => {
     }
   }
   return filteredByContent;
-};
-
-export const checkType = (data: any, type?: any): boolean => {
-  if (data && type) {
-    return data instanceof type;
-  }
-  return false;
 };
 
 export const prepareItemTypesOrder = (itemsOrder: any): Record<string, number> => {

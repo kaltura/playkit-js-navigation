@@ -1,20 +1,14 @@
 // @ts-ignore
 import {core} from 'kaltura-player-js';
 import {h} from 'preact';
-import {KalturaCaptionAsset} from 'kaltura-typescript-client/api/types/KalturaCaptionAsset';
-import {CaptionAssetListAction} from 'kaltura-typescript-client/api/types/CaptionAssetListAction';
-import {KalturaClient} from 'kaltura-typescript-client';
 import {
   itemTypesOrder,
   sortItems,
-  checkType,
   filterDuplications,
   prepareCuePoint,
-  addOrReplaceCaptions,
   prepareItemTypesOrder,
   isEmptyObject
 } from './utils';
-import {getCaptions, makeCaptionAssetListRequest, findCaptionAsset} from './captions';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {OnClickEvent} from './components/a11y-wrapper';
@@ -32,15 +26,14 @@ interface TimedMetadataEvent {
 }
 
 export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
-  private _kalturaClient = new KalturaClient();
   private _navigationData: Array<ItemData> = [];
-  private _captionAssetList: KalturaCaptionAsset[] = [];
   private _triggeredByKeyboard = false;
   private _isLoading = false;
   private _hasError = false;
   private _itemsOrder = itemTypesOrder;
   private _itemsFilter = itemTypesOrder;
   private _activeCuePointsMap: HighlightedMap = new Map();
+  private _captionMap: Map<string, Array<ItemData>> = new Map();
 
   private _player: KalturaPlayerTypes.Player;
   private _navigationPanel = null;
@@ -59,10 +52,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._player = player;
     this._itemsOrder = prepareItemTypesOrder(this.config.itemsOrder);
     this._itemsFilter = isEmptyObject(this.config.itemsOrder) ? itemTypesOrder : config.itemsOrder;
-    this._kalturaClient.setOptions({
-      clientTag: 'playkit-js-navigation',
-      endpointUrl: player.provider.env.serviceUrl
-    });
   }
 
   get sidePanelsManager() {
@@ -74,7 +63,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   }
 
   private get _data() {
-    return this._navigationData;
+    const captionMapId = this._getCaptionMapId(); // TODO: consider keep as class property
+    const activeCaptions: Array<ItemData> = this._captionMap.get(captionMapId) || [];
+    return sortItems([...this._navigationData, ...activeCaptions], this._itemsOrder);
   }
 
   private set _data(data: Array<ItemData>) {
@@ -90,13 +81,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._addPlayerListeners();
     this._registerCuePointTypes();
 
-    this._kalturaClient.setDefaultRequestOptions({
-      ks: this.player.provider.ks
-    });
     if (this.player.isLive()) {
-      if (this._shouldExpandOnFirstPlay()) {
-        this._addNavigationPlugin();
-      }
+      this._createNavigationPlugin();
     }
   }
 
@@ -118,22 +104,48 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (this._itemsFilter[ItemTypes.AnswerOnAir]) {
       cuePointTypes.push(this.cuePointManager.CuepointType.QNA);
     }
-
-    if (cuePointTypes.length) {
-      this.cuePointManager.registerTypes(cuePointTypes);
-    }
-    // TODO: move captions to separate service
     if (this._itemsFilter[ItemTypes.Caption]) {
-      this._loadCaptionList();
+      cuePointTypes.push(this.cuePointManager.CuepointType.CAPTION);
+    }
+    this.cuePointManager.registerTypes(cuePointTypes);
+  };
+
+  private _addNavigationData = (newData: ItemData[]) => {
+    this._data = sortItems([...this._data, ...newData], this._itemsOrder);
+    if (this._navigationPanel) {
+      this._updateNavigationPlugin();
+    } else {
+      this._createNavigationPlugin();
     }
   };
 
-  private _addNavigationData = (data: ItemData[]) => {
-    this._data = sortItems([...this._data, ...data], this._itemsOrder);
+  private _addCaptionData = (newData: ItemData[]) => {
+    const captionMapId = this._getCaptionMapId();
+    this._captionMap.set(captionMapId, newData);
+    if (this._navigationPanel) {
+      this._updateNavigationPlugin();
+    } else {
+      this._createNavigationPlugin();
+    }
   };
 
-  private _replaceNavigationData = (data: ItemData[]) => {
-    this._data = sortItems(data, this._itemsOrder);
+  private _handleLanguageChange = () => {
+    const captionMapId = this._getCaptionMapId();
+    if (this._captionMap.has(captionMapId)) {
+      this._updateNavigationPlugin();
+    }
+  };
+
+  private _getCaptionMapId = (): string => {
+    // @ts-ignore TODO
+    const allTextTracks = this._player.getTracks(this._player.Track.TEXT) || [];
+    // @ts-ignore TODO
+    const activeTextTrack = allTextTracks.find(track => track.active);
+    if (activeTextTrack) {
+      const captionMapId = `${activeTextTrack.language}-${activeTextTrack.label}`;
+      return captionMapId;
+    }
+    return '';
   };
 
   private _getCuePointType = (cue: CuePoint): ItemTypes | null => {
@@ -156,12 +168,16 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       const relatedObject = relatedObjects?.objects[0];
       return relatedObject?.xml.includes('<Type>AnswerOnAir</Type>') ? ItemTypes.AnswerOnAir : null;
     }
+    if (metadata?.cuePointType === KalturaCuePointType.CAPTION) {
+      return ItemTypes.Caption;
+    }
     return null;
   };
 
   private _onTimedMetadataAdded = ({payload}: TimedMetadataEvent) => {
     const isLive = this._player.isLive();
     const navigationData: ItemData[] = [];
+    const captionData: ItemData[] = [];
     payload.cues.forEach((cue: CuePoint) => {
       if (this._getCuePointType(cue) === ItemTypes.Slide && this._itemsFilter[ItemTypes.Slide]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Slide, isLive));
@@ -175,13 +191,15 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       if (this._getCuePointType(cue) === ItemTypes.AnswerOnAir && this._itemsFilter[ItemTypes.AnswerOnAir]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.AnswerOnAir, isLive));
       }
+      if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
+        captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
+      }
     });
-
-    this._addNavigationData(navigationData);
-    if (this._navigationPanel) {
-      this._updateNavigationPlugin();
-    } else {
-      this._addNavigationPlugin();
+    if (navigationData.length) {
+      this._addNavigationData(navigationData);
+    }
+    if (captionData.length) {
+      this._addCaptionData(captionData);
     }
   };
 
@@ -189,6 +207,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     const navigationCuePoints: Array<CuePoint> = payload.cues.filter((cue: CuePoint) => {
       const cuePointType = this._getCuePointType(cue);
       const filterTypePassed = cuePointType && this._itemsFilter[cuePointType];
+      // TODO: for caption cues filter by current player language
+      // TODO: add captions only of search active (capitons visible)
       return filterTypePassed;
     });
     this._activeCuePointsMap = new Map();
@@ -215,37 +235,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
   };
 
-  private _updateNavigationPlugin = () => {
-    if (this._navigationPanel) {
-      this.sidePanelsManager.update(this._navigationPanel);
-    }
-  };
-
-  private _addPlayerListeners() {
-    this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_CHANGE, this._onTimedMetadataChange);
-    this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_ADDED, this._onTimedMetadataAdded);
-
-    this.eventManager.listen(this._player, this._player.Event.RESIZE, this._updateNavigationPlugin);
-
-    if (!this.player.isLive() && this._itemsFilter[ItemTypes.Caption]) {
-      this.eventManager.listen(this._player, this._player.Event.TEXT_TRACK_CHANGED, this._handleLanguageChange);
-    }
-  }
-
-  private _retryFetchData = () => {
-    this._hasError = false;
-    this._loadCaptionList();
-  };
-
-  private _seekTo = (time: number) => {
-    this.player.currentTime = time;
-  };
-
-  private _addNavigationPlugin(): void {
-    if (this._navigationPanel) {
-      return;
-    }
-
+  private _createNavigationPlugin = () => {
     this._navigationPanel = this.sidePanelsManager.addItem({
       label: 'Navigation',
       panelComponent: () => {
@@ -259,7 +249,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
             onItemClicked={this._seekTo}
             isLoading={this._isLoading}
             hasError={this._hasError}
-            retry={this._retryFetchData}
             highlightedMap={this._activeCuePointsMap}
             kitchenSinkActive={!!this.sidePanelsManager.isItemActive(this._navigationPanel)}
             toggledWithEnter={this._triggeredByKeyboard}
@@ -297,81 +286,38 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         this.sidePanelsManager.activateItem(this._navigationPanel);
       });
     }
+  };
+
+  private _updateNavigationPlugin = () => {
+    if (this._navigationPanel) {
+      this.sidePanelsManager.update(this._navigationPanel);
+    }
+  };
+
+  private _addPlayerListeners() {
+    this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_CHANGE, this._onTimedMetadataChange);
+    this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_ADDED, this._onTimedMetadataAdded);
+
+    this.eventManager.listen(this._player, this._player.Event.RESIZE, this._updateNavigationPlugin);
+
+    if (this._itemsFilter[ItemTypes.Caption]) {
+      this.eventManager.listen(this._player, this._player.Event.TEXT_TRACK_CHANGED, this._handleLanguageChange);
+    }
   }
+
+  private _seekTo = (time: number) => {
+    this.player.currentTime = time;
+  };
 
   private _shouldExpandOnFirstPlay = () => {
     return (this.config.expandOnFirstPlay && !this._pluginState) || this._pluginState === PluginStates.OPENED;
   };
 
-  private _handleLanguageChange = (event: string | Record<string, any> = this.player.config?.playback?.textLanguage || '') => {
-    if (
-      (typeof event === 'string' ? event : (event.payload?.selectedTextTrack?._language || null) === 'off' && this._captionAssetList.length) ||
-      !this._captionAssetList.length
-    ) {
-      // prevent loading of captions when user select "off" captions option
-      return;
-    }
-    this._isLoading = true;
-    this._updateNavigationPlugin();
-    this._loadCaptions(event)
-      .then((captionList: Array<ItemData>) => {
-        this._replaceNavigationData(addOrReplaceCaptions(this._data, captionList));
-        this._isLoading = false;
-        this._updateNavigationPlugin();
-      })
-      .catch(() => {
-        this._hasError = true;
-        this._isLoading = false;
-        this.logger.error('failed retrieving caption asset');
-        this._updateNavigationPlugin();
-      });
-  };
-
-  private _loadCaptions = async (event?: {}): Promise<ItemData[]> => {
-    if (!this._captionAssetList.length) {
-      return [];
-    }
-    const captionAsset = findCaptionAsset(event || this.player.config?.playback?.textLanguage || '', this._captionAssetList);
-    const rawCaptionList: any = await getCaptions(this._kalturaClient, captionAsset, this._captionAssetList);
-    return Array.isArray(rawCaptionList)
-      ? rawCaptionList.map(captionItem => {
-          return prepareCuePoint({...captionItem, startTime: captionItem.startTime / 1000}, ItemTypes.Caption, false);
-        })
-      : [];
-  };
-
-  private _loadCaptionList = async () => {
-    const request: CaptionAssetListAction = makeCaptionAssetListRequest(this.player.config.sources.id);
-    try {
-      this._isLoading = true;
-      this._updateNavigationPlugin();
-      const response = await this._kalturaClient.request(request);
-      if (!response) {
-        // Wrong or empty data
-        throw new Error('ERROR! Wrong or empty data');
-      }
-      if (Array.isArray(response?.objects) && response.objects.every(captionAsset => checkType(captionAsset, KalturaCaptionAsset))) {
-        this._captionAssetList = response.objects;
-      }
-      if (this._captionAssetList.length) {
-        const captionList = await this._loadCaptions();
-        this._replaceNavigationData(addOrReplaceCaptions(this._data, captionList));
-      }
-      this._isLoading = false;
-      this._updateNavigationPlugin();
-    } catch (error) {
-      this._hasError = true;
-      this._isLoading = false;
-      this.logger.error('failed retrieving caption data');
-      this._updateNavigationPlugin();
-    }
-  };
-
   reset(): void {
     this._navigationPanel = null;
     this._activeCuePointsMap = new Map();
+    this._captionMap = new Map();
     this._navigationData = [];
-    this._captionAssetList = [];
     this._isLoading = false;
     this._hasError = false;
     this._triggeredByKeyboard = false;

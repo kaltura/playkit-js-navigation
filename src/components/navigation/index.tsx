@@ -23,7 +23,7 @@ export interface NavigationProps {
   data: Array<ItemData>;
   onItemClicked(time: number): void;
   onClose: () => void;
-  retry: () => void;
+  retry?: () => void;
   isLoading: boolean;
   hasError: boolean;
   highlightedMap: HighlightedMap;
@@ -54,6 +54,10 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
   private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
+
+  static defaultProps?: {
+    retry: () => {};
+  };
 
   constructor(props: NavigationProps) {
     super(props);
