@@ -4,23 +4,34 @@ import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
 
 const {KeyMap} = KalturaPlayer.ui.utils;
+const {withText, Text} = KalturaPlayer.ui.preacti18n;
 
-export interface Props {
+export interface NavigationItemProps {
   data: ItemData;
   onSelected: (params: {time: number; itemY: number}) => void;
   selectedItem: boolean;
   widgetWidth: number;
   onClick: (time: number) => void;
   showIcon: boolean;
+  readLess?: string;
+  readMore?: string;
 }
 
-export interface State {
+export interface NavigationItemState {
   expandText: boolean;
   imageLoaded: boolean;
   imageFailed: boolean;
 }
 
-export class NavigationItem extends Component<Props, State> {
+const translates = () => {
+  return {
+    readLess: <Text id="navigation.read_less">Read Less</Text>,
+    readMore: <Text id="navigation.read_more">Read More</Text>
+  };
+};
+
+@withText(translates)
+export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
   state = {expandText: false, imageLoaded: false, imageFailed: false};
@@ -33,7 +44,7 @@ export class NavigationItem extends Component<Props, State> {
     this._itemElementRef.style.minHeight = this._textContainerRef.offsetHeight + 4 + 'px';
   }
 
-  shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>) {
+  shouldComponentUpdate(nextProps: Readonly<NavigationItemProps>, nextState: Readonly<NavigationItemState>) {
     const {selectedItem, data, widgetWidth} = this.props;
     if (
       selectedItem !== nextProps.selectedItem ||
@@ -47,7 +58,7 @@ export class NavigationItem extends Component<Props, State> {
     return false;
   }
 
-  componentDidUpdate(previousProps: Readonly<Props>) {
+  componentDidUpdate(previousProps: Readonly<NavigationItemProps>) {
     this._getSelected();
     this.matchHeight();
   }
@@ -117,7 +128,7 @@ export class NavigationItem extends Component<Props, State> {
     );
   };
 
-  render({selectedItem, showIcon, data}: Props) {
+  render({selectedItem, showIcon, data, ...otherProps}: NavigationItemProps) {
     const {id, previewImage, itemType, displayTime, groupData, displayTitle, shorthandTitle, hasShowMore, displayDescription} = data;
     return (
       <div
@@ -163,8 +174,7 @@ export class NavigationItem extends Component<Props, State> {
                     this._handleExpandChange(e);
                   }
                 }}>
-                {/* TODO - locale */}
-                {this.state.expandText ? 'Read Less' : 'Read More'}
+                {this.state.expandText ? otherProps.readLess : otherProps.readMore}
               </div>
             )}
           </div>

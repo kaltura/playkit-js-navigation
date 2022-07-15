@@ -24,7 +24,7 @@ export const decodeString = (content: any): string => {
     .replace(/&quot;/gi, '"');
 };
 
-export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isLive: boolean, forceChaptersThumb = false): ItemData => {
+export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isLive: boolean): ItemData => {
   const {metadata} = cuePoint;
   const itemData: ItemData = {
     cuePointType,
@@ -42,9 +42,7 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
     itemData.displayTitle = decodeString(metadata.text);
   } else if ([ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType)) {
     itemData.displayTitle = decodeString(metadata.title);
-    if (cuePointType === ItemTypes.Slide || forceChaptersThumb) {
-      itemData.previewImage = metadata.assetUrl || null;
-    }
+    itemData.previewImage = metadata.assetUrl || null;
   }
   if (itemData.displayTitle && itemData.displayTitle.length > MAX_CHARACTERS && itemData.itemType !== ItemTypes.Caption) {
     let elipsisString = itemData.displayTitle.slice(0, MAX_CHARACTERS);

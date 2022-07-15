@@ -1,14 +1,7 @@
 // @ts-ignore
 import {core} from 'kaltura-player-js';
 import {h} from 'preact';
-import {
-  itemTypesOrder,
-  sortItems,
-  filterDuplications,
-  prepareCuePoint,
-  prepareItemTypesOrder,
-  isEmptyObject
-} from './utils';
+import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {OnClickEvent} from './components/a11y-wrapper';
@@ -34,6 +27,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _itemsFilter = itemTypesOrder;
   private _activeCuePointsMap: HighlightedMap = new Map();
   private _captionMap: Map<string, Array<ItemData>> = new Map();
+  private _activeCaptionMapId: string = '';
+  private _navigationComponentRef: Navigation | null = null;
 
   private _player: KalturaPlayerTypes.Player;
   private _navigationPanel = null;
@@ -43,7 +38,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     position: SidePanelPositions.RIGHT,
     expandMode: SidePanelModes.ALONGSIDE,
     expandOnFirstPlay: false,
-    forceChaptersThumb: false,
     itemsOrder: {}
   };
 
@@ -63,8 +57,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   }
 
   private get _data() {
-    const captionMapId = this._getCaptionMapId(); // TODO: consider keep as class property
-    const activeCaptions: Array<ItemData> = this._captionMap.get(captionMapId) || [];
+    const activeCaptions: Array<ItemData> = this._captionMap.get(this._activeCaptionMapId) || [];
     return sortItems([...this._navigationData, ...activeCaptions], this._itemsOrder);
   }
 
@@ -73,7 +66,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   }
 
   loadMedia(): void {
-    if (!this.cuePointManager) {
+    if (!this.cuePointManager || !this.sidePanelsManager) {
       this.logger.warn("kalturaCuepoints or sidePanelsManager haven't registered");
       return;
     }
@@ -112,40 +105,35 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
   private _addNavigationData = (newData: ItemData[]) => {
     this._data = sortItems([...this._data, ...newData], this._itemsOrder);
-    if (this._navigationPanel) {
-      this._updateNavigationPlugin();
-    } else {
-      this._createNavigationPlugin();
-    }
+    this._createOrUpdatePlugin();
   };
 
   private _addCaptionData = (newData: ItemData[]) => {
-    const captionMapId = this._getCaptionMapId();
-    this._captionMap.set(captionMapId, newData);
-    if (this._navigationPanel) {
-      this._updateNavigationPlugin();
-    } else {
-      this._createNavigationPlugin();
-    }
+    this._activeCaptionMapId = this._getCaptionMapId();
+    this._captionMap.set(this._activeCaptionMapId, newData);
+    this._createOrUpdatePlugin();
   };
 
   private _handleLanguageChange = () => {
-    const captionMapId = this._getCaptionMapId();
-    if (this._captionMap.has(captionMapId)) {
+    this._activeCaptionMapId = this._getCaptionMapId();
+    if (this._captionMap.has(this._activeCaptionMapId)) {
       this._updateNavigationPlugin();
     }
   };
 
   private _getCaptionMapId = (): string => {
-    // @ts-ignore TODO
     const allTextTracks = this._player.getTracks(this._player.Track.TEXT) || [];
-    // @ts-ignore TODO
     const activeTextTrack = allTextTracks.find(track => track.active);
     if (activeTextTrack) {
       const captionMapId = `${activeTextTrack.language}-${activeTextTrack.label}`;
       return captionMapId;
     }
     return '';
+  };
+
+  private _isSearchActive = () => {
+    const searchQuery = this._navigationComponentRef?.state.searchFilter?.searchQuery;
+    return Boolean(searchQuery && searchQuery.length > 0);
   };
 
   private _getCuePointType = (cue: CuePoint): ItemTypes | null => {
@@ -183,7 +171,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Slide, isLive));
       }
       if (this._getCuePointType(cue) === ItemTypes.Chapter && this._itemsFilter[ItemTypes.Chapter]) {
-        navigationData.push(prepareCuePoint(cue, ItemTypes.Chapter, isLive, this.config.forceChaptersThumb));
+        navigationData.push(prepareCuePoint(cue, ItemTypes.Chapter, isLive));
       }
       if (this._getCuePointType(cue) === ItemTypes.Hotspot && this._itemsFilter[ItemTypes.Hotspot]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Hotspot, isLive));
@@ -207,8 +195,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     const navigationCuePoints: Array<CuePoint> = payload.cues.filter((cue: CuePoint) => {
       const cuePointType = this._getCuePointType(cue);
       const filterTypePassed = cuePointType && this._itemsFilter[cuePointType];
-      // TODO: for caption cues filter by current player language
-      // TODO: add captions only of search active (capitons visible)
+      if (filterTypePassed && cuePointType === ItemTypes.Caption && !this._isSearchActive()) {
+        return false;
+      }
       return filterTypePassed;
     });
     this._activeCuePointsMap = new Map();
@@ -219,6 +208,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         this._updateNavigationPlugin();
       } else {
         const latestNavigationCuePoint = navigationCuePoints[navigationCuePoints.length - 1];
+        // define navigation item group
         const relevantNavigationItem = this._data.find(item => item.id === latestNavigationCuePoint.id);
         if (relevantNavigationItem) {
           const highlightedGroup = this._data.filter(item => {
@@ -235,16 +225,32 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
   };
 
+  private _handleCloseClick = () => {
+    this.sidePanelsManager.deactivateItem(this._navigationPanel);
+    this._pluginState = PluginStates.CLOSED;
+  };
+
+  private _createOrUpdatePlugin = () => {
+    if (this._navigationPanel) {
+      this._updateNavigationPlugin();
+    } else {
+      this._createNavigationPlugin();
+    }
+  };
+
   private _createNavigationPlugin = () => {
+    if (this._navigationPanel) {
+      return;
+    }
     this._navigationPanel = this.sidePanelsManager.addItem({
       label: 'Navigation',
       panelComponent: () => {
         return (
           <Navigation
-            onClose={() => {
-              this.sidePanelsManager.deactivateItem(this._navigationPanel);
-              this._pluginState = PluginStates.CLOSED;
+            ref={node => {
+              this._navigationComponentRef = node;
             }}
+            onClose={this._handleCloseClick}
             data={this._data}
             onItemClicked={this._seekTo}
             isLoading={this._isLoading}
@@ -297,9 +303,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _addPlayerListeners() {
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_CHANGE, this._onTimedMetadataChange);
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_ADDED, this._onTimedMetadataAdded);
-
     this.eventManager.listen(this._player, this._player.Event.RESIZE, this._updateNavigationPlugin);
-
     if (this._itemsFilter[ItemTypes.Caption]) {
       this.eventManager.listen(this._player, this._player.Event.TEXT_TRACK_CHANGED, this._handleLanguageChange);
     }
@@ -314,8 +318,10 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   reset(): void {
+    this._navigationComponentRef = null;
     this._navigationPanel = null;
     this._activeCuePointsMap = new Map();
+    this._activeCaptionMapId = '';
     this._captionMap = new Map();
     this._navigationData = [];
     this._isLoading = false;

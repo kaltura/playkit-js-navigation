@@ -4801,7 +4801,7 @@ jsonparse@^1.2.0:
 
 "kaltura-player-js@https://github.com/kaltura/kaltura-player-js.git#master":
   version "3.4.0"
-  resolved "https://github.com/kaltura/kaltura-player-js.git#3c7889d28f3b0402ca484914b590df4867688949"
+  resolved "https://github.com/kaltura/kaltura-player-js.git#803250c27f69637a447bdc578bdad7c3f6aea8d7"
   dependencies:
     "@babel/polyfill" "^7.0.0"
     "@playkit-js/playkit-js" "^0.80.3"
@@ -4812,7 +4812,7 @@ jsonparse@^1.2.0:
     intersection-observer "^0.12.0"
     playkit-js-providers "https://github.com/kaltura/playkit-js-providers.git#v2.35.1"
     proxy-polyfill "^0.3.0"
-    shaka-player "3.3.0"
+    shaka-player "3.3.3"
 
 keyv@3.0.0:
   version "3.0.0"
@@ -7051,10 +7051,10 @@ setprototypeof@1.2.0:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
-shaka-player@3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/shaka-player/-/shaka-player-3.3.0.tgz#50fdd7aa551376ddb7f6b90f2df18398af26142f"
-  integrity sha512-R73sL0X7KEgMSWbCsZXFeeq/kzv7z0Fjl2sYGbPQb0skR01v7Krw8H7XbihEKlKnGEvuIZvzkPrJZ3UXl+x4WQ==
+shaka-player@3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/shaka-player/-/shaka-player-3.3.3.tgz#c94b12c5ffafd8cbf67baa654cdb4a01fc9ff722"
+  integrity sha512-E6VRILD9rKunKCQ+lbUnNqqxAvoKuw/6vNaIC+Gz9nW2lYfLX22XCu0wjGZlkvwaR9Q1H+PF7A9iZzzoctSWwg==
   dependencies:
     eme-encryption-scheme-polyfill "^2.0.3"
 
