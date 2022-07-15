@@ -1,6 +1,9 @@
-import {h, Component, Fragment} from 'preact';
+import {h, Component} from 'preact';
 import * as styles from './navigation-search.scss';
 import {debounce} from '../../utils';
+import {icons} from '../icons';
+
+const {Icon} = KalturaPlayer.ui.components;
 
 export interface SearchProps {
   onChange(value: string): void;
@@ -93,7 +96,16 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
         />
         {searchQuery && (
           <div>
-            <button aria-label={'Clear search'} className={styles.clearIcon} onClick={this._onClear} tabIndex={0} />
+            <button aria-label={'Clear search'} className={styles.clearIcon} onClick={this._onClear} tabIndex={0}>
+              <Icon
+                id="navigation-clear-search-button"
+                height={icons.BigSize}
+                width={icons.BigSize}
+                viewBox={`0 0 ${icons.BigSize} ${icons.BigSize}`}
+                path={icons.CLEAR_ICON}
+                color="#cccccc"
+              />
+            </button>
           </div>
         )}
       </div>
