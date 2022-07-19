@@ -1,83 +1,17 @@
-import {ObjectUtils} from '@playkit-js-contrib/common';
-import {
-  ItemData,
-  RawItemData,
-} from '../components/navigation/navigation-item/NavigationItem';
-const {get} = ObjectUtils;
+import {GroupTypes, CuePoint, ItemData, ItemTypes, HighlightedMap} from '../types';
+const {toHHMMSS} = KalturaPlayer.ui.utils;
 
-export function getConfigValue( // TODO: consider move to contrib
-  value: any,
-  condition: (value: any) => boolean,
-  defaultValue: any
-) {
-  let result = defaultValue;
-  if (typeof condition === 'function' && condition(value)) {
-    result = value;
-  }
-  return result;
-}
-
-export enum groupTypes {
-  mid = 'mid',
-  first = 'first',
-  last = 'last',
-}
-
-// TODO: make the types plurals
-export enum itemTypes {
-  All = 'All',
-  AnswerOnAir = 'AnswerOnAir',
-  Chapter = 'Chapter',
-  Slide = 'Slide',
-  Hotspot = 'Hotspot',
-  Caption = 'Caption',
-}
-
-export const itemTypesOrder: Record<string, number> = {
-  [itemTypes.All]: 0,
-  [itemTypes.Chapter]: 1,
-  [itemTypes.Slide]: 2,
-  [itemTypes.Hotspot]: 3,
-  [itemTypes.AnswerOnAir]: 4,
-  [itemTypes.Caption]: 5,
-};
-
-export enum cuePointTypes {
-  Annotation = 'annotation.Annotation',
-  Thumb = 'thumbCuePoint.Thumb',
-}
-
-export enum cuePointTags {
-  AnswerOnAir = 'qna',
-  Hotspot = 'hotspots',
-}
-
-// TODO: move to config
 const MAX_CHARACTERS = 77;
 
-export const convertTime = (sec: number): string => {
-  const hours = Math.floor(sec / 3600);
-  if (hours >= 1) {
-    sec = sec - hours * 3600;
-  }
-  const min = Math.floor(sec / 60);
-  if (min >= 1) {
-    sec = sec - min * 60;
-  }
-  if (hours) {
-    return (
-      (hours < 10 ? '0' + hours : hours) +
-      ':' +
-      (min < 10 ? '0' + min : min) +
-      ':' +
-      (sec < 10 ? '0' + sec : sec)
-    );
-  } else {
-    return (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
-  }
+export const itemTypesOrder: Record<string, number> = {
+  [ItemTypes.All]: 0,
+  [ItemTypes.Chapter]: 1,
+  [ItemTypes.Slide]: 2,
+  [ItemTypes.Hotspot]: 3,
+  [ItemTypes.AnswerOnAir]: 4,
+  [ItemTypes.Caption]: 5
 };
 
-// TODO: consider move to contrib
 export const decodeString = (content: any): string => {
   if (typeof content !== 'string') {
     return content;
@@ -90,119 +24,42 @@ export const decodeString = (content: any): string => {
     .replace(/&quot;/gi, '"');
 };
 
-export function getKs(player: any): string {
-  if (player.shouldAddKs && player.shouldAddKs() && player.config.session?.ks) {
-    return player.config.session.ks;
+export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isLive: boolean): ItemData => {
+  const {metadata} = cuePoint;
+  const itemData: ItemData = {
+    cuePointType,
+    id: cuePoint.id,
+    startTime: cuePoint.startTime,
+    displayTime: isLive ? '' : toHHMMSS(Math.floor(cuePoint.startTime)),
+    itemType: cuePointType,
+    displayTitle: '',
+    displayDescription: [ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType) ? decodeString(metadata.description) : null,
+    previewImage: null,
+    hasShowMore: false,
+    groupData: null
+  };
+  if ([ItemTypes.Hotspot, ItemTypes.AnswerOnAir, ItemTypes.Caption].includes(cuePointType)) {
+    itemData.displayTitle = decodeString(metadata.text);
+  } else if ([ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType)) {
+    itemData.displayTitle = decodeString(metadata.title);
+    itemData.previewImage = metadata.assetUrl || null;
   }
-  return '';
-}
-
-export function makeAssetUrl(baseThumbAssetUrl: string, assetId: string) {
-  let assetUrl = '';
-  // for some thumb cue points, assetId may be undefined from the API.
-  if (typeof assetId !== 'undefined') {
-    assetUrl = baseThumbAssetUrl.replace(/thumbAssetId\/([^\/]+)/, '/thumbAssetId/' + assetId);
-  }
-  return assetUrl;
-}
-
-export function makeChapterThumb(
-  serviceUrl: string,
-  partnerId: number,
-  entryId: string,
-  startTime: number,
-  ks: string = ''
-) {
-  return `${
-    serviceUrl.split('api_v3')[0]
-  }/p/${partnerId}/sp/${partnerId}00/thumbnail/entry_id/${entryId}/width/400/vid_sec/${startTime}${
-    ks ? `/ks/${ks}` : ''
-  }`;
-}
-
-// normlise time, extract description and title, find thumbnail if exist etc'
-export const fillData = (
-  originalItem: any,
-  ks: string,
-  serviceUrl: string,
-  baseThumbAssetUrl = '',
-  forceChaptersThumb = false,
-  isLiveEntry = false
-) => {
-  const item: any = {...originalItem};
-  item.liveType = isLiveEntry;
-  if (isLiveEntry) {
-    item.startTime = item.createdAt;
-  } else {
-    item.startTime = item.startTime / 1000;
-    item.displayTime = convertTime(Math.floor(item.startTime));
-  }
-  switch (item.cuePointType) {
-    case itemTypes.Caption:
-      item.itemType = itemTypes.Caption;
-    case cuePointTypes.Annotation: // hotspot and AoA
-      item.displayTitle = decodeString(item.text);
-      switch (item.tags) {
-        case cuePointTags.Hotspot:
-          item.itemType = itemTypes.Hotspot;
-          break;
-        case cuePointTags.AnswerOnAir:
-          item.itemType = itemTypes.AnswerOnAir;
-          break;
-      }
-      break;
-    case cuePointTypes.Thumb: // chapters and slides
-      item.displayDescription = decodeString(item.description);
-      item.displayTitle = decodeString(item.title);
-      if (item.assetId) {
-        item.previewImage = makeAssetUrl(baseThumbAssetUrl, item.assetId);
-      }
-      switch (item.subType) {
-        case 1:
-          item.itemType = itemTypes.Slide;
-          break;
-        case 2:
-          item.itemType = itemTypes.Chapter;
-          if (!item.previewImage && forceChaptersThumb) {
-            item.previewImage = makeChapterThumb(
-              serviceUrl,
-              item.partnerId,
-              item.entryId,
-              item.startTime,
-              ks
-            );
-          }
-          break;
-      }
-      break;
-  }
-  if (
-    item.displayTitle &&
-    item.displayTitle.length > MAX_CHARACTERS &&
-    item.itemType !== itemTypes.Caption
-  ) {
-    let elipsisString = item.displayTitle.slice(0, MAX_CHARACTERS);
+  if (itemData.displayTitle && itemData.displayTitle.length > MAX_CHARACTERS && itemData.itemType !== ItemTypes.Caption) {
+    let elipsisString = itemData.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisString = elipsisString.trim();
-    item.shorthandTitle = elipsisString + '... ';
+    itemData.shorthandTitle = elipsisString + '... ';
   }
-  if (
-    !item.displayTitle &&
-    item.displayDescription &&
-    item.displayDescription.length > 79
-  ) {
-    let elipsisDescription = item.displayTitle.slice(0, MAX_CHARACTERS);
+  if (!itemData.displayTitle && itemData.displayDescription && itemData.displayDescription.length > 79) {
+    let elipsisDescription = itemData.displayTitle.slice(0, MAX_CHARACTERS);
     elipsisDescription = elipsisDescription.trim();
-    item.shorthandDescription = elipsisDescription + '... ';
+    itemData.shorthandDescription = elipsisDescription + '... ';
   }
+  itemData.hasShowMore = Boolean(itemData.displayDescription || itemData.shorthandDescription);
 
-  item.hasShowMore = item.displayDescription || item.shorthandDesctipyion;
-  return item;
+  return itemData;
 };
 
-export const sortItems = (
-  cuepoints: Array<ItemData>,
-  itemOrder: typeof itemTypesOrder
-): Array<ItemData> => {
+export const sortItems = (cuepoints: Array<ItemData>, itemOrder: typeof itemTypesOrder): Array<ItemData> => {
   return cuepoints.sort((item1: ItemData, item2: ItemData) => {
     if (item1.startTime === item2.startTime) {
       return itemOrder[item1.itemType] - itemOrder[item2.itemType];
@@ -220,15 +77,15 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
     (prevArr: Array<any>, currentCuepoint: ItemData) => {
       const prevItem = prevArr.length > 0 && prevArr[prevArr.length - 1];
       const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
-      if (prevItem && currentCuepoint.startTime === prevItem.startTime) {
-        if (prevPrevItem.startTime === prevItem.startTime) {
-          prevItem.groupData = groupTypes.mid;
+      if (prevItem && currentCuepoint.displayTime === prevItem.displayTime) {
+        if (prevPrevItem.displayTime === prevItem.displayTime) {
+          prevItem.groupData = GroupTypes.mid;
         }
         // found a previous item that has the same time value
         if (!prevItem.groupData && !prevItem.groupData) {
-          prevItem.groupData = groupTypes.first;
+          prevItem.groupData = GroupTypes.first;
         }
-        currentCuepoint.groupData = groupTypes.last;
+        currentCuepoint.groupData = GroupTypes.last;
       }
       // TODO - enforce order
       prevArr.push(currentCuepoint);
@@ -238,67 +95,34 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
   );
 };
 
-// main function for data handel. This sorts the cuepoints by startTime, and enriches the items with data so that the
-// items component will not contain too much logic in it and mostly will be a
-// dumb display-component (no offence - NavigationItem...)
-export const prepareVodData = (
-  receivedCuepoints: Array<RawItemData>,
-  ks: string,
-  serviceUrl: string,
-  forceChaptersThumb: boolean,
-  itemOrder: typeof itemTypesOrder,
-  baseThumbAssetUrl?: string
-): Array<ItemData> => {
-  const filledData = receivedCuepoints.map((cuepoint: RawItemData) => {
-    return {
-      ...fillData(cuepoint, ks, serviceUrl, baseThumbAssetUrl, forceChaptersThumb, false),
-      liveTypeCuepoint: false,
-    };
-  });
-  return sortItems(filledData, itemOrder);
-};
-
 const clearGroupData = (data: Array<ItemData>) => {
   return data.map((item: ItemData) => ({
     ...item,
-    groupData: null,
+    groupData: null
   }));
 };
 
-export const filterDataBySearchQuery = (
-  data: Array<ItemData> | undefined,
-  searchQuery: string
-) => {
+export const filterDataBySearchQuery = (data: Array<ItemData> | undefined, searchQuery: string) => {
   if (!data || !data.length) {
     return [];
   }
   if (!searchQuery) {
     return data.filter((item: ItemData) => {
-      return item.itemType !== itemTypes.Caption;
+      return item.itemType !== ItemTypes.Caption;
     });
   }
   const lowerQuery = searchQuery.toLowerCase();
   const filteredData = data.filter((item: ItemData) => {
     // search by title
-    if (
-      item.displayTitle &&
-      `${item.displayTitle}`.toLowerCase().indexOf(lowerQuery) > -1
-    ) {
+    if (item.displayTitle && `${item.displayTitle}`.toLowerCase().indexOf(lowerQuery) > -1) {
       return true;
     }
     // search by description
-    if (
-      item.displayDescription &&
-      `${item.displayDescription}`.toLowerCase().indexOf(lowerQuery) > -1
-    ) {
+    if (item.displayDescription && `${item.displayDescription}`.toLowerCase().indexOf(lowerQuery) > -1) {
       return true;
     }
     // search by time
-    if (
-      item.displayTime &&
-      /([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(lowerQuery) &&
-      item.displayTime.indexOf(lowerQuery) > -1
-    ) {
+    if (item.displayTime && /([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(lowerQuery) && item.displayTime.indexOf(lowerQuery) > -1) {
       return true;
     }
   });
@@ -306,174 +130,83 @@ export const filterDataBySearchQuery = (
   return clearGroupData(filteredData);
 };
 
-export const filterDataByActiveTab = (
-  data: Array<ItemData> | undefined,
-  activeTab: itemTypes
-) => {
+export const filterDataByActiveTab = (data: Array<ItemData> | undefined, activeTab: ItemTypes) => {
   if (!data || !data.length) {
     return [];
   }
-  if (activeTab === itemTypes.All) {
+  if (activeTab === ItemTypes.All) {
     return data;
   }
-  const filteredData = data.filter(
-    (item: ItemData) => item.itemType === activeTab
-  );
+  const filteredData = data.filter((item: ItemData) => item.itemType === activeTab);
   return clearGroupData(filteredData);
 };
 
-export const getAvailableTabs = (
-  data: ItemData[],
-  itemOrder: typeof itemTypesOrder
-): itemTypes[] => {
+export const getAvailableTabs = (data: ItemData[], itemOrder: typeof itemTypesOrder): ItemTypes[] => {
   const localData = [...data];
   let totalResults = 0;
-  const ret: itemTypes[] = localData.reduce(
-    (acc: itemTypes[], item: ItemData) => {
-      totalResults = totalResults + 1;
-      if (item.itemType && acc.indexOf(item.itemType) === -1) {
-        acc.push(item.itemType);
-      }
-      return acc;
-    },
-    []
-  );
+  const ret: ItemTypes[] = localData.reduce((acc: ItemTypes[], item: ItemData) => {
+    totalResults = totalResults + 1;
+    if (item.itemType && acc.indexOf(item.itemType) === -1) {
+      acc.push(item.itemType);
+    }
+    return acc;
+  }, []);
   if (ret.length > 1) {
-    ret.unshift(itemTypes.All);
+    ret.unshift(ItemTypes.All);
   }
-  return ret.sort((itemType1: itemTypes, itemType2: itemTypes) => {
+  return ret.sort((itemType1: ItemTypes, itemType2: ItemTypes) => {
     return itemOrder[itemType1] - itemOrder[itemType2];
   });
 };
 
-export const preparePendingCuepoints = (
-  currentData: Array<ItemData>,
-  currentTimeLive: number
-): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
-  return currentData.reduce(
-    (
-      acc: {listData: Array<ItemData>; pendingData: Array<ItemData>},
-      item: ItemData
-    ) => {
-      if (currentTimeLive < item.startTime) {
-        return {
-          listData: acc.listData,
-          pendingData: [...acc.pendingData, item],
-        };
-      }
-      return {listData: [...acc.listData, item], pendingData: acc.pendingData};
-    },
-    {listData: [], pendingData: []}
+const isDuplicatedSlide = (previousSlide: ItemData | null, currentSlide: ItemData) => {
+  return (
+    previousSlide &&
+    currentSlide.title === previousSlide.title &&
+    currentSlide.partnerData === previousSlide.partnerData &&
+    [currentSlide.tags, previousSlide.tags].includes('select-a-thumb, __PREVIEW_CUEPOINT_TAG__')
   );
 };
 
-/**
- * @function filterPreviewDuplications
- * filter out all slides which are duplication of their adjacent previous slides
- * (happens while switching from preview to live mode on the webcast app)
- * @param { Array<ItemData>} cues - the cues data
- * @returns {Array<ItemData>}
- */
-export function filterPreviewDuplications(
-  cues: Array<ItemData>
-): Array<ItemData> {
-  const isDuplicatedSlide = (
-    previousSlide: ItemData | null,
-    currentSlide: ItemData
-  ) => {
-    return (
-      previousSlide &&
-      currentSlide.title === previousSlide.title &&
-      currentSlide.partnerData === previousSlide.partnerData &&
-      [currentSlide.tags, previousSlide.tags].includes(
-        'select-a-thumb, __PREVIEW_CUEPOINT_TAG__'
-      )
-    );
-  };
+const filterCuesById = (cues: Array<ItemData>) => {
+  const cuesMap = new Map<string, ItemData>();
+  cues.forEach(cue => {
+    cuesMap.set(cue.id, cue);
+  });
+  return [...cuesMap.values()];
+};
 
-  const filteredArr: Array<ItemData> = [];
+// filter out all slides which are duplication of their adjacent previous slides
+// (happens while switching from preview to live mode on the webcast app)
+export const filterDuplications = (cues: Array<ItemData>): Array<ItemData> => {
+  const filteredById = filterCuesById(cues);
+  const filteredByContent: Array<ItemData> = [];
   let previousSlide: ItemData | null = null;
-  for (let i = 0; i < cues.length; i++) {
-    if (cues[i].itemType !== itemTypes.Slide) {
-      filteredArr.push(cues[i]);
+  for (let i = 0; i < filteredById.length; i++) {
+    if (filteredById[i].itemType !== ItemTypes.Slide) {
+      filteredByContent.push(filteredById[i]);
     } else {
-      if (!isDuplicatedSlide(previousSlide, cues[i])) {
-        filteredArr.push(cues[i]);
+      if (!isDuplicatedSlide(previousSlide, filteredById[i])) {
+        filteredByContent.push(filteredById[i]);
       }
-      previousSlide = cues[i];
+      previousSlide = filteredById[i];
     }
   }
-  return filteredArr;
-}
-
-export const prepareLiveData = (
-  currentData: Array<ItemData>,
-  pendingData: Array<ItemData>,
-  newData: Array<ItemData>,
-  ks: string,
-  serviceUrl: string,
-  forceChaptersThumb: boolean,
-  itemOrder: typeof itemTypesOrder,
-  currentTimeLive: number,
-  baseThumbAssetUrl?: string
-): {listData: Array<ItemData>; pendingData: Array<ItemData>} => {
-  if (!newData || newData.length === 0) {
-    // Wrong or empty data
-    return {listData: currentData, pendingData};
-  }
-  // avoid duplication of quepoints (push server can sent same quepoints on reconnect)
-  let receivedCuepoints: Array<ItemData> = newData.filter(
-    (newDataItem: ItemData) => {
-      return ![...currentData, ...pendingData].find(
-        (item: ItemData) => item.id === newDataItem.id
-      );
-    }
-  );
-  // receivedCuepoints is a flatten array now sort by startTime (plus normalize startTime to rounded seconds)
-  receivedCuepoints = receivedCuepoints.map((cuepoint: ItemData) => {
-    return fillData(cuepoint, ks, serviceUrl, baseThumbAssetUrl, forceChaptersThumb, true);
-  });
-  const result: {
-    listData: Array<ItemData>;
-    pendingData: Array<ItemData>;
-  } = preparePendingCuepoints(receivedCuepoints, currentTimeLive);
-  const filteredPendingData = pendingData.filter((cuepoint: ItemData) => {
-    return !result.listData.find((item: ItemData) => item.id === cuepoint.id);
-  });
-  result.listData = sortItems(currentData.concat(result.listData), itemOrder);
-  result.pendingData = filteredPendingData.concat(result.pendingData);
-  return result;
+  return filteredByContent;
 };
 
-export const checkResponce = (response: any, type?: any): boolean => {
-  if (get(response, 'result.objects', [])) {
-    if (type) {
-      return response.result instanceof type;
-    }
-    return true;
-  }
-  return false;
-};
-
-export const prepareItemTypesOrder = (
-  itemsOrder: any
-): Record<string, number> => {
+export const prepareItemTypesOrder = (itemsOrder: any): Record<string, number> => {
   if (itemsOrder && typeof itemsOrder === 'object') {
     return {...itemTypesOrder, ...itemsOrder};
   }
   return itemTypesOrder;
 };
 
-// TODO: consider move to contrib
 export const isEmptyObject = (obj: Record<string, any>) => {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 };
 
-// TODO: consider move to contrib
-export const isDataEqual = (
-  prevData: ItemData[],
-  nextData: ItemData[]
-): boolean => {
+export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean => {
   if (prevData.length !== nextData.length) {
     return false;
   }
@@ -484,11 +217,7 @@ export const isDataEqual = (
     if (prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id) {
       return false;
     }
-    if (
-      prevData[0].text &&
-      nextData[0].text &&
-      prevData[0].text !== nextData[0].text
-    ) {
+    if (prevData[0].text && nextData[0].text && prevData[0].text !== nextData[0].text) {
       return false;
     }
     if (
@@ -502,30 +231,55 @@ export const isDataEqual = (
   return true;
 };
 
-// TODO: consider move to contrib
-export const isMapEqual = (prevMap: any, nextMap: any): boolean => {
-  const prevMapKeys = Object.keys(prevMap);
-  const nextMapaKeys = Object.keys(nextMap);
-  return !(
-    prevMapKeys.length !== nextMapaKeys.length ||
-    prevMapKeys[0] !== nextMapaKeys[0] ||
-    prevMapKeys[prevMapKeys.length - 1] !==
-      nextMapaKeys[nextMapaKeys.length - 1]
-  );
+export const isMapsEqual = (map1: HighlightedMap, map2: HighlightedMap) => {
+  if (map1.size !== map2.size) {
+    return false;
+  }
+  for (let [key, val] of map1) {
+    const testVal = map2.get(key);
+    if (testVal !== val || (testVal === undefined && !map2.has(key))) {
+      return false;
+    }
+  }
+  return true;
 };
 
-export const findCuepointType = (
-  list: ItemData[],
-  cuePointType: itemTypes
-): boolean => {
-  return !!list.find(
-    (cuepoint: ItemData) => cuepoint.itemType === cuePointType
-  );
+export const findCuepointType = (list: ItemData[], cuePointType: ItemTypes): boolean => {
+  return !!list.find((cuepoint: ItemData) => cuepoint.itemType === cuePointType);
 };
 
-export const filterCuepointsByStartTime = (
-  list: ItemData[],
-  startTime: number
-): ItemData[] => {
-  return list.filter((item) => item.startTime >= startTime);
+export const filterCuepointsByStartTime = (list: ItemData[], startTime: number): ItemData[] => {
+  return list.filter(item => item.startTime >= startTime);
 };
+
+type Procedure = (...args: any[]) => void;
+export function debounce<F extends Procedure>(
+  func: F,
+  waitMilliseconds = 50,
+  options = {
+    isImmediate: false
+  }
+): F {
+  let timeoutId: any;
+
+  return function (this: any, ...args: any[]) {
+    const doLater = () => {
+      timeoutId = undefined;
+      if (!options.isImmediate) {
+        func.apply(this, args);
+      }
+    };
+
+    const shouldCallNow = options.isImmediate && timeoutId === undefined;
+
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(doLater, waitMilliseconds);
+
+    if (shouldCallNow) {
+      func.apply(this, args);
+    }
+  } as any;
+}

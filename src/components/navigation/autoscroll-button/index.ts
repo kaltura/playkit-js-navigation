@@ -1,1 +1,1 @@
-export * from "./autoscroll-button";
+export * from './autoscroll-button';

@@ -1,18 +1,4 @@
-/* TODO: (1) remove this once 3rd party cross-browser custom scroll bar is Added */
-.body::-webkit-scrollbar {
-  width: 4px;
-}
-
-/* Track TODO: as (1)*/
-.body::-webkit-scrollbar-track {
-  background: rgba(33, 33, 33, 0.9);
-}
-
-/* Handle TODO: as (1) */
-.body::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-  background-color: rgba(255, 255, 255, 0.3);
-}
+@import '../../theme.scss';
 
 .hidden {
   visibility: hidden;
@@ -20,13 +6,14 @@
 .body {
   overflow: auto;
   height: 100%;
+  @include plugin-scrollbar();
 }
 
 .root {
   display: flex;
   justify-content: center;
   padding: 16px 4px 16px 0px;
-  color: #fff;
+  color: map-get($theme-colors, 'primary');
   height: 100%;
   width: 100%;
   position: absolute;
@@ -64,17 +51,14 @@
       }
       .close-button {
         position: absolute;
-        top: 16px;
-        right: 0;
-        width: 32px;
-        height: 32px;
-        min-width: 32px;
-        margin: 0 8px;
-        cursor: pointer;
-        background-image: url("../../assets/images/close.svg");
+        top: 0;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        padding: 0;
         background-color: transparent;
         border: none;
-        padding: 0;
+        cursor: pointer;
       }
     }
     .autoscrollWrapper {
@@ -82,5 +66,11 @@
       bottom: 14px;
       right: 16px;
     }
+  }
+
+  // TODO: remove once player fix the font
+  * {
+    font-family: sans-serif;
+    font-style: normal;
   }
 }
