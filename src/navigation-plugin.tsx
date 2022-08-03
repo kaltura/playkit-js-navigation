@@ -9,8 +9,9 @@ import {OnClickEvent} from './components/a11y-wrapper';
 const {TimedMetadata} = core;
 
 import {ui} from 'kaltura-player-js';
-import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap} from './types';
+import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
+const liveCuePointTimeThreshold = 20 * 1000; // 20 seconds threshold
 
 interface TimedMetadataEvent {
   payload: {
@@ -33,6 +34,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _player: KalturaPlayerTypes.Player;
   private _navigationPanel = null;
   private _pluginState: PluginStates | null = null;
+  private _liveFutureCuePointsMap: CuePointsMap = new Map(); // map holding future cuepoints that were not reached yet
 
   static defaultConfig: NavigationConfig = {
     position: SidePanelPositions.RIGHT,
@@ -95,7 +97,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       cuePointTypes.push(this.cuePointManager.CuepointType.HOTSPOT);
     }
     if (this._itemsFilter[ItemTypes.AnswerOnAir]) {
-      cuePointTypes.push(this.cuePointManager.CuepointType.QNA);
+      cuePointTypes.push(this.cuePointManager.CuepointType.PUBLIC_QNA);
     }
     if (this._itemsFilter[ItemTypes.Caption]) {
       cuePointTypes.push(this.cuePointManager.CuepointType.CAPTION);
@@ -162,13 +164,33 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     return null;
   };
 
+  private isFutureCuePoint(cue: CuePoint): boolean {
+    if (cue.metadata && cue.metadata.createdAt) {
+      const cuePointCreationTime = cue.metadata.createdAt * 1000;
+      const currentTime = new Date().getTime();
+      return cuePointCreationTime > (currentTime - liveCuePointTimeThreshold);
+    }
+    return false;
+  }
+
   private _onTimedMetadataAdded = ({payload}: TimedMetadataEvent) => {
     const isLive = this._player.isLive();
     const navigationData: ItemData[] = [];
     const captionData: ItemData[] = [];
     payload.cues.forEach((cue: CuePoint) => {
       if (this._getCuePointType(cue) === ItemTypes.Slide && this._itemsFilter[ItemTypes.Slide]) {
-        navigationData.push(prepareCuePoint(cue, ItemTypes.Slide, isLive));
+        const preparedCuePoint = prepareCuePoint(cue, ItemTypes.Slide, isLive);
+        if (!isLive) {
+          navigationData.push(preparedCuePoint);
+        } else {
+          if (this.isFutureCuePoint(cue)) {
+            // if current playback hasn't reached this cuePoint yet, save it to the future cue points map and don't show it.
+            // We will display it when the playback reach it on the TimedMetadataChange event (see _onTimedMetadataChange)
+            this._liveFutureCuePointsMap.set(cue.id, preparedCuePoint);
+          } else {
+            navigationData.push(preparedCuePoint);
+          }
+        }
       }
       if (this._getCuePointType(cue) === ItemTypes.Chapter && this._itemsFilter[ItemTypes.Chapter]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Chapter, isLive));
@@ -204,7 +226,13 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (navigationCuePoints.length) {
       if (this._player.isLive()) {
         const latestNavigationCuePoint = navigationCuePoints[navigationCuePoints.length - 1];
-        this._activeCuePointsMap.set(latestNavigationCuePoint.id, true);
+        const id = latestNavigationCuePoint.id;
+        if (this._liveFutureCuePointsMap.has(id)) {
+          // if this is a cuepoint that wasn't displayed yet - show it in the panel and remove it from future cue points map
+          this._addNavigationData([this._liveFutureCuePointsMap.get(id)!]);
+          this._liveFutureCuePointsMap.delete(id);
+        }
+        this._activeCuePointsMap.set(id, true);
         this._updateNavigationPlugin();
       } else {
         const latestNavigationCuePoint = navigationCuePoints[navigationCuePoints.length - 1];
