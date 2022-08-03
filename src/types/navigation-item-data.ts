@@ -24,6 +24,7 @@ export interface CuePoint {
 
 export interface RawItemData {
   cuePointType: ItemTypes;
+  createdAt?: number;
   text?: string;
   description?: string;
   title?: string;
@@ -54,3 +55,4 @@ export interface ItemData extends RawItemData {
 }
 
 export type HighlightedMap = Map<string, true>;
+export type CuePointsMap = Map<string, ItemData>;
