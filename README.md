@@ -64,7 +64,7 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 
 Navigation plugin configuration can been found here:
 
-- **[Configuration](docs/configuration.md)**
+- **[Configuration](#configuration)**
 
 ## Running the tests
 
@@ -114,6 +114,7 @@ Run dev server: `npm run serve`;<br/>
 Update contrib: `npm run infra:latest`;<br/>
 Bump version: `npm run deploy:prepare`;<br/>
 
+<a name="configuration"></a>
 ## Configuration
 
 Plugin configuration:<br/> > `expandOnFirstPlay`: boolean - if plugin should automatically opens on first play (default true);<br/> > `forceChaptersThumb`: boolean - force to use chapters thumbnails (default false);<br/> > `expandMode`: string - expand mode of kitchensink (AlongSideTheVideo|OverTheVideo, default "AlongSideTheVideo");<br/> > `userRole`: string - use session userId as identificator of user (anonymousRole|unmoderatedAdminRole, default "anonymousRole");<br/> > `itemsOrder`: object< string, number > - define order of Tabs (min value at the left) and Items inside group (min value at the top).<br/> itemsOrder also uses as tabs filter (all items that not included in "itemsOrder" object will be filtered out) (default:
