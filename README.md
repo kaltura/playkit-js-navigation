@@ -147,8 +147,8 @@ Plugin configuration:<br/> > `expandOnFirstPlay`: boolean - if plugin should aut
 <a name="dependencies"></a>
 ## Dependencies
 
-Plugin dependencies:
-<a href="https://github.com/kaltura/playkit-js-kaltura-cuepoints">Cue Points</a>
+Plugin dependencies:<br/>
+<a href="https://github.com/kaltura/playkit-js-kaltura-cuepoints">Cue Points</a><br/>
 <a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a>
 
 ## Troubleshooting
