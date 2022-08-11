@@ -123,11 +123,11 @@ Bump version: `npm run deploy:prepare`;<br/>
 
 Plugin configuration:<br/> > `expandOnFirstPlay`: boolean - if plugin should automatically opens on first play (default true);<br/> > `forceChaptersThumb`: boolean - force to use chapters thumbnails (default false);<br/> > `expandMode`: string - expand mode of kitchensink (AlongSideTheVideo|OverTheVideo, default "AlongSideTheVideo");<br/> > `userRole`: string - use session userId as identificator of user (anonymousRole|unmoderatedAdminRole, default "anonymousRole");<br/> > `itemsOrder`: object< string, number > - define order of Tabs (min value at the left) and Items inside group (min value at the top).<br/> itemsOrder also uses as tabs filter (all items that not included in "itemsOrder" object will be filtered out) (default:
 ` { "All": 0, "Chapter": 1, "Slide": 2, "Hotspot": 3, "AnswerOnAir": 4, } ); `
-<br/><br/>`Default Configuration`:<br/>
+<br/><br/>`Default configuration:`<br/>
 ```html
     "navigation" = {};
 ```
-<br/>`Change tab order`:<br/>
+`Change tab order:`<br/>
 ```html
     navigation = {
      ...
@@ -141,18 +141,15 @@ Plugin configuration:<br/> > `expandOnFirstPlay`: boolean - if plugin should aut
      ...
     };
 ```
-<br/>`Additional Flashvars:`:<br/>
+`Additional flashvars:`<br/>
 "playkit-navigation":"Version" (check latest version of navigation plugin)
 
 <a name="dependencies"></a>
 ## Dependencies
 
 Plugin dependencies:
-
-[Cue Points]
-[cue points]: https://github.com/kaltura/playkit-js-kaltura-cuepoints
-[UI Managers]
-[ui managers]: https://github.com/kaltura/playkit-js-ui-managers0
+<a href="https://github.com/kaltura/playkit-js-kaltura-cuepoints">Cue Points</a>
+<a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a>
 
 ## Troubleshooting
 
