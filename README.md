@@ -108,7 +108,8 @@ Bump version: `npm run deploy:prepare`;<br/>
 ```js
 //Default configuration
 "navigation" = {};
-{
+//Plugin params
+"navigation" = {
   expandOnFirstPlay?: boolean, // optional
   forceChaptersThumb?: boolean, // optional
   expandMode?: string, // optional
