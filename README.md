@@ -54,9 +54,9 @@ Finally, add the bundle as a script tag in your page, and initialize the player
      ...
      targetId: 'player-placeholder',
      plugins: {
-       navigation: { ... },
-        uiManagers: { ... },
-        kalturaCuepoints: { ... },
+      navigation: { ... },
+      uiManagers: { ... },
+      kalturaCuepoints: { ... },
      }
      ...
     };
