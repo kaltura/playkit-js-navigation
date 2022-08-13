@@ -54,7 +54,9 @@ Finally, add the bundle as a script tag in your page, and initialize the player
      ...
      targetId: 'player-placeholder',
      plugins: {
-       navigation: { ... }
+       navigation: { ... },
+        uiManagers: { ... },
+        kalturaCuepoints: { ... },
      }
      ...
     };
@@ -196,11 +198,11 @@ Plugin dependencies:<br/>
 <a href="https://github.com/kaltura/playkit-js-kaltura-cuepoints">Cue Points</a><br/>
 <a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a>
 
+
+## Troubleshooting
+"dev": "webpack-dev-server --mode development"
+"release": "standard-version"
+
 ### Dev env
-
-Node version: up to 14.18.1<br/>
+Node version: up to 14+<br/>
 If nvm installed: `nvm use` change version of current terminal to required.<br/>
-
-### ARM Architecture support
-
-Install dependencies with `npm install --target_arch=x64` set target arch for running it through Rosetta (requires Rosetta installation).<br/>
