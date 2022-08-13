@@ -200,7 +200,7 @@ Plugin dependencies:<br/>
 
 
 ## Troubleshooting
-"dev": "webpack-dev-server --mode development"
+"dev": "webpack-dev-server --mode development"<br/>
 "release": "standard-version"
 
 ### Dev env
