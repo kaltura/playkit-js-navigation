@@ -154,17 +154,6 @@ Bump version: `yarn release`;<br/>
 
 ##
 
-> ### config.expandMode
->
-> ##### Type: `string`
->
-> ##### Default: `AlongSideTheVideo`
->
-> ##### Description: expand mode of side panel (AlongSideTheVideo|OverTheVideo, default "AlongSideTheVideo").
->
-
-##
-
 > ### config.userRole
 >
 > ##### Type: `string`
