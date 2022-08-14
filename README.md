@@ -98,9 +98,8 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE.md](LICEN
 
 ## Commands
 
-Run dev server: `npm run serve`;<br/>
-Update contrib: `npm run infra:latest`;<br/>
-Bump version: `npm run deploy:prepare`;<br/>
+Run dev server: `yarn dev`;<br/>
+Bump version: `yarn release`;<br/>
 
 <a name="configuration"></a>
 ## Configuration
@@ -197,11 +196,6 @@ Bump version: `npm run deploy:prepare`;<br/>
 Plugin dependencies:<br/>
 <a href="https://github.com/kaltura/playkit-js-kaltura-cuepoints">Cue Points</a><br/>
 <a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a>
-
-
-## Troubleshooting
-"dev": "webpack-dev-server --mode development"<br/>
-"release": "standard-version"
 
 ### Dev env
 Node version: up to 14+<br/>
