@@ -147,9 +147,9 @@ Bump version: `yarn release`;<br/>
 >
 > ##### Type: `string`
 >
-> ##### Default: `AlongSideTheVideo`
+> ##### Default: `alongside`
 >
-> ##### Description: expand mode of side panel (AlongSideTheVideo|OverTheVideo, default "AlongSideTheVideo").
+> ##### Description: expand mode of side panel (‘alongside', ‘hidden’, 'over’, default 'alongside').
 >
 
 ##
