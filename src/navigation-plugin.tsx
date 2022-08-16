@@ -297,8 +297,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
             onClick={(e: OnClickEvent, byKeyboard?: boolean) => {
               if (this.sidePanelsManager.isItemActive(this._navigationPanel)) {
                 this._triggeredByKeyboard = false;
-                this._pluginState = PluginStates.CLOSED;
-                this.sidePanelsManager.deactivateItem(this._navigationPanel);
+                this._handleCloseClick();
               } else {
                 this._triggeredByKeyboard = Boolean(byKeyboard);
                 this.sidePanelsManager.activateItem(this._navigationPanel);
@@ -346,8 +345,11 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   reset(): void {
-    this._navigationComponentRef = null;
-    this._navigationPanel = null;
+    if (this._navigationPanel) {
+      this.sidePanelsManager.removeItem(this._navigationPanel);
+      this._navigationPanel = null;
+      this._navigationComponentRef = null;
+    }
     this._activeCuePointsMap = new Map();
     this._activeCaptionMapId = '';
     this._captionMap = new Map();
