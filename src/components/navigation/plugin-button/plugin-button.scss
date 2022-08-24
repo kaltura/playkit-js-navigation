@@ -18,3 +18,7 @@
 :global(.playkit-player .playkit-top-bar .playkit-right-controls) {
   display: flex;
 }
+:global(.playkit-player.has-live-plugin-overlay .playkit-top-bar) {
+  visibility: visible;
+  margin-top: 0px;
+}
