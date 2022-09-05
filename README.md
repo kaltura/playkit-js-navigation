@@ -41,6 +41,10 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 ```html
 <script type="text/javascript" src="/PATH/TO/FILE/kaltura-player.js"></script>
 <!--Kaltura player-->
+<script type="text/javascript" src="/PATH/TO/FILE/playkit-kaltura-cuepoints.js"></script>
+<!--PlayKit cuepoints plugin-->
+<script type="text/javascript" src="/PATH/TO/FILE/playkit-ui-managers.js"></script>
+<!--PlayKit ui-managers plugin-->
 <script type="text/javascript" src="/PATH/TO/FILE/playkit-navigation.js"></script>
 <!--PlayKit navigation plugin-->
 <div id="player-placeholder" style="height:360px; width:640px">
@@ -50,7 +54,9 @@ Finally, add the bundle as a script tag in your page, and initialize the player
      ...
      targetId: 'player-placeholder',
      plugins: {
-       navigation: { ... }
+      navigation: { ... },
+      uiManagers: { ... },
+      kalturaCuepoints: { ... },
      }
      ...
     };
@@ -66,23 +72,9 @@ Navigation plugin configuration can been found here:
 
 - **[Configuration](#configuration)**
 
-## Running the tests
+Navigation plugin dependencies can been found here:
 
-Tests can be run locally via [Karma], which will run on Chrome, Firefox and Safari
-
-[karma]: https://karma-runner.github.io/1.0/index.html
-
-```
-yarn run test
-```
-
-You can test individual browsers:
-
-```
-yarn run test:chrome
-yarn run test:firefox
-yarn run test:safari
-```
+- **[Dependencies](#dependencies)**
 
 ### And coding style tests
 
@@ -91,10 +83,6 @@ We use ESLint [recommended set](http://eslint.org/docs/rules/) with some additio
 See [ESLint config](.eslintrc.json) for full configuration.
 
 We also use [.editorconfig](.editorconfig) to maintain consistent coding styles and settings, please make sure you comply with the styling.
-
-## Compatibility
-
-TBD
 
 ## Contributing
 
@@ -110,23 +98,94 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE.md](LICEN
 
 ## Commands
 
-Run dev server: `npm run serve`;<br/>
-Update contrib: `npm run infra:latest`;<br/>
-Bump version: `npm run deploy:prepare`;<br/>
+Run dev server: `yarn dev`;<br/>
+Bump version: `yarn release`;<br/>
 
 <a name="configuration"></a>
 ## Configuration
 
-Plugin configuration:<br/> > `expandOnFirstPlay`: boolean - if plugin should automatically opens on first play (default true);<br/> > `forceChaptersThumb`: boolean - force to use chapters thumbnails (default false);<br/> > `expandMode`: string - expand mode of kitchensink (AlongSideTheVideo|OverTheVideo, default "AlongSideTheVideo");<br/> > `userRole`: string - use session userId as identificator of user (anonymousRole|unmoderatedAdminRole, default "anonymousRole");<br/> > `itemsOrder`: object< string, number > - define order of Tabs (min value at the left) and Items inside group (min value at the top).<br/> itemsOrder also uses as tabs filter (all items that not included in "itemsOrder" object will be filtered out) (default:
-` { "All": 0, "Chapter": 1, "Slide": 2, "Hotspot": 3, "AnswerOnAir": 4, } ); `
+#### Configuration Structure
 
-## Troubleshooting
+```js
+//Default configuration
+"navigation" = {};
+//Plugin params
+"navigation" = {
+  expandOnFirstPlay?: boolean, // optional
+  forceChaptersThumb?: boolean, // optional
+  expandMode?: string, // optional
+  userRole?: string, // optional
+  itemsOrder?: object< string, number > // optional
+}
+```
+
+##
+
+> ### config.expandOnFirstPlay
+>
+> ##### Type: `boolean`
+>
+> ##### Default: `true`
+>
+> ##### Description: if plugin should automatically opens on first play.
+>
+
+##
+
+> ### config.forceChaptersThumb
+>
+> ##### Type: `boolean`
+>
+> ##### Default: `false`
+>
+> ##### Description: force to use chapters thumbnails.
+>
+
+##
+
+> ### config.expandMode
+>
+> ##### Type: `string`
+>
+> ##### Default: `alongside`
+>
+> ##### Description: expand mode of side panel (‘alongside', ‘hidden’, 'over’, default 'alongside').
+>
+
+##
+
+> ### config.userRole
+>
+> ##### Type: `string`
+>
+> ##### Default: `anonymousRole`
+>
+> ##### Description: use session userId as identificator of user (anonymousRole|unmoderatedAdminRole, default "anonymousRole").
+>
+
+##
+
+> ### config.itemsOrder
+>
+> ##### Type: `object< string, number >`
+>
+> ##### Default: `{ "All": 0, "Chapter": 1, "Slide": 2, "Hotspot": 3, "AnswerOnAir": 4, }`
+>
+> ##### Change tab order: `navigation = {...itemsOrder: { "Slide": 1, "All": 4, "AnswerOnAir": 3, "Chapter": 5,  "Hotspot": 2, }, ...}`
+>
+> ##### Description: define order of Tabs (min value at the left) and Items inside group (min value at the top). itemsOrder also uses as tabs filter (all items that not included in "itemsOrder" object will be filtered out) (default: { "All": 0, "Chapter": 1, "Slide": 2, "Hotspot": 3, "AnswerOnAir": 4, }).
+>
+
+## Additional flashvars
+"playkit-navigation":"Version" (check latest version of navigation plugin)
+
+<a name="dependencies"></a>
+## Dependencies
+
+Plugin dependencies:<br/>
+<a href="https://github.com/kaltura/playkit-js-kaltura-cuepoints">Cue Points</a><br/>
+<a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a>
 
 ### Dev env
-
-Node version: up to 14.18.1<br/>
+Node version: up to 14+<br/>
 If nvm installed: `nvm use` change version of current terminal to required.<br/>
-
-### ARM Architecture support
-
-Install dependencies with `npm install --target_arch=x64` set target arch for running it through Rosetta (requires Rosetta installation).<br/>
