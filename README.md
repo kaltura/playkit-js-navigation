@@ -112,9 +112,8 @@ Bump version: `yarn release`;<br/>
 //Plugin params
 "navigation" = {
   expandOnFirstPlay?: boolean, // optional
-  forceChaptersThumb?: boolean, // optional
+  position?: string, // optional
   expandMode?: string, // optional
-  userRole?: string, // optional
   itemsOrder?: object< string, number > // optional
 }
 ```
@@ -125,20 +124,20 @@ Bump version: `yarn release`;<br/>
 >
 > ##### Type: `boolean`
 >
-> ##### Default: `true`
+> ##### Default: `right`
 >
 > ##### Description: if plugin should automatically opens on first play.
 >
 
 ##
 
-> ### config.forceChaptersThumb
+> ### config.position
 >
-> ##### Type: `boolean`
+> ##### Type: `'right' | 'left' | 'top' | 'bottom'`
 >
-> ##### Default: `false`
+> ##### Default: `right`
 >
-> ##### Description: force to use chapters thumbnails.
+> ##### Description: expand mode of side panel (‘alongside', ‘hidden’, 'over’, default 'alongside').
 >
 
 ##
@@ -150,17 +149,6 @@ Bump version: `yarn release`;<br/>
 > ##### Default: `alongside`
 >
 > ##### Description: expand mode of side panel (‘alongside', ‘hidden’, 'over’, default 'alongside').
->
-
-##
-
-> ### config.userRole
->
-> ##### Type: `string`
->
-> ##### Default: `anonymousRole`
->
-> ##### Description: use session userId as identificator of user (anonymousRole|unmoderatedAdminRole, default "anonymousRole").
 >
 
 ##
