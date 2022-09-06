@@ -31,6 +31,8 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
     id: cuePoint.id,
     startTime: cuePoint.startTime,
     displayTime: isLive ? '' : toHHMMSS(Math.floor(cuePoint.startTime)),
+    partnerData: metadata.partnerData,
+    tags: metadata.tags,
     itemType: cuePointType,
     displayTitle: '',
     displayDescription: [ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType) ? decodeString(metadata.description) : null,
