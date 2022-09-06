@@ -168,7 +168,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (cue.metadata && cue.metadata.createdAt) {
       const cuePointCreationTime = cue.metadata.createdAt * 1000;
       const currentTime = new Date().getTime();
-      return cuePointCreationTime > (currentTime - liveCuePointTimeThreshold);
+      return cuePointCreationTime > currentTime - liveCuePointTimeThreshold;
     }
     return false;
   }
@@ -315,7 +315,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     });
 
     if (this._shouldExpandOnFirstPlay()) {
-      this.ready.then(() => {
+      this._player.ready().then(() => {
         this.sidePanelsManager.activateItem(this._navigationPanel);
       });
     }
