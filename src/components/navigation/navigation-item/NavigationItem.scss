@@ -10,6 +10,9 @@
   border-left: 2px solid transparent;
   -webkit-transition: background-color 0.3s;
   transition: background-color 0.3s;
+  &.hidden {
+    display: none;
+  }
   &:hover {
     background: rgba(255, 255, 255, 0.2);
   }
@@ -113,7 +116,7 @@
 
   .thumb-gradient {
     width: 100%;
-    min-height: 200px;
+    min-height: 100%;
     position: absolute;
     top: 2px;
     left: 0;

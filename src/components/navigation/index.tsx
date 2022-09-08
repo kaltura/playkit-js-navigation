@@ -203,7 +203,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       <NavigationList
         searchActive={searchFilter.searchQuery.length > 0}
         widgetWidth={widgetWidth}
-        autoScroll={this.state.autoscroll}
+        autoScroll={false} // TODO: temporary disable auto-scroll till https://kaltura.atlassian.net/browse/FEV-804 got a fix
         onSeek={this._handleSeek}
         onScroll={this._scrollTo}
         data={convertedData}
@@ -278,7 +278,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
                 this._listElementRef = node;
               }}>
               {this._renderNavigation()}
-              {this._renderAutoscrollButton()}
+              {/* {this._renderAutoscrollButton()} // TODO: temporary disable auto-scroll till https://kaltura.atlassian.net/browse/FEV-804 got a fix */}
             </div>
           </div>
         )}

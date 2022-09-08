@@ -50,7 +50,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       selectedItem !== nextProps.selectedItem ||
       data !== nextProps.data ||
       nextState.expandText !== this.state.expandText ||
-      (selectedItem && nextState.imageLoaded && !this.state.imageLoaded) ||
+      nextState.imageLoaded !== this.state.imageLoaded ||
+      nextState.imageFailed !== this.state.imageFailed ||
       nextProps.widgetWidth !== widgetWidth
     ) {
       return true;
@@ -130,6 +131,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
   render({selectedItem, showIcon, data, ...otherProps}: NavigationItemProps) {
     const {id, previewImage, itemType, displayTime, groupData, displayTitle, shorthandTitle, hasShowMore, displayDescription} = data;
+    const {imageLoaded} = this.state;
     return (
       <div
         tabIndex={0}
@@ -137,7 +139,12 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
         ref={node => {
           this._itemElementRef = node;
         }}
-        className={[styles[groupData ? groupData : 'single'], styles.navigationItem, selectedItem ? styles.selected : null].join(' ')}
+        className={[
+          styles[groupData ? groupData : 'single'],
+          styles.navigationItem,
+          selectedItem ? styles.selected : null,
+          previewImage && !imageLoaded ? styles.hidden : null
+        ].join(' ')}
         data-entry-id={id}
         onClick={this._handleClickHandler}
         onKeyDown={this._handleKeyHandler}>
