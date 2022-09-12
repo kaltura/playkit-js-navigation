@@ -77,6 +77,11 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
     // mid items will have addGroupData=groupTypes.mid
     // last items will have addGroupData=groupTypes.last
     (prevArr: Array<any>, currentCuepoint: ItemData) => {
+      if (!currentCuepoint.displayTime) {
+        // live cue-points doesn't have displayTime
+        currentCuepoint.groupData = GroupTypes.first;
+        return [...prevArr, currentCuepoint];
+      }
       const prevItem = prevArr.length > 0 && prevArr[prevArr.length - 1];
       const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
       if (prevItem && currentCuepoint.displayTime === prevItem.displayTime) {
@@ -89,9 +94,7 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
         }
         currentCuepoint.groupData = GroupTypes.last;
       }
-      // TODO - enforce order
-      prevArr.push(currentCuepoint);
-      return prevArr;
+      return [...prevArr, currentCuepoint];
     },
     []
   );
