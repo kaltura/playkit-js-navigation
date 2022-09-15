@@ -75,10 +75,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
     this._addPlayerListeners();
     this._registerCuePointTypes();
-
-    if (this.player.isLive()) {
-      this._createNavigationPlugin();
-    }
   }
 
   static isValid(): boolean {
