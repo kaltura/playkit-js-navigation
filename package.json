@@ -92,8 +92,11 @@
     "playkit-js-navigation",
     "html5 player"
   ],
-  "kalturaDependencies" : [
-    "playkit-kaltura-cuepoints",
-    "playkit-ui-managers"
-  ]
+  "kaltura": {
+    "name": "navigation",
+    "dependencies": {
+      "playkit-kaltura-cuepoints": "1.6.2",
+      "playkit-ui-managers": "1.2.2"
+    }
+  }
 }
