@@ -2,14 +2,24 @@ import {h} from 'preact';
 import * as styles from './autoscroll-button.scss';
 import {AutoscrollIcon} from '../icons/AutoscrollIcon';
 
+const {Tooltip} = KalturaPlayer.ui.components;
+const {withText, Text} = KalturaPlayer.ui.preacti18n;
+
+const translates = {
+  autoScrollLabel: <Text id="navigation.auto_scroll">Resume AutoScroll</Text>
+};
+
 interface AutoscrollButtonProps {
   onClick: (event: Event) => void;
+  autoScrollLabel?: string;
 }
 
-export const AutoscrollButton = ({onClick}: AutoscrollButtonProps) => {
+export const AutoscrollButton = withText(translates)(({onClick, autoScrollLabel}: AutoscrollButtonProps) => {
   return (
-    <button className={styles.autoscrollButton} onClick={onClick}>
-      <AutoscrollIcon />
-    </button>
+    <Tooltip label={autoScrollLabel} type="left">
+      <button className={styles.autoscrollButton} onClick={onClick} aria-label={autoScrollLabel} tabIndex={0}>
+        <AutoscrollIcon />
+      </button>
+    </Tooltip>
   );
-};
+});

@@ -1,15 +1,24 @@
 import {h, Component} from 'preact';
+import {A11yWrapper, OnClickEvent} from '@playkit-js/common';
 import * as styles from './navigation-search.scss';
 import {debounce} from '../../utils';
 import {icons} from '../icons';
 
 const {Icon} = KalturaPlayer.ui.components;
+const {withText, Text} = KalturaPlayer.ui.preacti18n;
+
+const translates = {
+  searchPlaceholder: <Text id="navigation.search_placeholder">Search in video</Text>,
+  clearSearch: <Text id="navigation.clear_search">Clear search</Text>
+};
 
 export interface SearchProps {
   onChange(value: string): void;
   searchQuery: string;
   kitchenSinkActive: boolean;
   toggledWithEnter: boolean;
+  searchPlaceholder?: string;
+  clearSearch?: string;
 }
 
 interface SearchState {
@@ -20,7 +29,7 @@ interface SearchState {
 // TODO: UX expert have to finetune this value
 const DEBOUNCE_TIMEOUT = 300;
 
-export class NavigationSearch extends Component<SearchProps, SearchState> {
+class NavigationSearchComponent extends Component<SearchProps, SearchState> {
   private _inputRef: null | HTMLInputElement = null;
   private _focusedByMouse = false;
   private _debouncedOnChange: (value: string) => void;
@@ -50,8 +59,8 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
     this._debouncedOnChange(e.target.value);
   };
 
-  private _onClear = (event: MouseEvent) => {
-    if (event.x !== 0 && event.y !== 0) {
+  private _onClear = (event: OnClickEvent, byKeyboard?: boolean) => {
+    if (!byKeyboard) {
       this._focusedByMouse = true;
     }
     this._inputRef?.focus();
@@ -83,7 +92,8 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
       <div className={[styles.searchRoot, searchQuery || this.state.active ? styles.active : '', this.state.focused ? styles.focused : ''].join(' ')}>
         <input
           className={styles.searchInput}
-          placeholder={'Search in video'}
+          placeholder={this.props.searchPlaceholder}
+          aria-label={this.props.searchPlaceholder}
           value={searchQuery}
           onInput={this._handleOnChange}
           onFocus={this._onFocus}
@@ -95,8 +105,8 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
           }}
         />
         {searchQuery && (
-          <div>
-            <button aria-label={'Clear search'} className={styles.clearIcon} onClick={this._onClear} tabIndex={0}>
+          <A11yWrapper onClick={this._onClear}>
+            <button aria-label={this.props.clearSearch} className={styles.clearIcon} tabIndex={0}>
               <Icon
                 id="navigation-clear-search-button"
                 height={icons.BigSize}
@@ -106,9 +116,11 @@ export class NavigationSearch extends Component<SearchProps, SearchState> {
                 color="#cccccc"
               />
             </button>
-          </div>
+          </A11yWrapper>
         )}
       </div>
     );
   }
 }
+
+export const NavigationSearch = withText(translates)(NavigationSearchComponent);

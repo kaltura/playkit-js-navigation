@@ -9,7 +9,7 @@ import {getAvailableTabs, filterDataBySearchQuery, filterDataByActiveTab, addGro
 import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap} from '../../types';
 import {CloseButton} from '../close-button';
-const {Tooltip} = KalturaPlayer.ui.components;
+
 const {KeyMap} = KalturaPlayer.ui.utils;
 
 export interface SearchFilter {
@@ -224,8 +224,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     }
   };
 
-  private _enableAutoScroll = (event: any) => {
-    event.preventDefault();
+  private _enableAutoScroll = () => {
     if (this.state.autoscroll) {
       return;
     }
@@ -250,9 +249,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     }
     return (
       <div className={styles.autoscrollWrapper}>
-        <Tooltip label="Resume AutoScroll" type="left">
-          <AutoscrollButton onClick={this._enableAutoScroll}></AutoscrollButton>
-        </Tooltip>
+        <AutoscrollButton onClick={this._enableAutoScroll} />
       </div>
     );
   };
@@ -261,6 +258,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     const {isLoading, kitchenSinkActive} = props;
     return (
       <div
+        aria-live="polite"
         className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
         ref={node => {
           this._widgetRootRef = node;

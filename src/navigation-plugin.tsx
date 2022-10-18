@@ -4,7 +4,7 @@ import {h} from 'preact';
 import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
-import {OnClickEvent} from './components/a11y-wrapper';
+import {OnClickEvent} from '@playkit-js/common';
 
 const {TimedMetadata} = core;
 
