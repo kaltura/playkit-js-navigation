@@ -1,42 +1,36 @@
 import {h, Component, Fragment} from 'preact';
-import {A11yWrapper} from '@playkit-js/common';
 import * as styles from './navigation-filter.scss';
 import {ItemTypes} from '../../types';
 import {IconsFactory, IconColors, BackgroundColors} from '../navigation/icons/IconsFactory';
-
 const {Tooltip} = KalturaPlayer.ui.components;
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
-
-const translates = {
-  [ItemTypes.All]: <Text id="navigation.all_types">All</Text>,
-  [ItemTypes.AnswerOnAir]: <Text id="navigation.aoa_type">Answer On Air</Text>,
-  [ItemTypes.Chapter]: <Text id="navigation.chapter_type">Chapters</Text>,
-  [ItemTypes.Slide]: <Text id="navigation.slide_type">Slides</Text>,
-  [ItemTypes.Hotspot]: <Text id="navigation.hotspot_type">Hotspots</Text>,
-  [ItemTypes.Caption]: <Text id="navigation.caption_type">Captions</Text>
-};
 
 export interface FilterProps {
   onChange(value: ItemTypes): void;
   activeTab: ItemTypes;
   availableTabs: ItemTypes[];
   totalResults: number | null;
+  translates: Record<string, string>;
   listDataContainCaptions: boolean;
-  [ItemTypes.All]?: string;
-  [ItemTypes.AnswerOnAir]?: string;
-  [ItemTypes.Chapter]?: string;
-  [ItemTypes.Slide]?: string;
-  [ItemTypes.Hotspot]?: string;
-  [ItemTypes.Caption]?: string;
 }
 
 export interface TabData {
   type: ItemTypes;
   isActive: boolean;
-  label?: string;
+  label: string;
 }
 
-class NavigationFilterComponent extends Component<FilterProps> {
+export class NavigationFilter extends Component<FilterProps> {
+  static defaultProps = {
+    translates: {
+      [ItemTypes.All]: 'All',
+      [ItemTypes.AnswerOnAir]: 'Answer On Air',
+      [ItemTypes.Chapter]: 'Chapters',
+      [ItemTypes.Slide]: 'Slides',
+      [ItemTypes.Hotspot]: 'Hotspots',
+      [ItemTypes.Caption]: 'Captions'
+    }
+  };
+
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const {activeTab, availableTabs, totalResults} = this.props;
     if (activeTab !== nextProps.activeTab || availableTabs !== nextProps.availableTabs || totalResults !== nextProps.totalResults) {
@@ -49,90 +43,51 @@ class NavigationFilterComponent extends Component<FilterProps> {
     this.props.onChange(type);
   };
 
-  public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label?: string}) => {
+  public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label: string}) => {
     const style = {
       borderColor: IconColors[tab.type],
       backgroundColor: BackgroundColors[tab.type]
     };
     return (
       <Tooltip label={tab.label}>
-        <A11yWrapper onClick={() => this._handleChange(tab.type)}>
-          <button
-            aria-label={tab.label}
-            key={tab.type}
-            tabIndex={0}
-            role="option"
-            type="checkbox"
-            aria-checked={tab.isActive}
-            className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
-            style={style}>
-            {tab.type === ItemTypes.All ? (
-              <span>{this.props[ItemTypes.All]}</span>
-            ) : (
-              <Fragment>
-                <IconsFactory iconType={tab.type} color={tab.isActive ? null : '#cccccc'} />
-                {this.props.availableTabs.length < 4 && <span className={styles.label}>{tab.label}</span>}
-              </Fragment>
-            )}
-          </button>
-        </A11yWrapper>
+        <button
+          aria-label={tab.label}
+          key={tab.type}
+          tabIndex={0}
+          className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
+          style={style}
+          onClick={() => this._handleChange(tab.type)}
+        >
+          {tab.type === ItemTypes.All ? (
+            <span>{this.props.translates[ItemTypes.All]}</span>
+          ) : (
+            <Fragment>
+              <IconsFactory iconType={tab.type} color={tab.isActive ? null : '#cccccc'} />
+              {this.props.availableTabs.length < 4 && <span className={styles.label}>{tab.label}</span>}
+            </Fragment>
+          )}
+        </button>
       </Tooltip>
     );
   };
 
   private _getTabsData = (): TabData[] => {
-    const {availableTabs, activeTab} = this.props;
+    const {availableTabs, activeTab, translates} = this.props;
     const tabs: TabData[] = availableTabs.map((tab: ItemTypes) => {
       return {
         type: tab,
         isActive: activeTab === tab,
-        label: this.props[tab]
+        label: translates[tab]
       };
     });
     return tabs;
   };
 
-  private _getResultLabel = () => {
-    const {activeTab, totalResults, listDataContainCaptions} = this.props;
-    const resultDefaultTranslate = `result${totalResults && totalResults > 1 ? 's' : ''}`;
-    if (activeTab === ItemTypes.All) {
-      if (listDataContainCaptions) {
-        return (
-          <Text
-            id="navigation.search_result_all_types_with_captions"
-            fields={{
-              totalResults
-            }}
-            plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in all content including captions`}</Text>
-        );
-      }
-      return (
-        <Text
-          id="navigation.search_result_all_types"
-          fields={{
-            totalResults
-          }}
-          plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in all content`}</Text>
-      );
-    }
-    return (
-      <Text
-        id="navigation.search_result_one_type"
-        fields={{
-          totalResults,
-          type: this.props[activeTab]
-        }}
-        plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in ${this.props[activeTab]?.toLowerCase()}`}</Text>
-    );
-  };
-
-  private _renderSearchResult = () => {
-    const searchResultsLabel = this._getResultLabel();
-    return (
-      <div className={styles.totalResults} aria-label={searchResultsLabel}>
-        {searchResultsLabel}
-      </div>
-    );
+  private _getResultLabel = (): string => {
+    const {activeTab, translates, totalResults, listDataContainCaptions} = this.props;
+    return `${totalResults} result${totalResults && totalResults > 1 ? 's' : ''} in ${
+      activeTab === ItemTypes.All ? `all content${listDataContainCaptions ? ' including captions' : ''}` : translates[activeTab].toLowerCase()
+    }`;
   };
 
   render() {
@@ -144,16 +99,14 @@ class NavigationFilterComponent extends Component<FilterProps> {
     return (
       <div className={styles.filterRoot}>
         {totalResults !== 0 && (
-          <div className={styles.tabsWrapper} role="listbox">
+          <div className={styles.tabsWrapper}>
             {tabs.map(tab => {
               return this._renderTab(tab);
             })}
           </div>
         )}
-        {!!totalResults && this._renderSearchResult()}
+        {!!totalResults && <div className={styles.totalResults}>{this._getResultLabel()}</div>}
       </div>
     );
   }
 }
-
-export const NavigationFilter = withText(translates)(NavigationFilterComponent);

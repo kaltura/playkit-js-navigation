@@ -1,22 +1,13 @@
 import {h} from 'preact';
 import * as styles from './EmptyList.scss';
 
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
-
-const translates = {
-  noResultTitle: <Text id="navigation.search_no_results_title">No Results Found</Text>,
-  noResultDescription: <Text id="navigation.search_no_results_description">Try a more general keyword</Text>
-};
-
 interface EmptyListProps {
   showNoResultsText: boolean;
-  noResultTitle?: string;
-  noResultDescription?: string;
 }
 
-export const EmptyList = withText(translates)(({showNoResultsText, noResultTitle, noResultDescription}: EmptyListProps) => {
+export const EmptyList = ({showNoResultsText}: EmptyListProps) => {
   return (
-    <div className={styles.emptyStateWrapper} role="banner">
+    <div className={styles.emptyStateWrapper}>
       <svg xmlns="http://www.w3.org/2000/svg" width="184" height="184" viewBox="0 0 184 184">
         <g fill="none" fill-rule="evenodd">
           <circle cx="92" cy="92" r="92" fill="#333" />
@@ -119,8 +110,8 @@ export const EmptyList = withText(translates)(({showNoResultsText, noResultTitle
           </g>
         </g>
       </svg>
-      {showNoResultsText && <div className={styles.primaryText}>{noResultTitle}</div>}
-      {showNoResultsText && <div className={styles.secondaryText}>{noResultDescription}</div>}
+      {showNoResultsText && <div className={styles.primaryText}>No Results Found</div>}
+      {showNoResultsText && <div className={styles.secondaryText}>Try a more general keyword</div>}
     </div>
   );
-});
+};

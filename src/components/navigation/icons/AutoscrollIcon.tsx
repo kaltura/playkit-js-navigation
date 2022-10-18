@@ -1,7 +1,7 @@
 import {h} from 'preact';
 
 export interface Props {
-  color: string;
+  color: any;
 }
 
 export const AutoscrollIcon = (props: Props) => {

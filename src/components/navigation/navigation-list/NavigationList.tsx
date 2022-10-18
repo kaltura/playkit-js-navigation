@@ -52,7 +52,7 @@ export class NavigationList extends Component<Props> {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
     }
     return (
-      <div className={styles.navigationList} role="list">
+      <div className={styles.navigationList}>
         {data.map((item: ItemData, index: number) => {
           return (
             <NavigationItem

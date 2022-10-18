@@ -1,5 +1,4 @@
 import {h} from 'preact';
-import {A11yWrapper} from '@playkit-js/common';
 import * as styles from './error.scss';
 import {ErrorIconSVG} from '../icons/error-icon';
 const {withText, Text} = KalturaPlayer.ui.preacti18n;
@@ -12,27 +11,27 @@ export interface ErrorProps {
   retry?: string;
 }
 
-const translates = {
-  whoops: <Text id="navigation.whoops">Whoops!</Text>,
-  errorMessage: <Text id="navigation.error_message">We couldn't retrieve your Data.</Text>,
-  retry: <Text id="navigation.retry">Retry</Text>
+const translates = () => {
+  return {
+    whoops: <Text id="navigation.whoops">Whoops!</Text>,
+    errorMessage: <Text id="navigation.error_message">We couldn't retrieve your Data.</Text>,
+    retry: <Text id="navigation.retry">Retry</Text>
+  };
 };
 
 export const Error = withText(translates)(({onRetryLoad, ...otherProps}: ErrorProps) => {
   return (
-    <div className={styles.errorWrapper} role="banner">
+    <div className={styles.errorWrapper}>
       <div className={styles.devider} />
-      <div className={styles.iconWrapper} aria-label={otherProps.errorMessage}>
+      <div className={styles.iconWrapper}>
         <div className={styles.errorIcon}>
           <ErrorIconSVG />
         </div>
         <p className={styles.errorMainText}>{otherProps.whoops}</p>
         <p className={styles.errorDescriptionText}>{otherProps.errorMessage}</p>
-        <A11yWrapper onClick={onRetryLoad}>
-          <button className={styles.retryButton} tabIndex={0}>
-            {otherProps.retry}
-          </button>
-        </A11yWrapper>
+        <button className={styles.retryButton} onClick={onRetryLoad}>
+          {otherProps.retry}
+        </button>
       </div>
     </div>
   );

@@ -7,32 +7,7 @@
       "read_more": "Read More",
       "whoops": "Whoops!",
       "error_message": "We couldn't retrieve your Data.",
-      "retry": "Retry",
-      "search_placeholder": "Search in video",
-      "clear_search": "Clear search",
-      "all_types": "All",
-      "aoa_type": "Answer On Air",
-      "chapter_type": "Chapters",
-      "slide_type": "Slides",
-      "hotspot_type": "Hotspots",
-      "caption_type": "Captions",
-      "search_result_one_type": {
-        "one": "{{totalResults}} result in {{type}}",
-        "many": "{{totalResults}} results in {{type}}"
-      },
-      "search_result_all_types": {
-        "one": "{{totalResults}} result in all content",
-        "many": "{{totalResults}} results in all content"
-      },
-      "search_result_all_types_with_captions": {
-        "one": "{{totalResults}} result in all content including captions",
-        "many": "{{totalResults}} results in all content including captions"
-      },
-      "search_no_results_title": "No Results Found",
-      "search_no_results_description": "Try a more general keyword",
-      "loading": "Loading",
-      "auto_scroll": "Resume AutoScroll",
-      "image_alt": "Slide Preview"
+      "retry": "Retry"
     }
   }
 }

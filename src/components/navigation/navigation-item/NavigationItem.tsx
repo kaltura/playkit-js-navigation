@@ -1,9 +1,9 @@
 import {Component, h, Fragment} from 'preact';
-import {A11yWrapper} from '@playkit-js/common';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
 
+const {KeyMap} = KalturaPlayer.ui.utils;
 const {withText, Text} = KalturaPlayer.ui.preacti18n;
 
 export interface NavigationItemProps {
@@ -15,7 +15,6 @@ export interface NavigationItemProps {
   showIcon: boolean;
   readLess?: string;
   readMore?: string;
-  imageAlt?: string;
 }
 
 export interface NavigationItemState {
@@ -27,8 +26,7 @@ export interface NavigationItemState {
 const translates = () => {
   return {
     readLess: <Text id="navigation.read_less">Read Less</Text>,
-    readMore: <Text id="navigation.read_more">Read More</Text>,
-    imageAlt: <Text id="navigation.image_alt">Slide Preview</Text>
+    readMore: <Text id="navigation.read_more">Read More</Text>
   };
 };
 
@@ -89,11 +87,18 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     }
   };
 
-  private _handleClick = () => {
+  private _handleClickHandler = () => {
     this.props.onClick(this.props.data.startTime);
   };
 
-  private _handleExpandChange = () => {
+  private _handleKeyHandler = (e: KeyboardEvent) => {
+    if (e.keyCode === KeyMap.ENTER || e.keyCode === KeyMap.SPACE) {
+      this._handleClickHandler();
+    }
+  };
+
+  private _handleExpandChange = (event: Event) => {
+    event.stopPropagation();
     this.setState({
       expandText: !this.state.expandText
     });
@@ -103,11 +108,11 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     if (this.state.imageFailed) {
       return null;
     }
-    const {data, imageAlt} = this.props;
+    const {data, selectedItem} = this.props;
     const {previewImage} = data;
     const imageProps: Record<string, any> = {
       src: previewImage,
-      alt: imageAlt,
+      alt: 'Slide Preview',
       className: styles.thumbnail,
       onLoad: () => {
         this.setState({imageLoaded: true});
@@ -128,52 +133,60 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const {id, previewImage, itemType, displayTime, groupData, displayTitle, shorthandTitle, hasShowMore, displayDescription} = data;
     const {imageLoaded} = this.state;
     return (
-      <A11yWrapper onClick={this._handleClick}>
-        <div
-          tabIndex={0}
-          role="listitem"
-          area-label={shorthandTitle || displayTitle}
-          ref={node => {
-            this._itemElementRef = node;
-          }}
-          className={[
-            styles[groupData ? groupData : 'single'],
-            styles.navigationItem,
-            selectedItem ? styles.selected : null,
-            previewImage && !imageLoaded ? styles.hidden : null
-          ].join(' ')}
-          data-entry-id={id}>
-          <div className={[styles.metadata, displayTime ? styles.withTime : null].join(' ')}>
-            {displayTime && <span>{displayTime}</span>}
-            {showIcon && (
-              <div className={styles.iconWrapper}>
-                <IconsFactory iconType={itemType}></IconsFactory>
+      <div
+        tabIndex={0}
+        role="button"
+        ref={node => {
+          this._itemElementRef = node;
+        }}
+        className={[
+          styles[groupData ? groupData : 'single'],
+          styles.navigationItem,
+          selectedItem ? styles.selected : null,
+          previewImage && !imageLoaded ? styles.hidden : null
+        ].join(' ')}
+        data-entry-id={id}
+        onClick={this._handleClickHandler}
+        onKeyDown={this._handleKeyHandler}>
+        <div className={[styles.metadata, displayTime ? styles.withTime : null].join(' ')}>
+          {displayTime && <span>{displayTime}</span>}
+          {showIcon && (
+            <div className={styles.iconWrapper}>
+              <IconsFactory iconType={itemType}></IconsFactory>
+            </div>
+          )}
+        </div>
+        <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
+          {previewImage && this._renderThumbnail()}
+          <div
+            className={styles.contentText}
+            ref={node => {
+              this._textContainerRef = node;
+            }}>
+            {shorthandTitle && !this.state.expandText && <span className={styles.title}>{shorthandTitle}</span>}
+
+            {displayTitle && (!shorthandTitle || this.state.expandText) && <span className={styles.title}>{displayTitle}</span>}
+
+            {displayDescription && this.state.expandText && <div className={styles.description}>{displayDescription}</div>}
+            {hasShowMore && (
+              <div
+                role={'button'}
+                tabIndex={0}
+                className={styles.showMoreButton}
+                onClick={e => {
+                  this._handleExpandChange(e);
+                }}
+                onKeyDown={e => {
+                  if (e.keyCode === KeyMap.ENTER || e.keyCode === KeyMap.SPACE) {
+                    this._handleExpandChange(e);
+                  }
+                }}>
+                {this.state.expandText ? otherProps.readLess : otherProps.readMore}
               </div>
             )}
           </div>
-          <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
-            {previewImage && this._renderThumbnail()}
-            <div
-              className={styles.contentText}
-              ref={node => {
-                this._textContainerRef = node;
-              }}>
-              {shorthandTitle && !this.state.expandText && <span className={styles.title}>{shorthandTitle}</span>}
-
-              {displayTitle && (!shorthandTitle || this.state.expandText) && <span className={styles.title}>{displayTitle}</span>}
-
-              {displayDescription && this.state.expandText && <div className={styles.description}>{displayDescription}</div>}
-              {hasShowMore && (
-                <A11yWrapper onClick={this._handleExpandChange}>
-                  <div role={'button'} tabIndex={0} className={styles.showMoreButton}>
-                    {this.state.expandText ? otherProps.readLess : otherProps.readMore}
-                  </div>
-                </A11yWrapper>
-              )}
-            </div>
-          </div>
         </div>
-      </A11yWrapper>
+      </div>
     );
   }
 }
