@@ -11,7 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/kaltura/playkit-js-navigation.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@playkit-js/common": "^1.0.7"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
