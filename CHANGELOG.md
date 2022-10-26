@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.16...v3.0.1) (2022-10-26)
+
+
+### Bug Fixes
+
+* **FEV-1171:** Navigation plugin move contrib kitchen sink to core side panels ([#263](https://github.com/kaltura/playkit-js-navigation/issues/263)) ([20434cb](https://github.com/kaltura/playkit-js-navigation/commit/20434cbc7fd1eccdba8bbfd33f0d2653f62d6195))
+* **FEV-1322:** hide slides with corrupted image ([#275](https://github.com/kaltura/playkit-js-navigation/issues/275)) ([7a01833](https://github.com/kaltura/playkit-js-navigation/commit/7a018338d1b4abb589514f63edefd8be2b7d3828))
+* **FEV-1326:** display new slides at the correct time ([#266](https://github.com/kaltura/playkit-js-navigation/issues/266)) ([2d1f389](https://github.com/kaltura/playkit-js-navigation/commit/2d1f389a2715cb495a1445aa0bc0bdc5e4148b8e))
+* **FEV-1344:** remove navigation panel on media switch ([#270](https://github.com/kaltura/playkit-js-navigation/issues/270)) ([5df487e](https://github.com/kaltura/playkit-js-navigation/commit/5df487efa88ce306e53e9151b4a30e1c76397f7b))
+* **FEV-1357:** style fix for panel ([c2de0ab](https://github.com/kaltura/playkit-js-navigation/commit/c2de0ab23c90c9ff5136d877a871607c9669df6e))
+* **FEV-1388:** add missed properties to filter-out duplication for slides ([#273](https://github.com/kaltura/playkit-js-navigation/issues/273)) ([73d9e90](https://github.com/kaltura/playkit-js-navigation/commit/73d9e901558fcaf0f09440c28dae0b2289e28191))
+* **FEV-1407:** open side panel only after player got ready ([#274](https://github.com/kaltura/playkit-js-navigation/issues/274)) ([5e1363e](https://github.com/kaltura/playkit-js-navigation/commit/5e1363ede8f4ff35b1f4fe8a8827117f5271a684))
+* **FEV-1418:** add plugin dependencies ([8ba4348](https://github.com/kaltura/playkit-js-navigation/commit/8ba43482917aee08f30f54691e337dee1010fc47))
+* **FEV-1447:** a11y changes ([#280](https://github.com/kaltura/playkit-js-navigation/issues/280)) ([9b3974f](https://github.com/kaltura/playkit-js-navigation/commit/9b3974fd91aedb18f511e819324564017da1d4a8))
+* **FEV-1492:** navigation plugin showing on Live entries even without chapters ([#277](https://github.com/kaltura/playkit-js-navigation/issues/277)) ([a717e77](https://github.com/kaltura/playkit-js-navigation/commit/a717e773e5129bb3a84df6ada75e6812bb691a80))
+
 ### [2.1.16](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.15...v2.1.16) (2022-05-27)
 
 
