@@ -306,7 +306,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }) as number;
 
     if ((this.config.expandOnFirstPlay && !this._pluginState) || this._pluginState === PluginStates.OPENED) {
-      this._activetePlugin();
+      this._activatePlugin();
     }
   };
 
@@ -335,11 +335,11 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._deactivatePlugin();
     } else {
       this._triggeredByKeyboard = Boolean(byKeyboard);
-      this._activetePlugin();
+      this._activatePlugin();
     }
   };
 
-  private _activetePlugin = () => {
+  private _activatePlugin = () => {
     this.ready.then(() => {
       this.sidePanelsManager?.activateItem(this._navigationPanel);
       this._pluginState === PluginStates.OPENED;
