@@ -1,10 +1,12 @@
 // @ts-ignore
 import {core} from 'kaltura-player-js';
 import {h} from 'preact';
+import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
+import {OnClickEvent} from '@playkit-js/common';
 import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
-import {OnClickEvent} from '@playkit-js/common';
+import {icons} from './components/icons';
 
 const {TimedMetadata} = core;
 
@@ -32,7 +34,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _navigationComponentRef: Navigation | null = null;
 
   private _player: KalturaPlayerTypes.Player;
-  private _navigationPanel = null;
+  private _navigationPanel = -1;
+  private _navigationIcon = -1;
   private _pluginState: PluginStates | null = null;
   private _liveFutureCuePointsMap: CuePointsMap = new Map(); // map holding future cuepoints that were not reached yet
 
@@ -51,7 +54,11 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   }
 
   get sidePanelsManager() {
-    return this.player.getService('sidePanelsManager') as any;
+    return this.player.getService('sidePanelsManager') as SidePanelsManager | undefined;
+  }
+
+  get upperBarManager() {
+    return this.player.getService('upperBarManager') as UpperBarManager | undefined;
   }
 
   get cuePointManager() {
@@ -68,8 +75,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   }
 
   loadMedia(): void {
-    if (!this.cuePointManager || !this.sidePanelsManager) {
-      this.logger.warn("kalturaCuepoints or sidePanelsManager haven't registered");
+    if (!this.cuePointManager || !this.sidePanelsManager || !this.upperBarManager) {
+      this.logger.warn("kalturaCuepoints, sidePanelsManager or upperBarManager haven't registered");
       return;
     }
 
@@ -249,13 +256,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
   };
 
-  private _handleCloseClick = () => {
-    this.sidePanelsManager.deactivateItem(this._navigationPanel);
-    this._pluginState = PluginStates.CLOSED;
-  };
-
   private _createOrUpdatePlugin = () => {
-    if (this._navigationPanel) {
+    if (this._navigationPanel > 0) {
       this._updateNavigationPlugin();
     } else {
       this._createNavigationPlugin();
@@ -263,10 +265,12 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _createNavigationPlugin = () => {
-    if (this._navigationPanel) {
+    if (Math.max(this._navigationPanel, this._navigationIcon) > 0) {
+      this.logger.warn('navigation plugin already initialized');
       return;
     }
-    this._navigationPanel = this.sidePanelsManager.addItem({
+
+    this._navigationPanel = this.sidePanelsManager!.add({
       label: 'Navigation',
       panelComponent: () => {
         return (
@@ -274,52 +278,41 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
             ref={node => {
               this._navigationComponentRef = node;
             }}
-            onClose={this._handleCloseClick}
+            onClose={this._deactivatePlugin}
             data={this._data}
             onItemClicked={this._seekTo}
             isLoading={this._isLoading}
             hasError={this._hasError}
             highlightedMap={this._activeCuePointsMap}
-            kitchenSinkActive={!!this.sidePanelsManager.isItemActive(this._navigationPanel)}
+            kitchenSinkActive={this._isPluginActive()}
             toggledWithEnter={this._triggeredByKeyboard}
             itemsOrder={this._itemsOrder}
           />
         );
       },
-      iconComponent: ({isActive}: {isActive: boolean}) => {
-        return (
-          <PluginButton
-            isActive={isActive}
-            onClick={(e: OnClickEvent, byKeyboard?: boolean) => {
-              if (this.sidePanelsManager.isItemActive(this._navigationPanel)) {
-                this._triggeredByKeyboard = false;
-                this._handleCloseClick();
-              } else {
-                this._triggeredByKeyboard = Boolean(byKeyboard);
-                this.sidePanelsManager.activateItem(this._navigationPanel);
-              }
-            }}
-          />
-        );
-      },
       presets: [ReservedPresetNames.Playback, ReservedPresetNames.Live, ReservedPresetNames.Ads],
       position: this.config.position,
-      expandMode: this.config.expandMode,
-      onActivate: () => {
-        this._pluginState = PluginStates.OPENED;
-      }
-    });
+      expandMode: this.config.expandMode === SidePanelModes.ALONGSIDE ? SidePanelModes.ALONGSIDE : SidePanelModes.OVER,
+      onDeactivate: this._deactivatePlugin
+    }) as number;
 
-    if (this._shouldExpandOnFirstPlay()) {
-      this._player.ready().then(() => {
-        this.sidePanelsManager.activateItem(this._navigationPanel);
-      });
+    this._navigationIcon = this.upperBarManager!.add({
+      label: 'Navigation',
+      svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
+      onClick: this._handleClickOnPluginIcon as () => void,
+      component: () => {
+        return <PluginButton isActive={this._isPluginActive()} onClick={this._handleClickOnPluginIcon} />;
+      }
+    }) as number;
+
+    if ((this.config.expandOnFirstPlay && !this._pluginState) || this._pluginState === PluginStates.OPENED) {
+      this._activatePlugin();
     }
   };
 
   private _updateNavigationPlugin = () => {
-    if (this._navigationPanel) {
-      this.sidePanelsManager.update(this._navigationPanel);
+    if (this._navigationPanel > 0) {
+      this.sidePanelsManager!.update(this._navigationPanel);
     }
   };
 
@@ -336,14 +329,42 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this.player.currentTime = time;
   };
 
-  private _shouldExpandOnFirstPlay = () => {
-    return (this.config.expandOnFirstPlay && !this._pluginState) || this._pluginState === PluginStates.OPENED;
+  private _handleClickOnPluginIcon = (e: OnClickEvent, byKeyboard?: boolean) => {
+    if (this._isPluginActive()) {
+      this._triggeredByKeyboard = false;
+      this._deactivatePlugin();
+    } else {
+      this._triggeredByKeyboard = Boolean(byKeyboard);
+      this._activatePlugin();
+    }
+  };
+
+  private _activatePlugin = () => {
+    this.ready.then(() => {
+      this.sidePanelsManager?.activateItem(this._navigationPanel);
+      this._pluginState === PluginStates.OPENED;
+      this.upperBarManager?.update(this._navigationIcon);
+    });
+  };
+
+  private _deactivatePlugin = () => {
+    this.ready.then(() => {
+      this.sidePanelsManager?.deactivateItem(this._navigationPanel);
+      this._pluginState = PluginStates.CLOSED;
+      this.upperBarManager?.update(this._navigationIcon);
+    });
+  };
+
+  private _isPluginActive = () => {
+    return this.sidePanelsManager!.isItemActive(this._navigationPanel);
   };
 
   reset(): void {
-    if (this._navigationPanel) {
-      this.sidePanelsManager.removeItem(this._navigationPanel);
-      this._navigationPanel = null;
+    if (Math.max(this._navigationPanel, this._navigationIcon) > 0) {
+      this.sidePanelsManager!.remove(this._navigationPanel);
+      this.upperBarManager!.remove(this._navigationIcon);
+      this._navigationPanel = -1;
+      this._navigationIcon = -1;
       this._navigationComponentRef = null;
     }
     this._activeCuePointsMap = new Map();

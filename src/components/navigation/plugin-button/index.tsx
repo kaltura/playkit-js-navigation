@@ -1,5 +1,6 @@
 import {h} from 'preact';
 import * as styles from './plugin-button.scss';
+import {ui} from 'kaltura-player-js';
 import {icons} from '../../icons';
 import {A11yWrapper, OnClick} from '@playkit-js/common';
 
@@ -22,7 +23,7 @@ export const PluginButton = withText(translates)(({isActive, onClick, ...otherPr
   return (
     <Tooltip label={otherProps.label} type="bottom">
       <A11yWrapper onClick={onClick}>
-        <button aria-label={otherProps.label} className={[styles.pluginButton, isActive ? styles.active : ''].join(' ')}>
+        <button aria-label={otherProps.label} className={[ui.style.upperBarIcon, styles.pluginButton, isActive ? styles.active : ''].join(' ')}>
           <Icon
             id="navigation-plugin-button"
             height={icons.BigSize}
