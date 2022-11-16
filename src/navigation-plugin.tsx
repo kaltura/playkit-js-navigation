@@ -316,10 +316,26 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
   };
 
+  private _onPlaybackEnded = () => {
+    this.eventManager.listenOnce(this._player, this._player.Event.PLAY, () => {
+      // resetting active cues to remove highlight from the last cp
+      this._activeCuePointsMap = new Map();
+      this._updateNavigationPlugin();
+      // need to trigger _onTimedMetadataChange in a case where there is an active cp at position 0
+      const fakeEvent = {
+        payload: {
+          cues: this._player.cuePointManager.getActiveCuePoints()
+        }
+      };
+      this._onTimedMetadataChange(fakeEvent);
+    });
+  }
+
   private _addPlayerListeners() {
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_CHANGE, this._onTimedMetadataChange);
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_ADDED, this._onTimedMetadataAdded);
     this.eventManager.listen(this._player, this._player.Event.RESIZE, this._updateNavigationPlugin);
+    this.eventManager.listen(this._player, this._player.Event.PLAYBACK_ENDED, this._onPlaybackEnded);
     if (this._itemsFilter[ItemTypes.Caption]) {
       this.eventManager.listen(this._player, this._player.Event.TEXT_TRACK_CHANGED, this._handleLanguageChange);
     }
