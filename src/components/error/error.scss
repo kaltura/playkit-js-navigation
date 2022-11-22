@@ -1,9 +1,11 @@
+@import '../../theme.scss';
+
 .error-wrapper {
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
-  color: #999999;
+  color: $tone-3;
   .devider {
     align-self: flex-start;
     margin-left: 16px;
@@ -42,7 +44,7 @@
       padding: 0;
       margin-top: 12px;
       background: inherit;
-      color: white;
+      color: #ffffff;
       border-radius: 18px;
       text-align: center;
       border: solid 2px rgba(255, 255, 255, 0.2);

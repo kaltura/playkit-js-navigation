@@ -1,5 +1,5 @@
-import {Component, h, Fragment} from 'preact';
-import {A11yWrapper} from '@playkit-js/common';
+import {Component, h} from 'preact';
+import {A11yWrapper, OnClickEvent} from '@playkit-js/common';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
@@ -20,14 +20,15 @@ export interface NavigationItemProps {
 
 export interface NavigationItemState {
   expandText: boolean;
+  titleTrimmed: boolean;
   imageLoaded: boolean;
   imageFailed: boolean;
 }
 
 const translates = () => {
   return {
-    readLess: <Text id="navigation.read_less">Read Less</Text>,
-    readMore: <Text id="navigation.read_more">Read More</Text>,
+    readLess: <Text id="navigation.read_less">Less</Text>,
+    readMore: <Text id="navigation.read_more">More</Text>,
     imageAlt: <Text id="navigation.image_alt">Slide Preview</Text>
   };
 };
@@ -36,7 +37,11 @@ const translates = () => {
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
-  state = {expandText: false, imageLoaded: false, imageFailed: false};
+  private _titleRef: HTMLSpanElement | null = null;
+  private _showMoreButtonRef: HTMLDivElement | null = null;
+  private _showLessButtonRef: HTMLDivElement | null = null;
+
+  state = {expandText: false, imageLoaded: false, imageFailed: false, titleTrimmed: false};
 
   matchHeight() {
     if (!this._textContainerRef || !this._itemElementRef) {
@@ -52,6 +57,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       selectedItem !== nextProps.selectedItem ||
       data !== nextProps.data ||
       nextState.expandText !== this.state.expandText ||
+      nextState.titleTrimmed !== this.state.titleTrimmed ||
       nextState.imageLoaded !== this.state.imageLoaded ||
       nextState.imageFailed !== this.state.imageFailed ||
       nextProps.widgetWidth !== widgetWidth
@@ -61,14 +67,24 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return false;
   }
 
-  componentDidUpdate(previousProps: Readonly<NavigationItemProps>) {
+  componentDidUpdate(previousProps: Readonly<NavigationItemProps>, nextState: Readonly<NavigationItemState>) {
     this._getSelected();
     this.matchHeight();
+    if (nextState.imageLoaded !== this.state.imageLoaded) {
+      this.setState({
+        titleTrimmed: this._isEllipsisActive()
+      });
+    }
   }
 
   componentDidMount() {
     this._getSelected();
     this.matchHeight();
+    if (!this.props.data?.previewImage) {
+      this.setState({
+        titleTrimmed: this._isEllipsisActive()
+      });
+    }
   }
 
   private _getSelected = () => {
@@ -93,10 +109,21 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     this.props.onClick(this.props.data.startTime);
   };
 
-  private _handleExpandChange = () => {
-    this.setState({
-      expandText: !this.state.expandText
-    });
+  private _handleExpandChange = (e: OnClickEvent, byKeyboard?: boolean) => {
+    this.setState(
+      {
+        expandText: !this.state.expandText
+      },
+      () => {
+        if (byKeyboard) {
+          if (this.state.expandText) {
+            this._showLessButtonRef?.focus();
+          } else {
+            this._showMoreButtonRef?.focus();
+          }
+        }
+      }
+    );
   };
 
   private _renderThumbnail = () => {
@@ -116,23 +143,48 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
         this.setState({imageFailed: true});
       }
     };
+    return <img {...imageProps} />;
+  };
+
+  private _renderShowMoreLessButton = () => {
+    const {readLess, readMore} = this.props;
+    const {expandText} = this.state;
     return (
-      <Fragment>
-        <img {...imageProps} />
-        <div className={styles.thumbGradient}></div>
-      </Fragment>
+      <A11yWrapper onClick={this._handleExpandChange}>
+        <div
+          role={'button'}
+          tabIndex={0}
+          className={styles.showMoreButton}
+          ref={node => {
+            if (expandText) {
+              this._showLessButtonRef = node;
+            } else {
+              this._showMoreButtonRef = node;
+            }
+          }}>
+          {expandText ? readLess : readMore}
+        </div>
+      </A11yWrapper>
     );
   };
 
-  render({selectedItem, showIcon, data, ...otherProps}: NavigationItemProps) {
-    const {id, previewImage, itemType, displayTime, groupData, displayTitle, shorthandTitle, hasShowMore, displayDescription} = data;
+  private _isEllipsisActive() {
+    if (!this._titleRef || !this._textContainerRef) {
+      return false;
+    }
+    return this._titleRef.getBoundingClientRect().width > this._textContainerRef.getBoundingClientRect().width;
+  }
+
+  render({selectedItem, showIcon, data}: NavigationItemProps) {
+    const {id, previewImage, itemType, displayTime, groupData, displayTitle, displayDescription} = data;
     const {imageLoaded} = this.state;
+    const hasTitle = Boolean(displayTitle || displayDescription);
     return (
       <A11yWrapper onClick={this._handleClick}>
         <div
           tabIndex={0}
           role="listitem"
-          area-label={shorthandTitle || displayTitle}
+          area-label={displayTitle}
           ref={node => {
             this._itemElementRef = node;
           }}
@@ -152,25 +204,33 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
             )}
           </div>
           <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
-            {previewImage && this._renderThumbnail()}
             <div
               className={styles.contentText}
               ref={node => {
                 this._textContainerRef = node;
               }}>
-              {shorthandTitle && !this.state.expandText && <span className={styles.title}>{shorthandTitle}</span>}
-
-              {displayTitle && (!shorthandTitle || this.state.expandText) && <span className={styles.title}>{displayTitle}</span>}
-
-              {displayDescription && this.state.expandText && <div className={styles.description}>{displayDescription}</div>}
-              {hasShowMore && (
-                <A11yWrapper onClick={this._handleExpandChange}>
-                  <div role={'button'} tabIndex={0} className={styles.showMoreButton}>
-                    {this.state.expandText ? otherProps.readLess : otherProps.readMore}
+              {hasTitle && !this.state.expandText && (
+                <div className={styles.titleWrapper}>
+                  <div className={styles.title}>
+                    <span
+                      ref={node => {
+                        this._titleRef = node;
+                      }}>
+                      {displayTitle || displayDescription}
+                    </span>
                   </div>
-                </A11yWrapper>
+                  {this.state.titleTrimmed && this._renderShowMoreLessButton()}
+                </div>
+              )}
+              {this.state.expandText && (
+                <div className={styles.expandTextWrapper}>
+                  {displayTitle && <span>{displayTitle}</span>}
+                  {displayDescription && <div className={styles.description}>{displayDescription}</div>}
+                  {this._renderShowMoreLessButton()}
+                </div>
               )}
             </div>
+            {previewImage && this._renderThumbnail()}
           </div>
         </div>
       </A11yWrapper>

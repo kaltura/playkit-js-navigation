@@ -12,33 +12,14 @@ export interface Props {
   hoverColor?: any;
 }
 
-export enum IconColors {
-  All = '#01accd',
-  Hotspot = '#1687ff',
-  AnswerOnAir = '#b2d238',
-  Chapter = '#01accd',
-  Slide = '#7fd9e8',
-  Caption = '#fdd304'
-}
-
-// TODO: make all colors replacable later
-export enum BackgroundColors {
-  All = '#151414',
-  Hotspot = '#061527',
-  AnswerOnAir = '#21270c',
-  Chapter = '#082025',
-  Slide = '#162527',
-  Caption = '#322a08'
-}
-
 export const IconsFactory = (props: Props) => {
   return (
     <div className={styles.icon}>
-      {props.iconType === ItemTypes.Hotspot && <HotspotIcon color={props.color ? props.color : IconColors.Hotspot} />}
-      {props.iconType === ItemTypes.AnswerOnAir && <AnswerOnAirIcon color={props.color ? props.color : IconColors.AnswerOnAir} />}
-      {props.iconType === ItemTypes.Chapter && <ChapterIcon color={props.color ? props.color : IconColors.Chapter} />}
-      {props.iconType === ItemTypes.Slide && <SlideIcon color={props.color ? props.color : IconColors.Slide} />}
-      {props.iconType === ItemTypes.Caption && <CaptionIcon color={props.color ? props.color : IconColors.Caption} />}
+      {props.iconType === ItemTypes.Hotspot && <HotspotIcon />}
+      {props.iconType === ItemTypes.AnswerOnAir && <AnswerOnAirIcon />}
+      {props.iconType === ItemTypes.Chapter && <ChapterIcon />}
+      {props.iconType === ItemTypes.Slide && <SlideIcon />}
+      {props.iconType === ItemTypes.Caption && <CaptionIcon />}
     </div>
   );
 };

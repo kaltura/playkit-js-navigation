@@ -1,8 +1,6 @@
 import {GroupTypes, CuePoint, ItemData, ItemTypes, HighlightedMap} from '../types';
 const {toHHMMSS} = KalturaPlayer.ui.utils;
 
-const MAX_CHARACTERS = 77;
-
 export const itemTypesOrder: Record<string, number> = {
   [ItemTypes.All]: 0,
   [ItemTypes.Chapter]: 1,
@@ -37,7 +35,6 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
     displayTitle: '',
     displayDescription: [ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType) ? decodeString(metadata.description) : null,
     previewImage: null,
-    hasShowMore: false,
     groupData: null
   };
   if ([ItemTypes.Hotspot, ItemTypes.AnswerOnAir, ItemTypes.Caption].includes(cuePointType)) {
@@ -46,18 +43,6 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
     itemData.displayTitle = decodeString(metadata.title);
     itemData.previewImage = metadata.assetUrl || null;
   }
-  if (itemData.displayTitle && itemData.displayTitle.length > MAX_CHARACTERS && itemData.itemType !== ItemTypes.Caption) {
-    let elipsisString = itemData.displayTitle.slice(0, MAX_CHARACTERS);
-    elipsisString = elipsisString.trim();
-    itemData.shorthandTitle = elipsisString + '... ';
-  }
-  if (!itemData.displayTitle && itemData.displayDescription && itemData.displayDescription.length > 79) {
-    let elipsisDescription = itemData.displayTitle.slice(0, MAX_CHARACTERS);
-    elipsisDescription = elipsisDescription.trim();
-    itemData.shorthandDescription = elipsisDescription + '... ';
-  }
-  itemData.hasShowMore = Boolean(itemData.displayDescription || itemData.shorthandDescription);
-
   return itemData;
 };
 

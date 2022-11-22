@@ -1,3 +1,5 @@
+@import '../../theme.scss';
+
 .search-root {
   ::-moz-placeholder {
     opacity: 1;
@@ -9,50 +11,51 @@
   width: 100%;
   max-width: 599px;
   height: 32px;
-  background-color: rgba(255, 255, 255, 0.24);
   border: solid 1px rgba(255, 255, 255, 0.4);
-  border-radius: 4px;
+  border-radius: $roundness-1;
   .search-input {
     width: 100%;
     flex-grow: 1;
     flex-shrink: 1;
     font-size: 15px;
-    padding: 0 8px;
-    color: #cccccc;
+    padding: 0 6px 1px 6px;
+    color: $tone-1;
     background: transparent;
     border: none;
     overflow: hidden;
     text-overflow: ellipsis;
-    &:focus {
-      outline: none !important; // prevent focus styles inherited from playkit-player.playkit-nav
-    }
     &::placeholder {
-      color: #cccccc;
+      color: $tone-2;
     }
     &::selection {
-      background-color: #5b80a7;
+      background-color: $text-selected-color;
     }
   }
   .clear-icon {
+    padding: 0;
+    flex: 0 0 12px;
+    max-width: 12px;
+    max-height: 12px;
     background-color: transparent;
-    width: 32px;
-    height: 32px;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
+    outline-offset: 4px;
     border: none;
     cursor: pointer;
-    margin-top: 2px;
+  }
+  &:hover {
+    border-color: #ffffff;
   }
   &.active {
-    color: #cccccc;
-    background: #000000;
+    color: $tone-2;
+    background: $tone-8;
+    border-color: #ffffff;
   }
-  &.focused {
-    box-shadow: 0 0 0 1px #00cbff;
-    border-radius: 4px;
-  }
-}
 
-:global {
-  .playkit-tooltip {
-    z-index: 1;
+  :global {
+    .playkit-tooltip {
+      z-index: 1;
+    }
   }
 }

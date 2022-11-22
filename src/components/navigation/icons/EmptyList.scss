@@ -1,10 +1,12 @@
+@import '../../../theme.scss';
+
 .empty-state-wrapper {
   text-align: center;
   margin-top: 40%;
   margin-bottom: auto;
   .primary-text,
   .secondary-text {
-    color: #999999;
+    color: $tone-3;
   }
   .primary-text {
     margin-top: 12px;

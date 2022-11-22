@@ -2,6 +2,6 @@
 
 .pluginButton {
   &.active {
-    background-color: map-get($theme-colors, 'gray');
+    background-color: $tone-6;
   }
 }

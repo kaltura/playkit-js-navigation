@@ -1,7 +1,13 @@
-$theme-colors: (
-  'primary': #ffffff,
-  'gray': #444444
-);
+$brand-color: var(--playkit-primary-color);
+$brand-color-dark: var(--playkit-primary-darker-color);
+$text-selected-color: var(--playkit-primary-brighter-color);
+$tone-1: var(--playkit-tone-1-color);
+$tone-2: var(--playkit-tone-2-color);
+$tone-3: var(--playkit-tone-3-color);
+$tone-6: var(--playkit-tone-6-color);
+$tone-8: var(--playkit-tone-8-color);
+
+$roundness-1: 4px;
 
 @mixin plugin-scrollbar {
   &::-webkit-scrollbar {
