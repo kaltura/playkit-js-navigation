@@ -22,6 +22,7 @@ export interface NavigationItemState {
   expandText: boolean;
   imageLoaded: boolean;
   imageFailed: boolean;
+  focused: boolean;
 }
 
 const translates = () => {
@@ -36,7 +37,8 @@ const translates = () => {
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
-  state = {expandText: false, imageLoaded: false, imageFailed: false};
+  
+  state = {expandText: false, imageLoaded: false, imageFailed: false, focused: false};
 
   matchHeight() {
     if (!this._textContainerRef || !this._itemElementRef) {
@@ -50,6 +52,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const {selectedItem, data, widgetWidth} = this.props;
     if (
       selectedItem !== nextProps.selectedItem ||
+      this.state.focused !== nextState.focused ||
       data !== nextProps.data ||
       nextState.expandText !== this.state.expandText ||
       nextState.imageLoaded !== this.state.imageLoaded ||
@@ -87,6 +90,18 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
         });
       }
     }
+  };
+
+  private _handleFocus = () => {
+    this.setState({
+      focused: true
+    });
+  };
+
+  private _handleBlur = () => {
+    this.setState({
+      focused: false
+    });
   };
 
   private _handleClick = () => {
@@ -127,12 +142,19 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   render({selectedItem, showIcon, data, ...otherProps}: NavigationItemProps) {
     const {id, previewImage, itemType, displayTime, groupData, displayTitle, shorthandTitle, hasShowMore, displayDescription} = data;
     const {imageLoaded} = this.state;
+
+    const a11yProps: Record<string, any> = {
+      role: selectedItem ? 'text' : 'listitem',
+      ariaCurrent: selectedItem,
+      onFocus: this._handleFocus,
+      onBlur: this._handleBlur,
+      tabIndex: 0,
+      ariaHidden: !(selectedItem || this.state.focused)
+    };
+    
     return (
       <A11yWrapper onClick={this._handleClick}>
         <div
-          tabIndex={0}
-          role="listitem"
-          area-label={shorthandTitle || displayTitle}
           ref={node => {
             this._itemElementRef = node;
           }}
@@ -142,7 +164,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
             selectedItem ? styles.selected : null,
             previewImage && !imageLoaded ? styles.hidden : null
           ].join(' ')}
-          data-entry-id={id}>
+          data-entry-id={id}
+          {...a11yProps}>
           <div className={[styles.metadata, displayTime ? styles.withTime : null].join(' ')}>
             {displayTime && <span>{displayTime}</span>}
             {showIcon && (
