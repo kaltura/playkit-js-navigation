@@ -61,7 +61,7 @@ class NavigationFilterComponent extends Component<FilterProps> {
             aria-label={tab.label}
             key={tab.type}
             tabIndex={0}
-            role="option"
+            role="radio"
             type="checkbox"
             aria-checked={tab.isActive}
             className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
@@ -144,7 +144,7 @@ class NavigationFilterComponent extends Component<FilterProps> {
     return (
       <div className={styles.filterRoot}>
         {totalResults !== 0 && (
-          <div className={styles.tabsWrapper} role="listbox">
+          <div className={styles.tabsWrapper} role="radiogroup">
             {tabs.map(tab => {
               return this._renderTab(tab);
             })}
