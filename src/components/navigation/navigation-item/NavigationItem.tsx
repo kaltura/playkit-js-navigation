@@ -4,7 +4,7 @@ import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
 
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {Text} = KalturaPlayer.ui.preacti18n;
 
 export interface NavigationItemProps {
   data: ItemData;
@@ -13,9 +13,8 @@ export interface NavigationItemProps {
   widgetWidth: number;
   onClick: (time: number) => void;
   showIcon: boolean;
-  readLess?: string;
-  readMore?: string;
-  imageAlt?: string;
+  onNext: () => void;
+  onPrev: () => void;
 }
 
 export interface NavigationItemState {
@@ -25,20 +24,15 @@ export interface NavigationItemState {
   focused: boolean;
 }
 
-const translates = () => {
-  return {
-    readLess: <Text id="navigation.read_less">Read Less</Text>,
-    readMore: <Text id="navigation.read_more">Read More</Text>,
-    imageAlt: <Text id="navigation.image_alt">Slide Preview</Text>
-  };
-};
-
-@withText(translates)
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
   
   state = {expandText: false, imageLoaded: false, imageFailed: false, focused: false};
+
+  setFocus() {
+    this._itemElementRef?.focus();
+  }
 
   matchHeight() {
     if (!this._textContainerRef || !this._itemElementRef) {
@@ -118,11 +112,11 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     if (this.state.imageFailed) {
       return null;
     }
-    const {data, imageAlt} = this.props;
+    const {data} = this.props;
     const {previewImage} = data;
     const imageProps: Record<string, any> = {
       src: previewImage,
-      alt: imageAlt,
+      alt: <Text id="navigation.image_alt">Slide Preview</Text>,
       className: styles.thumbnail,
       onLoad: () => {
         this.setState({imageLoaded: true});
@@ -139,7 +133,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     );
   };
 
-  render({selectedItem, showIcon, data, ...otherProps}: NavigationItemProps) {
+  render({selectedItem, showIcon, data}: NavigationItemProps) {
     const {id, previewImage, itemType, displayTime, groupData, displayTitle, shorthandTitle, hasShowMore, displayDescription} = data;
     const {imageLoaded} = this.state;
 
@@ -153,7 +147,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     };
     
     return (
-      <A11yWrapper onClick={this._handleClick}>
+      <A11yWrapper onClick={this._handleClick} onDownKeyPressed={this.props.onNext} onUpKeyPressed={this.props.onPrev}>
         <div
           ref={node => {
             this._itemElementRef = node;
@@ -187,9 +181,9 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
               {displayDescription && this.state.expandText && <div className={styles.description}>{displayDescription}</div>}
               {hasShowMore && (
-                <A11yWrapper onClick={this._handleExpandChange}>
+                <A11yWrapper onClick={this._handleExpandChange} onDownKeyPressed={() => {}} onUpKeyPressed={() => {}}>
                   <div role={'button'} tabIndex={0} className={styles.showMoreButton}>
-                    {this.state.expandText ? otherProps.readLess : otherProps.readMore}
+                    {this.state.expandText ? <Text id="navigation.read_less">Read Less</Text> : <Text id="navigation.read_more">Read More</Text>}
                   </div>
                 </A11yWrapper>
               )}
