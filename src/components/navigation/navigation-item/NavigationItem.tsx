@@ -30,7 +30,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   
   state = {expandText: false, imageLoaded: false, imageFailed: false, focused: false};
 
-  setFocus() {
+  public setFocus() {
     this._itemElementRef?.focus();
   }
 
