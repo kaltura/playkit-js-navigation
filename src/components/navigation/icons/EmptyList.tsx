@@ -119,8 +119,16 @@ export const EmptyList = withText(translates)(({showNoResultsText, noResultTitle
           </g>
         </g>
       </svg>
-      {showNoResultsText && <div className={styles.primaryText}>{noResultTitle}</div>}
-      {showNoResultsText && <div className={styles.secondaryText}>{noResultDescription}</div>}
+      {showNoResultsText && (
+        <div className={styles.primaryText} aria-label={noResultTitle}>
+          {noResultTitle}
+        </div>
+      )}
+      {showNoResultsText && (
+        <div className={styles.secondaryText} aria-label={noResultDescription}>
+          {noResultDescription}
+        </div>
+      )}
     </div>
   );
 });
