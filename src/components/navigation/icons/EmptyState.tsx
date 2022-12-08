@@ -14,7 +14,7 @@ export const EmptyState = () => {
           Search in video
         </p>
         <p class={styles.description}>
-          Search in video captions to discover the video
+          You can search the video captions for specific words or phrases.
         </p>
       </div>
   );
