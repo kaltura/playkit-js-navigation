@@ -1,0 +1,24 @@
+@import '../../../theme.scss';
+
+.empty-state{
+  color: $tone-2;
+  text-align: center;
+  margin-top: 11px;
+  .arrow {
+    margin-left: 15%;
+    width: fit-content;
+  }
+  .title {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 20px;
+    margin-bottom: 0px;
+    margin-top: 4.5px;
+  }
+  .description{
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    margin-top: 4px;
+  }
+}
