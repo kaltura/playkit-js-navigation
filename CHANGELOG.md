@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/kaltura/playkit-js-navigation/compare/v3.0.1...v3.1.0) (2022-12-12)
+
+
+### Features
+
+* **FEV-1553:** Add support to the More plugin ([#281](https://github.com/kaltura/playkit-js-navigation/issues/281)) ([d1d751e](https://github.com/kaltura/playkit-js-navigation/commit/d1d751eb115974919421137e6af17f24d517be02))
+
+
+### Bug Fixes
+
+* **FEV-1548:** when tab navigate to Read more\less buttons and hit space\enter the chapter is also triggered ([#282](https://github.com/kaltura/playkit-js-navigation/issues/282)) ([05f2ce0](https://github.com/kaltura/playkit-js-navigation/commit/05f2ce035bb92118c0c1cdc4bc670ed989cfbfe2))
+* **FEV-1561:** last slide is highlighted although it shouldn't be ([#284](https://github.com/kaltura/playkit-js-navigation/issues/284)) ([896e318](https://github.com/kaltura/playkit-js-navigation/commit/896e31857230abd2191660f2a66a6ba5f2eee36a))
+* **FEV-1576:** a11y changes ([#287](https://github.com/kaltura/playkit-js-navigation/issues/287)) ([8251adf](https://github.com/kaltura/playkit-js-navigation/commit/8251adf18ec6eaa60f5afe532b59b4db4fd7e85b))
+
 ### [3.0.1](https://github.com/kaltura/playkit-js-navigation/compare/v2.1.16...v3.0.1) (2022-10-26)
 
 
