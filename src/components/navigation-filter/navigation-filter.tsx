@@ -87,7 +87,6 @@ class NavigationFilterComponent extends Component<FilterProps> {
             role="radio"
             type="checkbox"
             aria-checked={tab.isActive}
-            aria-orientation="horizontal"
             className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
             style={style}
             ref={node => {
