@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  color: $tone-3;
+  color: $tone-3-color;
   .spinner-ball {
     position: relative;
     display: flex;
@@ -30,7 +30,7 @@
     min-width: 184px;
     min-height: 184px;
     border-radius: 50%;
-    background-color: $tone-2;
+    background-color: $tone-2-color;
     opacity: 0.2;
 
     -webkit-animation: frame-bounce 2s infinite ease-in-out;

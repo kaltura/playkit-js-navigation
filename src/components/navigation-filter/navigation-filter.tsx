@@ -37,6 +37,12 @@ export interface TabData {
 }
 
 class NavigationFilterComponent extends Component<FilterProps> {
+  private _tabsRefMap: Map<number, HTMLButtonElement | null> = new Map();
+
+  componentWillUnmount() {
+    this._tabsRefMap = new Map();
+  }
+
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const {activeTab, availableTabs, totalResults} = this.props;
     if (activeTab !== nextProps.activeTab || availableTabs !== nextProps.availableTabs || totalResults !== nextProps.totalResults) {
@@ -48,19 +54,39 @@ class NavigationFilterComponent extends Component<FilterProps> {
   public _handleChange = (type: ItemTypes) => {
     this.props.onChange(type);
   };
+  private _getTabRef = (index: number) => {
+    return this._tabsRefMap.get(index);
+  };
 
-  public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label?: string}) => {
+  private _setTabRef = (index: number, ref: HTMLButtonElement | null) => {
+    return this._tabsRefMap.set(index, ref);
+  };
+
+  private _handleUpKeyPressed = (currentIndex: number) => () => {
+    this._getTabRef(currentIndex - 1)?.focus();
+  };
+
+  private _handleDownKeyPressed = (currentIndex: number) => () => {
+    this._getTabRef(currentIndex + 1)?.focus();
+  };
+
+
+  public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label?: string}, index: number) => {
     return (
       <Tooltip label={tab.label}>
-        <A11yWrapper onClick={() => this._handleChange(tab.type)}>
+        <A11yWrapper onClick={() => this._handleChange(tab.type)} onDownKeyPressed={this._handleDownKeyPressed(index)}
+                     onUpKeyPressed={this._handleUpKeyPressed(index)}>
           <button
             aria-label={tab.label}
             key={tab.type}
             tabIndex={0}
-            role="option"
+            role="radio"
             type="checkbox"
             aria-checked={tab.isActive}
-            className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}>
+            className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
+            ref={node => {
+              this._setTabRef(index, node);
+            }}>
             {tab.type === ItemTypes.All ? (
               <span>{this.props[ItemTypes.All]}</span>
             ) : (
@@ -139,9 +165,9 @@ class NavigationFilterComponent extends Component<FilterProps> {
     return (
       <div className={styles.filterRoot}>
         {totalResults !== 0 && (
-          <div className={styles.tabsWrapper} role="listbox">
-            {tabs.map(tab => {
-              return this._renderTab(tab);
+          <div className={styles.tabsWrapper} role="radiogroup">
+            {tabs.map((tab, index) => {
+              return this._renderTab(tab, index);
             })}
           </div>
         )}

@@ -4,7 +4,7 @@ import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
 
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {Text} = KalturaPlayer.ui.preacti18n;
 
 export interface NavigationItemProps {
   data: ItemData;
@@ -13,9 +13,8 @@ export interface NavigationItemProps {
   widgetWidth: number;
   onClick: (time: number) => void;
   showIcon: boolean;
-  readLess?: string;
-  readMore?: string;
-  imageAlt?: string;
+  onNext: () => void;
+  onPrev: () => void;
 }
 
 export interface NavigationItemState {
@@ -23,17 +22,9 @@ export interface NavigationItemState {
   titleTrimmed: boolean;
   imageLoaded: boolean;
   imageFailed: boolean;
+  focused: boolean;
 }
 
-const translates = () => {
-  return {
-    readLess: <Text id="navigation.read_less">Less</Text>,
-    readMore: <Text id="navigation.read_more">More</Text>,
-    imageAlt: <Text id="navigation.image_alt">Slide Preview</Text>
-  };
-};
-
-@withText(translates)
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
@@ -41,7 +32,11 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   private _showMoreButtonRef: HTMLDivElement | null = null;
   private _showLessButtonRef: HTMLDivElement | null = null;
 
-  state = {expandText: false, imageLoaded: false, imageFailed: false, titleTrimmed: false};
+  state = {expandText: false, imageLoaded: false, imageFailed: false, titleTrimmed: false, focused: false};
+
+  public setFocus() {
+    this._itemElementRef?.focus();
+  }
 
   matchHeight() {
     if (!this._textContainerRef || !this._itemElementRef) {
@@ -55,6 +50,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const {selectedItem, data, widgetWidth} = this.props;
     if (
       selectedItem !== nextProps.selectedItem ||
+      this.state.focused !== nextState.focused ||
       data !== nextProps.data ||
       nextState.expandText !== this.state.expandText ||
       nextState.titleTrimmed !== this.state.titleTrimmed ||
@@ -105,6 +101,18 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     }
   };
 
+  private _handleFocus = () => {
+    this.setState({
+      focused: true
+    });
+  };
+
+  private _handleBlur = () => {
+    this.setState({
+      focused: false
+    });
+  };
+
   private _handleClick = () => {
     this.props.onClick(this.props.data.startTime);
   };
@@ -130,11 +138,11 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     if (this.state.imageFailed) {
       return null;
     }
-    const {data, imageAlt} = this.props;
+    const {data} = this.props;
     const {previewImage} = data;
     const imageProps: Record<string, any> = {
       src: previewImage,
-      alt: imageAlt,
+      alt: <Text id="navigation.image_alt">Slide Preview</Text>,
       className: styles.thumbnail,
       onLoad: () => {
         this.setState({imageLoaded: true});
@@ -147,7 +155,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   };
 
   private _renderShowMoreLessButton = () => {
-    const {readLess, readMore} = this.props;
     const {expandText} = this.state;
     return (
       <A11yWrapper onClick={this._handleExpandChange}>
@@ -162,7 +169,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               this._showMoreButtonRef = node;
             }
           }}>
-          {expandText ? readLess : readMore}
+          {expandText ? <Text id="navigation.read_less">Less</Text> : <Text id="navigation.read_more">More</Text>}
         </div>
       </A11yWrapper>
     );
@@ -177,14 +184,24 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
   render({selectedItem, showIcon, data}: NavigationItemProps) {
     const {id, previewImage, itemType, displayTime, groupData, displayTitle, displayDescription} = data;
-    const {imageLoaded} = this.state;
     const hasTitle = Boolean(displayTitle || displayDescription);
+    const {imageLoaded} = this.state;
+
+    const a11yProps: Record<string, any> = {
+      role: selectedItem ? 'text' : 'listitem',
+      ariaCurrent: selectedItem,
+      onFocus: this._handleFocus,
+      onBlur: this._handleBlur,
+      tabIndex: 0,
+      ariaHidden: !(selectedItem || this.state.focused)
+    };
+
     return (
-      <A11yWrapper onClick={this._handleClick}>
+      <A11yWrapper onClick={this._handleClick} onDownKeyPressed={this.props.onNext} onUpKeyPressed={this.props.onPrev}>
         <div
           tabIndex={0}
           role="listitem"
-          area-label={displayTitle}
+          area-label={displayTitle || displayDescription}
           ref={node => {
             this._itemElementRef = node;
           }}
@@ -194,7 +211,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
             selectedItem ? styles.selected : null,
             previewImage && !imageLoaded ? styles.hidden : null
           ].join(' ')}
-          data-entry-id={id}>
+          data-entry-id={id}
+          {...a11yProps}>
           <div className={[styles.metadata, displayTime ? styles.withTime : null].join(' ')}>
             {displayTime && <span>{displayTime}</span>}
             {showIcon && (

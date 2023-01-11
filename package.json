@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/navigation",
-  "version": "3.0.1",
+  "version": "3.1.1",
   "main": "dist/playkit-navigation.js",
   "private": false,
   "bugs": {
@@ -12,8 +12,9 @@
     "url": "git+https://github.com/kaltura/playkit-js-navigation.git"
   },
   "dependencies": {
-    "@playkit-js/common": "^1.0.9",
-    "@playkit-js/ui-managers": "^1.3.0"
+    "@playkit-js/common": "^1.0.17",
+    "@playkit-js/playkit-js-ui": "^0.73.0",
+    "@playkit-js/ui-managers": "^1.3.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.23.0",
@@ -98,8 +99,8 @@
   "kaltura": {
     "name": "navigation",
     "dependencies": {
-      "playkit-kaltura-cuepoints": "3.0.0",
-      "playkit-ui-managers": "1.3.0"
+      "playkit-kaltura-cuepoints": "3.0.2",
+      "playkit-ui-managers": "1.3.2"
     }
   }
 }

@@ -628,10 +628,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@playkit-js/common@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@playkit-js/common/-/common-1.0.9.tgz#ac964805d6be8d31c0f14142013d645c001575e3"
-  integrity sha512-jrzkwFJiOUe1p0Yn1gQQ06QsSVq6ejlOVNBVbFbDh9AtpeVoi4S0PjNzul7UjTdKY7Msivccwj8R3Z3BQ1n+hg==
+"@playkit-js/common@^1.0.17":
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/@playkit-js/common/-/common-1.0.17.tgz#4d0aee766e2839914df2adfe8e36b476e72ec16c"
+  integrity sha512-ENd2oOa5AMH3MZnaqe2MiNUUYz29KkN+fIeMWuIr0J4GpMsgyXk37slyBsNatb+M6M0irgAMvsbM7eCNDmYLPw==
   dependencies:
     linkify-it "^4.0.1"
 
@@ -655,6 +655,16 @@
     react-redux "^7.2.0"
     redux "^4.0.5"
 
+"@playkit-js/playkit-js-ui@^0.73.0":
+  version "0.73.0"
+  resolved "https://registry.yarnpkg.com/@playkit-js/playkit-js-ui/-/playkit-js-ui-0.73.0.tgz#3948415346bd0d7fe3a2e3cf558fa51616266c37"
+  integrity sha512-d0Mlt0q6ypAJgK52+y2pH4kpSmxxkpajCXGsR91cHidHRD7F0Ytn6h88LZ4rh9sLSsgXOhfZxH8A5Pc9BtAtvw==
+  dependencies:
+    preact "^10.3.4"
+    preact-i18n "^2.0.0-preactx.2"
+    react-redux "^7.2.0"
+    redux "^4.0.5"
+
 "@playkit-js/playkit-js@^0.80.3":
   version "0.80.3"
   resolved "https://registry.yarnpkg.com/@playkit-js/playkit-js/-/playkit-js-0.80.3.tgz#07e47e560aeadc6ca3b20afde87dfdf4ab8f7ac0"
@@ -663,10 +673,10 @@
     js-logger "^1.6.0"
     ua-parser-js "1.0.2"
 
-"@playkit-js/ui-managers@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@playkit-js/ui-managers/-/ui-managers-1.3.0.tgz#53c0217eb5a56936b3740c170083358ef975cd1f"
-  integrity sha512-d732Zrdlp3kXYoAmkitrZ6wM9mt+Na+pM5Gh21mfbn37TRgfGmG0AIBhaK2ii1bwfj1HAdn/CqGpTrWHOuRPdw==
+"@playkit-js/ui-managers@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@playkit-js/ui-managers/-/ui-managers-1.3.2.tgz#fda0c05067aa692c2c9b34a61c32b182f8d5292a"
+  integrity sha512-5k7YvZziUVt+vGVkQFfR7Eyd6ji/MLfAGgPRKIl46fu4isw6DtN7tqCwQcicuJcTt4wQPWxS9loqyJTf3idgMg==
 
 "@sinclair/typebox@^0.23.3":
   version "0.23.5"

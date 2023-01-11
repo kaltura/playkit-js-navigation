@@ -17,7 +17,7 @@
   }
   &.selected {
     background-color: rgba(255, 255, 255, 0.12);
-    border-left: 2px solid $brand-color;
+    border-left: 2px solid $primary-color;
     &.first {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
