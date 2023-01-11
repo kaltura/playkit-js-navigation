@@ -1,3 +1,5 @@
+@import '../../theme.scss';
+
 .filter-root {
   display: flex;
   flex-direction: column;
@@ -12,31 +14,26 @@
       display: flex;
       flex: 1 1 0px;
       justify-content: center;
+      padding: 1px 8px 3px 8px;
       align-items: center;
-      padding-bottom: 2px;
       background-color: transparent;
       background-position: center;
       background-repeat: no-repeat;
-      color: white;
+      color: #ffffff;
       border: none;
       cursor: pointer;
-      &:hover {
-        border-radius: 4px;
-      }
       &:not(:hover) {
         background-color: transparent !important; // overwride inline styles
       }
       &.active {
         padding-bottom: 0;
-        border-bottom: 2px solid;
-        border-bottom-left-radius: 1px;
-        border-bottom-right-radius: 1px;
+        border-bottom: 3px solid $primary-color;
       }
       .label {
-        margin-left: 5px;
-        font-size: 13px;
+        margin-left: 10px;
+        font-size: 14px;
         line-height: 1.15;
-        color: #cccccc;
+        color: #ffffff;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

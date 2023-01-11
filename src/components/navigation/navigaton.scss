@@ -13,7 +13,7 @@
   display: flex;
   justify-content: center;
   padding: 16px 4px 16px 0px;
-  color: map-get($theme-colors, 'primary');
+  color: #ffffff;
   height: 100%;
   width: 100%;
   position: absolute;
@@ -39,7 +39,7 @@
         margin: 6px 0 0 0;
         font-size: 15px;
         line-height: 1.4;
-        color: #cccccc;
+        color: $tone-2-color;
         text-align: left;
       }
       .search-wrapper {
@@ -62,11 +62,6 @@
         border: none;
         cursor: pointer;
       }
-    }
-    .autoscrollWrapper {
-      position: absolute;
-      bottom: 14px;
-      right: 16px;
     }
   }
 

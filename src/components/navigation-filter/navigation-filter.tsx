@@ -2,7 +2,7 @@ import {h, Component, Fragment} from 'preact';
 import {A11yWrapper} from '@playkit-js/common';
 import * as styles from './navigation-filter.scss';
 import {ItemTypes} from '../../types';
-import {IconsFactory, IconColors, BackgroundColors} from '../navigation/icons/IconsFactory';
+import {IconsFactory} from '../navigation/icons/IconsFactory';
 
 const {Tooltip} = KalturaPlayer.ui.components;
 const {withText, Text} = KalturaPlayer.ui.preacti18n;
@@ -72,10 +72,6 @@ class NavigationFilterComponent extends Component<FilterProps> {
 
 
   public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label?: string}, index: number) => {
-    const style = {
-      borderColor: IconColors[tab.type],
-      backgroundColor: BackgroundColors[tab.type]
-    };
     return (
       <Tooltip label={tab.label}>
         <A11yWrapper onClick={() => this._handleChange(tab.type)} onDownKeyPressed={this._handleDownKeyPressed(index)}
@@ -88,7 +84,6 @@ class NavigationFilterComponent extends Component<FilterProps> {
             type="checkbox"
             aria-checked={tab.isActive}
             className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
-            style={style}
             ref={node => {
               this._setTabRef(index, node);
             }}>
@@ -96,7 +91,7 @@ class NavigationFilterComponent extends Component<FilterProps> {
               <span>{this.props[ItemTypes.All]}</span>
             ) : (
               <Fragment>
-                <IconsFactory iconType={tab.type} color={tab.isActive ? null : '#cccccc'} />
+                <IconsFactory iconType={tab.type} />
                 {this.props.availableTabs.length < 4 && <span className={styles.label}>{tab.label}</span>}
               </Fragment>
             )}

@@ -48,10 +48,7 @@ export interface ItemData extends RawItemData {
   displayTime?: string;
   groupData: GroupTypes | null;
   displayTitle: string;
-  shorthandTitle?: string;
   displayDescription: string | null;
-  shorthandDescription?: string;
-  hasShowMore: boolean;
 }
 
 export type HighlightedMap = Map<string, true>;

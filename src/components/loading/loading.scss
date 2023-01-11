@@ -1,3 +1,5 @@
+@import '../../theme.scss';
+
 .loading-wrapper {
   height: 100%;
   width: 100%;
@@ -5,7 +7,7 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  color: #999999;
+  color: $tone-3-color;
   .spinner-ball {
     position: relative;
     display: flex;
@@ -28,7 +30,7 @@
     min-width: 184px;
     min-height: 184px;
     border-radius: 50%;
-    background-color: #cccccc;
+    background-color: $tone-2-color;
     opacity: 0.2;
 
     -webkit-animation: frame-bounce 2s infinite ease-in-out;

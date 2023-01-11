@@ -244,14 +244,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _renderAutoscrollButton = () => {
     const {hasError} = this.props;
     const {autoscroll, searchFilter, convertedData} = this.state;
-    if (autoscroll || searchFilter.searchQuery || !convertedData.length || hasError) {
-      return null;
-    }
-    return (
-      <div className={styles.autoscrollWrapper}>
-        <AutoscrollButton onClick={this._enableAutoScroll} />
-      </div>
-    );
+    const autoScrollDisabled = !autoscroll || searchFilter.searchQuery || !convertedData.length || hasError;
+    return <AutoscrollButton onClick={this._enableAutoScroll} isAutoScrollEnabled={!autoScrollDisabled} />;
   };
 
   render(props: NavigationProps) {

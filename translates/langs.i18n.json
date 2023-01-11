@@ -3,8 +3,8 @@
     "navigation": {
       "hide_plugin": "Hide Navigation",
       "show_plugin": "Show Navigation",
-      "read_less": "Read Less",
-      "read_more": "Read More",
+      "read_less": "Less",
+      "read_more": "More",
       "whoops": "Whoops!",
       "error_message": "We couldn't retrieve your Data.",
       "retry": "Retry",
