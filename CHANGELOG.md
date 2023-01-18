@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/kaltura/playkit-js-navigation/compare/v3.1.1...v3.2.0) (2023-01-18)
+
+
+### Features
+
+* **FEV-1576:** Migrate style of plugin Navigation ([#286](https://github.com/kaltura/playkit-js-navigation/issues/286)) ([c27c9f8](https://github.com/kaltura/playkit-js-navigation/commit/c27c9f8df930b036d3482ce2031e256c73100461))
+
+
+### Bug Fixes
+
+* **FEV-1588:** add up/down arrow keyboards navigation to the filter bar ([#292](https://github.com/kaltura/playkit-js-navigation/issues/292)) ([193c212](https://github.com/kaltura/playkit-js-navigation/commit/193c21242324af372df5b88a19d7328e30dd9a4f))
+* **FEV-1588:** use the arrow keys by Jaws screen reader is not available inside navigation ([#288](https://github.com/kaltura/playkit-js-navigation/issues/288)) ([097f33d](https://github.com/kaltura/playkit-js-navigation/commit/097f33d4e696b033051fee434fab4e4a5d943012))
+* **FEV-1589:** jaws screen-reader issue ([#289](https://github.com/kaltura/playkit-js-navigation/issues/289)) ([74a8c87](https://github.com/kaltura/playkit-js-navigation/commit/74a8c878c88a5a4cfa3b1ac4fb6394c774edd04b))
+
 ### [3.1.1](https://github.com/kaltura/playkit-js-navigation/compare/v3.1.0...v3.1.1) (2022-12-12)
 
 ## [3.1.0](https://github.com/kaltura/playkit-js-navigation/compare/v3.0.1...v3.1.0) (2022-12-12)
