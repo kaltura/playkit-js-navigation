@@ -95,14 +95,14 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _prepareNavigationData = (searchFilter: SearchFilter) => {
     const {highlightedMap} = this.props;
-    const {searchQuery, activeTab} = searchFilter;
+    const {searchQuery, activeTab, availableTabs} = searchFilter;
     const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
     const listDataContainCaptions = searchQuery
       ? findCuepointType(filteredBySearchQuery, ItemTypes.Caption)
       : findCuepointType(this.props.data, ItemTypes.Caption);
     const convertedData = addGroupData(filterDataByActiveTab(filteredBySearchQuery, activeTab));
 
-    const highlightedTime = highlightedMap.get(activeTab)!;
+    const highlightedTime = searchQuery ? Math.max(...availableTabs.map(tab => highlightedMap.get(tab)!)) : highlightedMap.get(activeTab)!;
     const stateData: NavigationState = {
       ...this.state,
       listDataContainCaptions,

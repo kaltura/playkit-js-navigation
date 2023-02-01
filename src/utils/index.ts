@@ -10,6 +10,10 @@ export const itemTypesOrder: Record<string, number> = {
   [ItemTypes.Caption]: 5
 };
 
+export const getLast = <T>(arr: Array<T>) => {
+  return arr[arr.length - 1];
+};
+
 export const makeDisplayTime = (startTime: number) => {
   return toHHMMSS(Math.floor(startTime));
 };
@@ -72,7 +76,7 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
         currentCuepoint.groupData = GroupTypes.first;
         return [...prevArr, currentCuepoint];
       }
-      const prevItem = prevArr.length > 0 && prevArr[prevArr.length - 1];
+      const prevItem = prevArr.length > 0 && getLast(prevArr);
       const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
       if (prevItem && currentCuepoint.displayTime === prevItem.displayTime) {
         if (prevPrevItem.displayTime === prevItem.displayTime) {
@@ -209,17 +213,13 @@ export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean
     if (prevData[0].id !== nextData[0].id) {
       return false;
     }
-    if (prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id) {
+    if (getLast(prevData).id !== getLast(nextData).id) {
       return false;
     }
     if (prevData[0].text && nextData[0].text && prevData[0].text !== nextData[0].text) {
       return false;
     }
-    if (
-      prevData[prevData.length - 1].text &&
-      nextData[nextData.length - 1].text &&
-      prevData[prevData.length - 1].text !== nextData[nextData.length - 1].text
-    ) {
+    if (getLast(prevData).text && getLast(nextData).text && getLast(prevData).text !== getLast(nextData).text) {
       return false;
     }
   }

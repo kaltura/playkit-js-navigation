@@ -3,7 +3,7 @@ import {core} from 'kaltura-player-js';
 import {h} from 'preact';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common';
-import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject} from './utils';
+import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject, getLast} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
@@ -121,7 +121,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _addNavigationData = (newData: ItemData[]) => {
-    this._data = sortItems([...this._data, ...newData], this._itemsOrder);
+    this._data = sortItems([...this._navigationData, ...newData], this._itemsOrder);
     this._createOrUpdatePlugin();
   };
 
@@ -146,11 +146,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       return captionMapId;
     }
     return '';
-  };
-
-  private _isSearchActive = () => {
-    const searchQuery = this._navigationComponentRef?.state.searchFilter?.searchQuery;
-    return Boolean(searchQuery && searchQuery.length > 0);
   };
 
   private _getCuePointType = (cue: CuePoint): ItemTypes | null => {
@@ -231,20 +226,17 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _onTimedMetadataChange = ({payload}: TimedMetadataEvent) => {
     const navigationCuePoints: Array<CuePoint> = payload.cues.filter((cue: CuePoint) => {
       const cuePointType = this._getCuePointType(cue);
-      const filterTypePassed = cuePointType && this._itemsFilter[cuePointType];
-      if (filterTypePassed && cuePointType === ItemTypes.Caption && !this._isSearchActive()) {
-        return false;
-      }
-      return filterTypePassed;
+      return cuePointType && this._itemsFilter[cuePointType];
     });
     if (this._player.currentTime < Math.max(...Array.from(this._activeCuePointsMap.values()))) {
       // seek back happened, reset startTime for each tab
       this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
     }
     if (navigationCuePoints.length) {
-      if (navigationCuePoints[navigationCuePoints.length - 1].startTime > this._activeCuePointsMap.get(ItemTypes.All)!) {
+      const cueForAllTab = getLast(navigationCuePoints.filter(cue => this._getCuePointType(cue) !== ItemTypes.Caption));
+      if (cueForAllTab && cueForAllTab.startTime > this._activeCuePointsMap.get(ItemTypes.All)!) {
         // update activeCue startTime for All tab
-        this._activeCuePointsMap.set(ItemTypes.All, navigationCuePoints[navigationCuePoints.length - 1].startTime);
+        this._activeCuePointsMap.set(ItemTypes.All, cueForAllTab.startTime);
       }
       navigationCuePoints.forEach(item => {
         if (this._player.isLive() && this._liveFutureCuePointsMap.has(item.id)) {
