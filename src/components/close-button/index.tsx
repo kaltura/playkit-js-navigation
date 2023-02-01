@@ -17,7 +17,11 @@ const translates = {
 
 export const CloseButton = withText(translates)((props: CloseButtonProps) => (
   <A11yWrapper onClick={props.onClick}>
-    <button className={[styles.closeButtonIcon, 'kaltura-navigation__close-button'].join(' ')} tabIndex={0} aria-label={props.closeButtonLabel}>
+    <button
+      className={[styles.closeButtonIcon, 'kaltura-navigation__close-button'].join(' ')}
+      tabIndex={0}
+      aria-label={props.closeButtonLabel}
+      data-testid="navigation_closeButton">
       <Icon
         id="navigation-plugin-close-button"
         height={icons.BigSize}

@@ -50,7 +50,7 @@
     "watch": "webpack --progress --color --watch --mode development",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "test:prepare": "yarn run build && yes | cp -i ./dist/playkit-transcript.js ./cypress/public/plugin.js",
+    "test:prepare": "yarn run build && yes | cp -i ./dist/playkit-navigation.js ./cypress/public/plugin.js",
     "test:watch": "yarn run test:prepare && cypress open",
     "test": "yarn run test:prepare && cypress run",
     "release": "standard-version",
