@@ -3,7 +3,7 @@ import {core} from 'kaltura-player-js';
 import {h} from 'preact';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common';
-import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject, makeDisplayTime} from './utils';
+import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
@@ -77,12 +77,12 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
   private _makeDefaultActiveCuePointsMap = () => {
     return new Map([
-      [ItemTypes.All, null],
-      [ItemTypes.AnswerOnAir, null],
-      [ItemTypes.Caption, null],
-      [ItemTypes.Chapter, null],
-      [ItemTypes.Hotspot, null],
-      [ItemTypes.Slide, null]
+      [ItemTypes.All, -1],
+      [ItemTypes.AnswerOnAir, -1],
+      [ItemTypes.Caption, -1],
+      [ItemTypes.Chapter, -1],
+      [ItemTypes.Hotspot, -1],
+      [ItemTypes.Slide, -1]
     ]);
   };
 
@@ -237,15 +237,23 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
       return filterTypePassed;
     });
-    this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
+    if (this._player.currentTime < Math.max(...Array.from(this._activeCuePointsMap.values()))) {
+      // seek back happened, reset startTime for each tab
+      this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
+    }
     if (navigationCuePoints.length) {
-      this._activeCuePointsMap.set(ItemTypes.All, makeDisplayTime(navigationCuePoints[navigationCuePoints.length - 1].startTime));
+      if (navigationCuePoints[navigationCuePoints.length - 1].startTime > this._activeCuePointsMap.get(ItemTypes.All)!) {
+        // update activeCue startTime for All tab
+        this._activeCuePointsMap.set(ItemTypes.All, navigationCuePoints[navigationCuePoints.length - 1].startTime);
+      }
       navigationCuePoints.forEach(item => {
         if (this._player.isLive() && this._liveFutureCuePointsMap.has(item.id)) {
+          // add posponed cues into navigation data
           this._addNavigationData([this._liveFutureCuePointsMap.get(item.id)!]);
           this._liveFutureCuePointsMap.delete(item.id);
         }
-        this._activeCuePointsMap.set(this._getCuePointType(item)!, makeDisplayTime(item.startTime));
+        // update activeCue startTime for each type of cues
+        this._activeCuePointsMap.set(this._getCuePointType(item)!, item.startTime);
       });
     }
     this._updateNavigationPlugin();

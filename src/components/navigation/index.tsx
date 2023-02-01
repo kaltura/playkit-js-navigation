@@ -12,7 +12,8 @@ import {
   addGroupData,
   itemTypesOrder,
   findCuepointType,
-  isMapsEqual
+  isMapsEqual,
+  makeDisplayTime
 } from '../../utils';
 import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap} from '../../types';
@@ -93,6 +94,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   }
 
   private _prepareNavigationData = (searchFilter: SearchFilter) => {
+    const {highlightedMap} = this.props;
     const {searchQuery, activeTab} = searchFilter;
     const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
     const listDataContainCaptions = searchQuery
@@ -100,12 +102,13 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       : findCuepointType(this.props.data, ItemTypes.Caption);
     const convertedData = addGroupData(filterDataByActiveTab(filteredBySearchQuery, activeTab));
 
+    const highlightedTime = highlightedMap.get(activeTab)!;
     const stateData: NavigationState = {
       ...this.state,
       listDataContainCaptions,
       convertedData,
       searchFilter: this._prepareSearchFilter(filteredBySearchQuery, searchFilter),
-      highlightedTime: this.props.highlightedMap.get(activeTab) || this.state.highlightedTime
+      highlightedTime: highlightedTime >= 0 ? makeDisplayTime(highlightedTime) : ''
     };
     if (this.state.searchFilter.searchQuery !== searchQuery) {
       // Any search interaction should stop autoscroll
@@ -115,7 +118,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       // if the user erases all the chars in the input field, the auto-scroll functionality will be kept
       stateData.autoscroll = true;
     }
-    console.log('>> stateData', stateData);
     this.setState(stateData);
   };
 

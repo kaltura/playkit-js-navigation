@@ -52,5 +52,5 @@ export interface ItemData extends RawItemData {
   liveCuePoint: boolean;
 }
 
-export type HighlightedMap = Map<ItemTypes, string | null>;
+export type HighlightedMap = Map<ItemTypes, number>;
 export type CuePointsMap = Map<string, ItemData>;
