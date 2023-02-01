@@ -10,6 +10,10 @@ export const itemTypesOrder: Record<string, number> = {
   [ItemTypes.Caption]: 5
 };
 
+export const makeDisplayTime = (startTime: number) => {
+  return toHHMMSS(Math.floor(startTime));
+};
+
 export const decodeString = (content: any): string => {
   if (typeof content !== 'string') {
     return content;
@@ -28,11 +32,12 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
     cuePointType,
     id: cuePoint.id,
     startTime: cuePoint.startTime,
-    displayTime: isLive ? '' : toHHMMSS(Math.floor(cuePoint.startTime)),
+    displayTime: makeDisplayTime(cuePoint.startTime),
     partnerData: metadata.partnerData,
     tags: metadata.tags,
     itemType: cuePointType,
     displayTitle: '',
+    liveCuePoint: isLive,
     displayDescription: [ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType) ? decodeString(metadata.description) : null,
     previewImage: null,
     groupData: null

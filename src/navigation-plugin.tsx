@@ -3,7 +3,7 @@ import {core} from 'kaltura-player-js';
 import {h} from 'preact';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common';
-import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject} from './utils';
+import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject, makeDisplayTime} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
@@ -28,7 +28,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _hasError = false;
   private _itemsOrder = itemTypesOrder;
   private _itemsFilter = itemTypesOrder;
-  private _activeCuePointsMap: HighlightedMap = new Map();
+  private _activeCuePointsMap: HighlightedMap;
   private _captionMap: Map<string, Array<ItemData>> = new Map();
   private _activeCaptionMapId: string = '';
   private _navigationComponentRef: Navigation | null = null;
@@ -49,6 +49,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   constructor(name: string, player: KalturaPlayerTypes.Player, config: NavigationConfig) {
     super(name, player, config);
     this._player = player;
+    this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
     this._itemsOrder = prepareItemTypesOrder(this.config.itemsOrder);
     this._itemsFilter = isEmptyObject(this.config.itemsOrder) ? itemTypesOrder : config.itemsOrder;
   }
@@ -73,6 +74,17 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private set _data(data: Array<ItemData>) {
     this._navigationData = filterDuplications(data);
   }
+
+  private _makeDefaultActiveCuePointsMap = () => {
+    return new Map([
+      [ItemTypes.All, null],
+      [ItemTypes.AnswerOnAir, null],
+      [ItemTypes.Caption, null],
+      [ItemTypes.Chapter, null],
+      [ItemTypes.Hotspot, null],
+      [ItemTypes.Slide, null]
+    ]);
+  };
 
   loadMedia(): void {
     if (!this.cuePointManager || !this.sidePanelsManager || !this.upperBarManager) {
@@ -225,35 +237,18 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
       return filterTypePassed;
     });
-    this._activeCuePointsMap = new Map();
+    this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
     if (navigationCuePoints.length) {
-      if (this._player.isLive()) {
-        const latestNavigationCuePoint = navigationCuePoints[navigationCuePoints.length - 1];
-        const id = latestNavigationCuePoint.id;
-        if (this._liveFutureCuePointsMap.has(id)) {
-          // if this is a cuepoint that wasn't displayed yet - show it in the panel and remove it from future cue points map
-          this._addNavigationData([this._liveFutureCuePointsMap.get(id)!]);
-          this._liveFutureCuePointsMap.delete(id);
+      this._activeCuePointsMap.set(ItemTypes.All, makeDisplayTime(navigationCuePoints[navigationCuePoints.length - 1].startTime));
+      navigationCuePoints.forEach(item => {
+        if (this._player.isLive() && this._liveFutureCuePointsMap.has(item.id)) {
+          this._addNavigationData([this._liveFutureCuePointsMap.get(item.id)!]);
+          this._liveFutureCuePointsMap.delete(item.id);
         }
-        this._activeCuePointsMap.set(id, true);
-        this._updateNavigationPlugin();
-      } else {
-        const latestNavigationCuePoint = navigationCuePoints[navigationCuePoints.length - 1];
-        // define navigation item group
-        const relevantNavigationItem = this._data.find(item => item.id === latestNavigationCuePoint.id);
-        if (relevantNavigationItem) {
-          const highlightedGroup = this._data.filter(item => {
-            return item.displayTime === relevantNavigationItem.displayTime;
-          });
-          if (highlightedGroup.length) {
-            highlightedGroup.forEach(item => {
-              this._activeCuePointsMap.set(item.id, true);
-            });
-            this._updateNavigationPlugin();
-          }
-        }
-      }
+        this._activeCuePointsMap.set(this._getCuePointType(item)!, makeDisplayTime(item.startTime));
+      });
     }
+    this._updateNavigationPlugin();
   };
 
   private _createOrUpdatePlugin = () => {
@@ -329,7 +324,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       };
       this._onTimedMetadataChange(fakeEvent);
     });
-  }
+  };
 
   private _addPlayerListeners() {
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_CHANGE, this._onTimedMetadataChange);
@@ -383,9 +378,10 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._navigationIcon = -1;
       this._navigationComponentRef = null;
     }
-    this._activeCuePointsMap = new Map();
+    this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
     this._activeCaptionMapId = '';
     this._captionMap = new Map();
+    this._liveFutureCuePointsMap = new Map();
     this._navigationData = [];
     this._isLoading = false;
     this._hasError = false;
