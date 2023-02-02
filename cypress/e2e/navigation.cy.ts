@@ -4,7 +4,7 @@ const MANIFEST = `#EXTM3U
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=509496,RESOLUTION=480x272,AUDIO="audio",SUBTITLES="subs"
 ${location.origin}/media/index.m3u8`;
 
-const preparePage = (navigationConf = {}) => {
+const preparePage = (navigationConf = {}, playbackConf = {}) => {
   cy.visit('index.html');
   cy.window().then(win => {
     try {
@@ -23,19 +23,13 @@ const preparePage = (navigationConf = {}) => {
           uiManagers: {},
           kalturaCuepoints: {}
         },
-        playback: {
-          muted: true
-        }
+        playback: {muted: true, autoplay: true, ...playbackConf}
       });
       kalturaPlayer.loadMedia({entryId: '0_wifqaipd'});
     } catch (e: any) {
       console.error(e.message);
     }
   });
-};
-
-const initiatePlay = () => {
-  cy.get('.playkit-pre-playback-play-button').click({force: true});
 };
 
 const clickNavigationPluginButton = () => {
@@ -52,15 +46,23 @@ const checkRequest = (reqBody: any, service: string, action: string) => {
   return reqBody?.service === service && reqBody?.action === action;
 };
 
-const mocKalturaBe = (entryFixture = 'vod-with-captions.json', captionsFixture = 'captions-en-response.json') => {
+const mockKalturaBe = (entryFixture = 'vod-entry.json', dataFixture = 'navigation-data.json', captionsFixture = 'captions-en-response.json') => {
   cy.intercept('http://mock-api/service/multirequest', req => {
     if (checkRequest(req.body[2], 'baseEntry', 'list')) {
       return req.reply({fixture: entryFixture});
     }
+    if (checkRequest(req.body[2], 'cuepoint_cuepoint', 'list')) {
+      return req.reply({fixture: dataFixture});
+    }
     if (checkRequest(req.body[2], 'caption_captionasset', 'serveAsJson')) {
       return req.reply({fixture: captionsFixture});
     }
+    if (checkRequest(req.body[2], 'thumbAsset', 'getUrl')) {
+      return req.reply({fixture: 'thumb-url.json'});
+    }
   });
+  cy.intercept('GET', '**/ks/123', {fixture: 'thumb-asset.jpeg'}).as('getSlides');
+  cy.intercept('GET', '**/vid_sec/*', {fixture: 'thumb-asset.jpeg'}).as('getChapters');
 };
 
 describe('Navigation plugin', () => {
@@ -74,105 +76,115 @@ describe('Navigation plugin', () => {
     cy.intercept('GET', '**/index.php?service=analytics*', {});
   });
 
-  describe('navigation', () => {
-    it('should not show Navigation plugin button for entry without navigation data', () => {
-      mocKalturaBe('vod-without-captions.json');
+  describe('plugin button and panel', () => {
+    it('should open then close the navigation side panel', () => {
+      mockKalturaBe();
       preparePage();
-      initiatePlay();
-      cy.get('[data-testid="transcript_pluginButton"]').should('not.exist');
-      cy.get('[data-testid="transcript_printButton"]').should('not.exist');
-      cy.get('[data-testid="transcript_downloadButton"]').should('not.exist');
+      clickNavigationPluginButton();
+      cy.get('[data-testid="navigation_root"]').should('exist');
+      cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
+      clickClosePluginButton();
+      cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'hidden');
     });
 
-    // it('should open the transcript side panel after clicking on play button', () => {
-    //   mockNavigation();
-    //   preparePage();
-    //   initiatePlay();
-    //   cy.get('[data-testid="transcript_root"]').should('exist');
-    //   cy.get('[data-testid="transcript_root"]').should('have.css', 'visibility', 'visible');
-    // });
-
-    // it('should not open the transcript side panel after clicking on play button', () => {
-    //   mockNavigation();
-    //   preparePage({expandOnFirstPlay: false});
-    //   initiatePlay();
-    //   cy.get('[data-testid="transcript_root"]').should('have.css', 'visibility', 'hidden');
-    // });
-
-    // it('should open and close Navigation plugin', () => {
-    //   mockNavigation();
-    //   preparePage({expandOnFirstPlay: false});
-    //   initiatePlay();
-    //   clickTranscriptPluginButton();
-    //   cy.get('[data-testid="transcript_root"]').should('exist');
-    //   cy.get('[data-testid="transcript_root"]').should('have.css', 'visibility', 'visible');
-    //   clickClosePluginButton();
-    //   cy.get('[data-testid="transcript_root"]').should('have.css', 'visibility', 'hidden');
-    // });
-
-    // it('should select captions and highlight them', () => {
-    //   mockNavigation();
-    //   preparePage();
-    //   initiatePlay();
-    //   cy.window().then(win => {
-    //     // @ts-ignore
-    //     const kalturaPlayer = win.KalturaPlayer.getPlayers()['player-placeholder'];
-    //     const captionSpan = cy.get('[data-testid="transcript_list"] [role="listitem"]').first();
-    //     captionSpan.should('exist');
-    //     kalturaPlayer.currentTime = 20;
-    //     captionSpan.should('have.attr', 'aria-current', 'false');
-    //     captionSpan.click();
-    //     kalturaPlayer.pause();
-    //     captionSpan.should('have.attr', 'aria-current', 'true');
-    //   });
-    // });
+    it('should open the navigation side panel if expandOnFirstPlay configuration is true ', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.get('[data-testid="navigation_pluginButton"]').should('exist');
+      cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
+    });
   });
 
-  // describe('search bar', () => {
-  //   it('should search for the word "first" and find 2 results', () => {
-  //     mockNavigation();
-  //     preparePage();
-  //     initiatePlay();
-  //     cy.get('[data-testid="transcript_header"]').within(() => {
-  //       cy.get('[aria-label="Search in Transcript"]').get('input').type('first');
-  //       cy.get('[aria-label="Previous"]').should('exist');
-  //       cy.get('[aria-label="Next"]').should('exist');
-  //       cy.get('[aria-label="Result 1 of 2"]').should('exist');
-  //       cy.get('[aria-label="Result 1 of 2"]').should($div => {
-  //         expect($div[0].textContent).to.eq('1/2');
-  //       });
-  //     });
-  //   });
+  describe('navigation data', () => {
+    it('should test fetch of slides and chapters image', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.get('@getChapters.all').should('have.length', 3);
+      cy.get('@getSlides.all').should('have.length', 2);
+    });
 
-  //   it('should highlight search results', () => {
-  //     mockNavigation();
-  //     preparePage();
-  //     initiatePlay();
-  //     cy.get('[data-testid="transcript_header"] [aria-label="Search in Transcript"]').get('input').type('first');
+    it('should render navigation items', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.get('[data-testid="navigation_root"]').within(() => {
+        cy.get("[role='listitem']").should('have.length', 6);
+      });
+    });
 
-  //     cy.get('[data-testid="transcript_list"]')
-  //       .contains('listening to music for the first time')
-  //       .within(() => cy.get('span[class*="highlight-search"]').should('exist'));
+    it('should handle click and highlight active item', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.get('[data-testid="navigation_root"]').within(() => {
+        const chapterItem = cy.get('[area-label="chapter 2"]').should('have.attr', 'aria-current', 'false');
+        chapterItem.click();
+        chapterItem.should('have.attr', 'aria-current', 'true');
+      });
+    });
 
-  //     cy.get('[data-testid="transcript_list"]')
-  //       .contains('first caption')
-  //       .within(() => cy.get('span[class*="highlight-search"]').should('not.exist'));
-  //   });
+    it('should highlight navigation item when playback reach cue startTime', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.window().then($win => {
+        // @ts-ignore
+        const kalturaPlayer = $win.KalturaPlayer.getPlayers()['player-placeholder'];
+        cy.get('[data-testid="navigation_root"]').within(() => {
+          cy.get('[area-label="Hotspot 1"]').should('have.attr', 'aria-current', 'false');
+          kalturaPlayer.currentTime = 12;
+          cy.get('[area-label="Hotspot 1"]').should('have.attr', 'aria-current', 'true');
+        });
+      });
+    });
+  });
 
-  //   it('should clear the search bar', () => {
-  //     mockNavigation();
-  //     preparePage();
-  //     initiatePlay();
-  //     cy.get('[data-testid="transcript_header"]').within(() => {
-  //       cy.get('[aria-label="Search in Transcript"]').should('exist');
-  //       cy.get('[aria-label="Search in Transcript"]').get('input').type('first');
-  //       cy.get('[aria-label="Clear search"]').click();
-  //       cy.get('[aria-label="Search in Transcript"]')
-  //         .get('input')
-  //         .should($div => {
-  //           expect($div[0].textContent).to.eq('');
-  //         });
-  //     });
-  //   });
-  // });
+  describe('search and filter', () => {
+    it('should test search bar', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.get('[data-testid="navigation_root"]').within(() => {
+        const searchInput = cy.get("[aria-label='Search in video']");
+        searchInput.should('be.visible');
+        searchInput.type('1');
+        searchInput.should('have.value', '1');
+        cy.get("[role='listitem']").should('have.length', 1);
+        const clearSearchButton = cy.get("[aria-label='Clear search']");
+        clearSearchButton.should('be.visible');
+        clearSearchButton.click();
+        searchInput.should('have.value', '');
+        cy.get("[role='listitem']").should('have.length', 6);
+      });
+    });
+    it('should test filter tabs', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.get('[data-testid="navigation_root"]').within(() => {
+        // default state
+        const tabAll = cy.get("[aria-label='All']").should('be.visible').should('have.attr', 'aria-checked', 'true');
+        const tabChapters = cy.get("[aria-label='Chapters']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+        const tabSlides = cy.get("[aria-label='Slides']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+        const tabHotspots = cy.get("[aria-label='Hotspots']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+        cy.get("[aria-label='Captions']").should('not.exist');
+        cy.get("[aria-label='AoA']").should('not.exist');
+
+        // apply filters
+        tabChapters.click();
+        cy.get("[role='listitem']").should('have.length', 3);
+        tabSlides.click();
+        cy.get("[role='listitem']").should('have.length', 2);
+        tabHotspots.click();
+        cy.get("[role='listitem']").should('have.length', 1);
+        tabAll.click();
+        cy.get("[role='listitem']").should('have.length', 6);
+
+        // apply search
+        cy.get("[aria-label='Captions']").should('not.exist');
+        cy.get("[aria-label='Search in video']").type('c');
+        cy.get("[aria-label='All']").should('be.visible');
+        cy.get("[aria-label='Captions']").should('be.visible');
+        cy.get("[aria-label='Chapters']").should('be.visible');
+        cy.get("[aria-label='Slides']").should('not.exist');
+        cy.get("[aria-label='Hotspots']").should('not.exist');
+        cy.get("[aria-label='AoA']").should('not.exist');
+      });
+    });
+  });
 });

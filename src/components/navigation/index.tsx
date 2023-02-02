@@ -252,6 +252,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     const {isLoading, kitchenSinkActive} = props;
     return (
       <div
+        data-testid="navigation_root"
         aria-live="polite"
         className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
         ref={node => {

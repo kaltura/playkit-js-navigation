@@ -37,16 +37,6 @@
     ],
     "playbackCaptions": [
       {
-        "label": "Finnish",
-        "format": "1",
-        "language": "Finnish",
-        "webVttUrl": "https://mock-captions/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/1_drrtkrgf/segmentIndex/-1/version/1/captions.vtt",
-        "url": "https://mock-captions/api_v3/index.php/service/caption_captionAsset/action/serve/captionAssetId/1_drrtkrgf",
-        "isDefault": true,
-        "languageCode": "fi",
-        "objectType": "KalturaCaptionPlaybackPluginData"
-      },
-      {
         "label": "English",
         "format": "1",
         "language": "English",
@@ -93,35 +83,21 @@
   {
     "objects": [
       {
-        "id": 13624421,
-        "partnerId": 1091,
-        "metadataProfileId": 4771,
-        "metadataProfileVersion": 12,
+        "id": 1772441992,
+        "partnerId": 27017,
+        "metadataProfileId": 7680121,
+        "metadataProfileVersion": 1,
         "metadataObjectType": 1,
-        "objectId": "0_wifqaipd",
-        "version": 12,
-        "createdAt": 1499600020,
-        "updatedAt": 1499600285,
+        "objectId": "1_ahuv8q4v",
+        "version": 1,
+        "createdAt": 1657274764,
+        "updatedAt": 1657274764,
         "status": 1,
-        "xml": "<metadata/>",
-        "objectType": "KalturaMetadata"
-      },
-      {
-        "id": 13624422,
-        "partnerId": 1091,
-        "metadataProfileId": 13126,
-        "metadataProfileVersion": 2,
-        "metadataObjectType": 1,
-        "objectId": "0_wifqaipd",
-        "version": 2,
-        "createdAt": 1499600285,
-        "updatedAt": 1499600285,
-        "status": 1,
-        "xml": "<metadata>\n  <MediaType>Movie</MediaType>\n  <WatchPermissionRule>Parrent Allowed</WatchPermissionRule>\n</metadata>",
+        "xml": "<?xml version=\"1.0\"?>\n<metadata><Key/><Value/><Detail><Key>widgetId</Key><Value>\"1_7zw6r2e7\"</Value></Detail></metadata>\n",
         "objectType": "KalturaMetadata"
       }
     ],
-    "totalCount": 2,
+    "totalCount": 1,
     "objectType": "KalturaMetadataListResponse"
   }
 ]

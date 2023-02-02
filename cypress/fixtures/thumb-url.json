@@ -1,0 +1,9 @@
+[
+  {
+    "partnerId": 1091,
+    "ks": "",
+    "userId": 0,
+    "objectType": "KalturaStartWidgetSessionResponse"
+  },
+  "https://mock-thumb-assets/api_v3/index.php/service/thumbAsset/action/serve/thumbAssetId/1_2l76qxkd/ks/123"
+]
