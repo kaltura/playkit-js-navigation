@@ -107,17 +107,24 @@ describe('Navigation plugin', () => {
       mockKalturaBe();
       preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
       cy.get('[data-testid="navigation_root"]').within(() => {
-        cy.get("[role='listitem']").should('have.length', 6);
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 6);
       });
     });
 
-    it('should handle click and highlight active item', () => {
+    it('should handle click and make seek to cue startTime', () => {
       mockKalturaBe();
       preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
-      cy.get('[data-testid="navigation_root"]').within(() => {
-        const chapterItem = cy.get('[area-label="chapter 2"]').should('have.attr', 'aria-current', 'false');
-        chapterItem.click();
-        chapterItem.should('have.attr', 'aria-current', 'true');
+      cy.window().then($win => {
+        // @ts-ignore
+        const kalturaPlayer = $win.KalturaPlayer.getPlayers()['player-placeholder'];
+        cy.get('[data-testid="navigation_root"]').within(() => {
+          kalturaPlayer.pause();
+          const chapterItem = cy.get('[area-label="chapter 2"]').should('have.attr', 'aria-current', 'false');
+          chapterItem.click();
+          chapterItem.should('have.attr', 'aria-current', 'true').then(() => {
+            expect(kalturaPlayer.currentTime).to.eql(20);
+          });
+        });
       });
     });
 
@@ -134,6 +141,23 @@ describe('Navigation plugin', () => {
         });
       });
     });
+
+    it('should highlight different type of navigation items according to playback ', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.window().then($win => {
+        // @ts-ignore
+        const kalturaPlayer = $win.KalturaPlayer.getPlayers()['player-placeholder'];
+        cy.get('[data-testid="navigation_root"]').within(() => {
+          cy.get('[data-entry-id="1_02sihd5j"]').should('have.attr', 'aria-current', 'false');
+          cy.get("[aria-label='Search in video']").type('c');
+          kalturaPlayer.currentTime = 12;
+          cy.get('[data-entry-id="1_nkiuwh50-1"]').should('have.attr', 'aria-current', 'true');
+          cy.get("[aria-label='Chapters']").click();
+          cy.get('[data-entry-id="1_02sihd5j"]').should('have.attr', 'aria-current', 'true');
+        });
+      });
+    });
   });
 
   describe('search and filter', () => {
@@ -145,12 +169,12 @@ describe('Navigation plugin', () => {
         searchInput.should('be.visible');
         searchInput.type('1');
         searchInput.should('have.value', '1');
-        cy.get("[role='listitem']").should('have.length', 1);
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 1);
         const clearSearchButton = cy.get("[aria-label='Clear search']");
         clearSearchButton.should('be.visible');
         clearSearchButton.click();
         searchInput.should('have.value', '');
-        cy.get("[role='listitem']").should('have.length', 6);
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 6);
       });
     });
     it('should test filter tabs', () => {
@@ -167,23 +191,25 @@ describe('Navigation plugin', () => {
 
         // apply filters
         tabChapters.click();
-        cy.get("[role='listitem']").should('have.length', 3);
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 3);
         tabSlides.click();
-        cy.get("[role='listitem']").should('have.length', 2);
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 2);
         tabHotspots.click();
-        cy.get("[role='listitem']").should('have.length', 1);
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 1);
         tabAll.click();
-        cy.get("[role='listitem']").should('have.length', 6);
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 6);
 
         // apply search
         cy.get("[aria-label='Captions']").should('not.exist');
         cy.get("[aria-label='Search in video']").type('c');
         cy.get("[aria-label='All']").should('be.visible');
-        cy.get("[aria-label='Captions']").should('be.visible');
         cy.get("[aria-label='Chapters']").should('be.visible');
         cy.get("[aria-label='Slides']").should('not.exist');
         cy.get("[aria-label='Hotspots']").should('not.exist');
         cy.get("[aria-label='AoA']").should('not.exist');
+        const tabCaptions = cy.get("[aria-label='Captions']").should('be.visible').click();
+        tabCaptions.should('have.attr', 'aria-checked', 'true');
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 5);
       });
     });
   });
