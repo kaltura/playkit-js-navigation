@@ -3,8 +3,8 @@ import * as styles from './NavigationList.scss';
 import {NavigationItem} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';
 import {EmptyState} from '../icons/EmptyState';
-import {isDataEqual, isMapsEqual} from '../../../utils';
-import {ItemData, HighlightedMap} from '../../../types';
+import {isDataEqual} from '../../../utils';
+import {ItemData} from '../../../types';
 
 export interface Props {
   data: Array<ItemData>;
@@ -12,7 +12,7 @@ export interface Props {
   autoScroll: boolean;
   onScroll: (n: number) => void;
   widgetWidth: number;
-  highlightedMap: HighlightedMap;
+  highlightedTime: string;
   showItemsIcons: boolean;
   listDataContainCaptions: boolean;
   searchActive: boolean;
@@ -28,7 +28,7 @@ export class NavigationList extends Component<Props> {
 
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
-      !isMapsEqual(this.props.highlightedMap, nextProps.highlightedMap) ||
+      this.props.highlightedTime !== nextProps.highlightedTime ||
       !isDataEqual(this.props.data, nextProps.data) ||
       nextProps.autoScroll !== this.props.autoScroll ||
       nextProps.listDataContainCaptions !== this.props.listDataContainCaptions ||
@@ -69,7 +69,7 @@ export class NavigationList extends Component<Props> {
     this._getItemRef(currentIndex + 1)?.setFocus();
   };
 
-  render({data, widgetWidth, showItemsIcons, onSeek, highlightedMap, listDataContainCaptions, searchActive}: Props) {
+  render({data, widgetWidth, showItemsIcons, onSeek, highlightedTime, listDataContainCaptions, searchActive}: Props) {
     if (!data.length) {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
     }
@@ -83,7 +83,7 @@ export class NavigationList extends Component<Props> {
               }}
               widgetWidth={widgetWidth}
               onClick={onSeek}
-              selectedItem={highlightedMap.has(item.id)}
+              selectedItem={highlightedTime === item.displayTime}
               key={item.id}
               data={item}
               onSelected={this.updateSelected}

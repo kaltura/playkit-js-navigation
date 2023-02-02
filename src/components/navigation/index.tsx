@@ -5,7 +5,16 @@ import {NavigationSearch} from '../navigation-search/navigation-search';
 import {NavigationFilter} from '../navigation-filter';
 import {Error} from '../error';
 import {Loading} from '../loading';
-import {getAvailableTabs, filterDataBySearchQuery, filterDataByActiveTab, addGroupData, itemTypesOrder, findCuepointType} from '../../utils';
+import {
+  getAvailableTabs,
+  filterDataBySearchQuery,
+  filterDataByActiveTab,
+  addGroupData,
+  itemTypesOrder,
+  findCuepointType,
+  isMapsEqual,
+  makeDisplayTime
+} from '../../utils';
 import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap} from '../../types';
 import {CloseButton} from '../close-button';
@@ -38,6 +47,7 @@ interface NavigationState {
   autoscroll: boolean;
   convertedData: ItemData[];
   listDataContainCaptions: boolean;
+  highlightedTime: string;
 }
 
 const HEADER_HEIGHT = 94; // TODO: calculate Header height in runtime (only once);
@@ -66,7 +76,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       widgetWidth: 0,
       searchFilter: {...initialSearchFilter},
       convertedData: [],
-      listDataContainCaptions: false
+      listDataContainCaptions: false,
+      highlightedTime: ''
     };
   }
 
@@ -76,23 +87,29 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   componentDidUpdate(previousProps: Readonly<NavigationProps>): void {
     this._setWidgetSize();
-    if (previousProps.data !== this.props.data) {
+    if (previousProps.data !== this.props.data || !isMapsEqual(previousProps.highlightedMap, this.props.highlightedMap)) {
       this._prepareNavigationData(this.state.searchFilter);
       return;
     }
   }
 
   private _prepareNavigationData = (searchFilter: SearchFilter) => {
-    const {searchQuery, activeTab} = searchFilter;
+    const {highlightedMap} = this.props;
+    const {searchQuery, activeTab, availableTabs} = searchFilter;
     const filteredBySearchQuery = filterDataBySearchQuery(this.props.data, searchQuery);
     const listDataContainCaptions = searchQuery
       ? findCuepointType(filteredBySearchQuery, ItemTypes.Caption)
       : findCuepointType(this.props.data, ItemTypes.Caption);
+    const convertedData = addGroupData(filterDataByActiveTab(filteredBySearchQuery, activeTab));
+
+    const highlightedTime =
+      searchQuery && activeTab === ItemTypes.All ? Math.max(...availableTabs.map(tab => highlightedMap.get(tab)!)) : highlightedMap.get(activeTab)!;
     const stateData: NavigationState = {
       ...this.state,
       listDataContainCaptions,
-      convertedData: addGroupData(filterDataByActiveTab(filteredBySearchQuery, activeTab)),
-      searchFilter: this._prepareSearchFilter(filteredBySearchQuery, searchFilter)
+      convertedData,
+      searchFilter: this._prepareSearchFilter(filteredBySearchQuery, searchFilter),
+      highlightedTime: highlightedTime >= 0 ? makeDisplayTime(highlightedTime) : ''
     };
     if (this.state.searchFilter.searchQuery !== searchQuery) {
       // Any search interaction should stop autoscroll
@@ -194,8 +211,8 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   };
 
   private _renderNavigation = () => {
-    const {searchFilter, widgetWidth, listDataContainCaptions, convertedData} = this.state;
-    const {hasError, retry, highlightedMap} = this.props;
+    const {searchFilter, widgetWidth, listDataContainCaptions, convertedData, highlightedTime} = this.state;
+    const {hasError, retry} = this.props;
     if (hasError) {
       return <Error onRetryLoad={retry} />;
     }
@@ -207,7 +224,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         onSeek={this._handleSeek}
         onScroll={this._scrollTo}
         data={convertedData}
-        highlightedMap={highlightedMap}
+        highlightedTime={highlightedTime}
         showItemsIcons={searchFilter.activeTab === ItemTypes.All}
         listDataContainCaptions={listDataContainCaptions}
       />
