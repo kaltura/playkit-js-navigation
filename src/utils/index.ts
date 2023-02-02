@@ -10,6 +10,14 @@ export const itemTypesOrder: Record<string, number> = {
   [ItemTypes.Caption]: 5
 };
 
+export const getLastItem = <T>(arr: Array<T>) => {
+  return arr[arr.length - 1];
+};
+
+export const makeDisplayTime = (startTime: number) => {
+  return toHHMMSS(Math.floor(startTime));
+};
+
 export const decodeString = (content: any): string => {
   if (typeof content !== 'string') {
     return content;
@@ -28,11 +36,12 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
     cuePointType,
     id: cuePoint.id,
     startTime: cuePoint.startTime,
-    displayTime: isLive ? '' : toHHMMSS(Math.floor(cuePoint.startTime)),
+    displayTime: makeDisplayTime(cuePoint.startTime),
     partnerData: metadata.partnerData,
     tags: metadata.tags,
     itemType: cuePointType,
     displayTitle: '',
+    liveCuePoint: isLive,
     displayDescription: [ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType) ? decodeString(metadata.description) : null,
     previewImage: null,
     groupData: null
@@ -67,7 +76,7 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
         currentCuepoint.groupData = GroupTypes.first;
         return [...prevArr, currentCuepoint];
       }
-      const prevItem = prevArr.length > 0 && prevArr[prevArr.length - 1];
+      const prevItem = getLastItem(prevArr);
       const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
       if (prevItem && currentCuepoint.displayTime === prevItem.displayTime) {
         if (prevPrevItem.displayTime === prevItem.displayTime) {
@@ -201,20 +210,20 @@ export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean
     return false;
   }
   if (prevData.length && nextData.length) {
-    if (prevData[0].id !== nextData[0].id) {
+    const prevDataFirst = prevData[0];
+    const nextDataFirst = nextData[0];
+    if (prevDataFirst.id !== nextDataFirst.id) {
       return false;
     }
-    if (prevData[prevData.length - 1].id !== nextData[nextData.length - 1].id) {
+    const prevDataLast = getLastItem(prevData);
+    const nextDataLast = getLastItem(nextData);
+    if (prevDataLast.id !== nextDataLast.id) {
       return false;
     }
-    if (prevData[0].text && nextData[0].text && prevData[0].text !== nextData[0].text) {
+    if (prevDataFirst.text && nextDataFirst.text && prevDataFirst.text !== nextDataFirst.text) {
       return false;
     }
-    if (
-      prevData[prevData.length - 1].text &&
-      nextData[nextData.length - 1].text &&
-      prevData[prevData.length - 1].text !== nextData[nextData.length - 1].text
-    ) {
+    if (prevDataLast.text && nextDataLast.text && prevDataLast.text !== nextDataLast.text) {
       return false;
     }
   }

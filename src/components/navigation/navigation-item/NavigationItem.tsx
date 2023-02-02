@@ -183,7 +183,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   }
 
   render({selectedItem, showIcon, data}: NavigationItemProps) {
-    const {id, previewImage, itemType, displayTime, groupData, displayTitle, displayDescription} = data;
+    const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription} = data;
     const hasTitle = Boolean(displayTitle || displayDescription);
     const {imageLoaded} = this.state;
 
@@ -213,8 +213,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
           ].join(' ')}
           data-entry-id={id}
           {...a11yProps}>
-          <div className={[styles.metadata, displayTime ? styles.withTime : null].join(' ')}>
-            {displayTime && <span>{displayTime}</span>}
+          <div className={[styles.metadata, liveCuePoint ? null : styles.withTime].join(' ')}>
+            {!liveCuePoint && <span>{displayTime}</span>}
             {showIcon && (
               <div className={styles.iconWrapper}>
                 <IconsFactory iconType={itemType}></IconsFactory>
