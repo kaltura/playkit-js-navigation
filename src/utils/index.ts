@@ -210,16 +210,20 @@ export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean
     return false;
   }
   if (prevData.length && nextData.length) {
-    if (prevData[0].id !== nextData[0].id) {
+    const prevDataFirst = prevData[0];
+    const nextDataFirst = nextData[0];
+    if (prevDataFirst.id !== nextDataFirst.id) {
       return false;
     }
-    if (getLastItem(prevData).id !== getLastItem(nextData).id) {
+    const prevDataLast = getLastItem(prevData);
+    const nextDataLast = getLastItem(nextData);
+    if (prevDataLast.id !== nextDataLast.id) {
       return false;
     }
-    if (prevData[0].text && nextData[0].text && prevData[0].text !== nextData[0].text) {
+    if (prevDataFirst.text && nextDataFirst.text && prevDataFirst.text !== nextDataFirst.text) {
       return false;
     }
-    if (getLastItem(prevData).text && getLastItem(nextData).text && getLastItem(prevData).text !== getLastItem(nextData).text) {
+    if (prevDataLast.text && nextDataLast.text && prevDataLast.text !== nextDataLast.text) {
       return false;
     }
   }
