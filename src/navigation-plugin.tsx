@@ -49,7 +49,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   constructor(name: string, player: KalturaPlayerTypes.Player, config: NavigationConfig) {
     super(name, player, config);
     this._player = player;
-    this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
+    this._activeCuePointsMap = this._getDefaultActiveCuePointsMap();
     this._itemsOrder = prepareItemTypesOrder(this.config.itemsOrder);
     this._itemsFilter = isEmptyObject(this.config.itemsOrder) ? itemTypesOrder : config.itemsOrder;
   }
@@ -75,7 +75,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._navigationData = filterDuplications(data);
   }
 
-  private _makeDefaultActiveCuePointsMap = () => {
+  private _getDefaultActiveCuePointsMap = () => {
     return new Map([
       [ItemTypes.All, -1],
       [ItemTypes.AnswerOnAir, -1],
@@ -230,7 +230,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     });
     if (this._player.currentTime < Math.max(...Array.from(this._activeCuePointsMap.values()))) {
       // seek back happened, reset startTime for each tab
-      this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
+      this._activeCuePointsMap = this._getDefaultActiveCuePointsMap();
     }
     if (navigationCuePoints.length) {
       const activeCueForAllTab = getLastItem(navigationCuePoints.filter(cue => this._getCuePointType(cue) !== ItemTypes.Caption));
@@ -378,7 +378,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._navigationIcon = -1;
       this._navigationComponentRef = null;
     }
-    this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
+    this._activeCuePointsMap = this._getDefaultActiveCuePointsMap();
     this._activeCaptionMapId = '';
     this._captionMap = new Map();
     this._liveFutureCuePointsMap = new Map();
