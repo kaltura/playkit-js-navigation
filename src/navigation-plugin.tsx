@@ -233,10 +233,10 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
     }
     if (navigationCuePoints.length) {
-      const cueForAllTab = getLastItem(navigationCuePoints.filter(cue => this._getCuePointType(cue) !== ItemTypes.Caption));
-      if (cueForAllTab && cueForAllTab.startTime > this._activeCuePointsMap.get(ItemTypes.All)!) {
+      const activeCueForAllTab = getLastItem(navigationCuePoints.filter(cue => this._getCuePointType(cue) !== ItemTypes.Caption));
+      if (activeCueForAllTab && activeCueForAllTab.startTime > this._activeCuePointsMap.get(ItemTypes.All)!) {
         // update activeCue startTime for All tab
-        this._activeCuePointsMap.set(ItemTypes.All, cueForAllTab.startTime);
+        this._activeCuePointsMap.set(ItemTypes.All, activeCueForAllTab.startTime);
       }
       navigationCuePoints.forEach(item => {
         if (this._player.isLive() && this._liveFutureCuePointsMap.has(item.id)) {

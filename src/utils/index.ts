@@ -76,7 +76,7 @@ export const addGroupData = (cuepoints: Array<ItemData>): Array<ItemData> => {
         currentCuepoint.groupData = GroupTypes.first;
         return [...prevArr, currentCuepoint];
       }
-      const prevItem = prevArr.length > 0 && getLastItem(prevArr);
+      const prevItem = getLastItem(prevArr);
       const prevPrevItem = prevArr.length > 1 && prevArr[prevArr.length - 2];
       if (prevItem && currentCuepoint.displayTime === prevItem.displayTime) {
         if (prevPrevItem.displayTime === prevItem.displayTime) {
