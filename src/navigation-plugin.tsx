@@ -3,7 +3,7 @@ import {core} from 'kaltura-player-js';
 import {h} from 'preact';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common';
-import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject, getLast} from './utils';
+import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject, getLastItem} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
@@ -233,7 +233,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._activeCuePointsMap = this._makeDefaultActiveCuePointsMap();
     }
     if (navigationCuePoints.length) {
-      const cueForAllTab = getLast(navigationCuePoints.filter(cue => this._getCuePointType(cue) !== ItemTypes.Caption));
+      const cueForAllTab = getLastItem(navigationCuePoints.filter(cue => this._getCuePointType(cue) !== ItemTypes.Caption));
       if (cueForAllTab && cueForAllTab.startTime > this._activeCuePointsMap.get(ItemTypes.All)!) {
         // update activeCue startTime for All tab
         this._activeCuePointsMap.set(ItemTypes.All, cueForAllTab.startTime);
