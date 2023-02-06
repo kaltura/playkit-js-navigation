@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.2.2](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.1...v3.2.2) (2023-02-06)
+
+
+### Bug Fixes
+
+* **FEV-1654:** Chapter fails to remain highlighted after the player reaches a time were a slide it is displayed while the user has Chapters tab selected in navigation ([#295](https://github.com/kaltura/playkit-js-navigation/issues/295)) ([fa2a780](https://github.com/kaltura/playkit-js-navigation/commit/fa2a78012d823a2941c1f6c95d592ec588566cb2))
+
 ### [3.2.1](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.0...v3.2.1) (2023-01-26)
 
 ## [3.2.0](https://github.com/kaltura/playkit-js-navigation/compare/v3.1.1...v3.2.0) (2023-01-18)
