@@ -1,0 +1,77 @@
+[
+  {
+    "partnerId": 1091,
+    "ks": "",
+    "userId": 0,
+    "objectType": "KalturaStartWidgetSessionResponse"
+  },
+  {
+    "objects": [
+      {
+        "description": "",
+        "title": "Pellentesque in ipsum id orci porta dapibus. Nulla quis lorem ut libero malesuada feugiat. Donec rutrum congue leo eget malesuada. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Proin eget tortor risus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Cras ultricies ligula sed magna dictum porta. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Quisque velit nisi, pretium ut lacinia in, elementum id enim.",
+        "subType": 2,
+        "id": "1_02sihd5j",
+        "cuePointType": "thumbCuePoint.Thumb",
+        "startTime": 3000,
+        "objectType": "KalturaThumbCuePoint"
+      },
+      {
+        "assetId": "1_2l76qxkd",
+        "description": "",
+        "title": "",
+        "subType": 1,
+        "id": "1_0h1uf07a",
+        "cuePointType": "thumbCuePoint.Thumb",
+        "startTime": 12000,
+        "objectType": "KalturaThumbCuePoint"
+      },
+      {
+        "assetId": "1_ri4o1mvs",
+        "description": "",
+        "title": "",
+        "subType": 1,
+        "id": "1_ine3l8m5",
+        "cuePointType": "thumbCuePoint.Thumb",
+        "startTime": 13000,
+        "objectType": "KalturaThumbCuePoint"
+      },
+      {
+        "description": "Pellentesque in ipsum id orci porta dapibus. Nulla quis lorem ut libero malesuada feugiat. Donec rutrum congue leo eget malesuada. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Proin eget tortor risus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Cras ultricies ligula sed magna dictum porta. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Quisque velit nisi, pretium ut lacinia in, elementum id enim.",
+        "title": "chapter 2",
+        "subType": 2,
+        "id": "1_o6am7wrw",
+        "cuePointType": "thumbCuePoint.Thumb",
+        "startTime": 20000,
+        "objectType": "KalturaThumbCuePoint"
+      },
+      {
+        "description": "Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Donec rutrum congue leo eget malesuada. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Donec rutrum congue leo eget malesuada. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.",
+        "title": "Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Donec rutrum congue leo eget malesuada. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vivamus ma",
+        "subType": 2,
+        "id": "1_qmdwu0hw",
+        "cuePointType": "thumbCuePoint.Thumb",
+        "startTime": 25000,
+        "objectType": "KalturaThumbCuePoint"
+      }
+    ],
+    "totalCount": 5,
+    "objectType": "KalturaCuePointListResponse"
+  },
+  {
+    "objects": [
+      {
+        "text": "Hotspot 1",
+        "endTime": 20000,
+        "id": "1_guectepa",
+        "cuePointType": "annotation.Annotation",
+        "tags": "hotspots",
+        "startTime": 12000,
+        "partnerData": "{\"schemaVersion\":\"1\",\"onClick\":{\"type\":\"jumpToTime\",\"jumpToTime\":0},\"createdAt\":\"2022-11-17T12:10:21.727Z\",\"layout\":{\"relativeX\":0.27636704998826567,\"relativeY\":0.3695741740332212,\"relativeWidth\":0.25634045216302903,\"relativeHeight\":0.11481916086469009,\"stageWidth\":499.3359375,\"stageHeight\":278.69912790697674},\"styles\":{\"background\":\"rgba(0, 0, 0, 0.6)\",\"color\":\"white\",\"border-radius\":\"3px\",\"font-weight\":\"normal\",\"font-size\":\"14px\",\"font-family\":\"Helvetica, Arial, Sans-Serif\"}}",
+        "objectType": "KalturaAnnotation"
+      }
+    ],
+    "totalCount": 1,
+    "objectType": "KalturaCuePointListResponse"
+  }
+]

@@ -23,7 +23,10 @@ export const PluginButton = withText(translates)(({isActive, onClick, ...otherPr
   return (
     <Tooltip label={otherProps.label} type="bottom">
       <A11yWrapper onClick={onClick}>
-        <button aria-label={otherProps.label} className={[ui.style.upperBarIcon, styles.pluginButton, isActive ? styles.active : ''].join(' ')}>
+        <button
+          aria-label={otherProps.label}
+          className={[ui.style.upperBarIcon, styles.pluginButton, isActive ? styles.active : ''].join(' ')}
+          data-testid={'navigation_pluginButton'}>
           <Icon
             id="navigation-plugin-button"
             height={icons.BigSize}
