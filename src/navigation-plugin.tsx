@@ -31,7 +31,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _activeCuePointsMap: HighlightedMap;
   private _captionMap: Map<string, Array<ItemData>> = new Map();
   private _activeCaptionMapId: string = '';
-  private _navigationComponentRef: Navigation | null = null;
+  private _pluginButtonRef: HTMLButtonElement | null = null;
 
   private _player: KalturaPlayerTypes.Player;
   private _navigationPanel = -1;
@@ -259,6 +259,13 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
   };
 
+  private _handleClose = (e: OnClickEvent, byKeyboard: boolean) => {
+    if (byKeyboard) {
+      this._pluginButtonRef?.focus();
+    }
+    this._deactivatePlugin();
+  };
+
   private _createNavigationPlugin = () => {
     if (Math.max(this._navigationPanel, this._navigationIcon) > 0) {
       this.logger.warn('navigation plugin already initialized');
@@ -270,10 +277,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       panelComponent: () => {
         return (
           <Navigation
-            ref={node => {
-              this._navigationComponentRef = node;
-            }}
-            onClose={this._deactivatePlugin}
+            onClose={this._handleClose}
             data={this._data}
             onItemClicked={this._seekTo}
             isLoading={this._isLoading}
@@ -296,7 +300,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
-        return <PluginButton isActive={this._isPluginActive()} onClick={this._handleClickOnPluginIcon} />;
+        return <PluginButton isActive={this._isPluginActive()} onClick={this._handleClickOnPluginIcon} setRef={this._setPluginButtonRef} />;
       }
     }) as number;
 
@@ -370,13 +374,17 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     return this.sidePanelsManager!.isItemActive(this._navigationPanel);
   };
 
+  private _setPluginButtonRef = (ref: HTMLButtonElement) => {
+    this._pluginButtonRef = ref;
+  };
+
   reset(): void {
     if (Math.max(this._navigationPanel, this._navigationIcon) > 0) {
       this.sidePanelsManager!.remove(this._navigationPanel);
       this.upperBarManager!.remove(this._navigationIcon);
       this._navigationPanel = -1;
       this._navigationIcon = -1;
-      this._navigationComponentRef = null;
+      this._pluginButtonRef = null;
     }
     this._activeCuePointsMap = this._getDefaultActiveCuePointsMap();
     this._activeCaptionMapId = '';

@@ -1,5 +1,6 @@
 import {h, Component} from 'preact';
 import * as styles from './navigaton.scss';
+import {OnClick} from '@playkit-js/common';
 import {NavigationList} from './navigation-list/NavigationList';
 import {NavigationSearch} from '../navigation-search/navigation-search';
 import {NavigationFilter} from '../navigation-filter';
@@ -31,7 +32,7 @@ export interface SearchFilter {
 export interface NavigationProps {
   data: Array<ItemData>;
   onItemClicked(time: number): void;
-  onClose: () => void;
+  onClose: OnClick;
   retry?: () => void;
   isLoading: boolean;
   hasError: boolean;
@@ -237,7 +238,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
   private _handleClose = (event: KeyboardEvent) => {
     if (event.keyCode === KeyMap.ESC) {
-      this.props.onClose();
+      this.props.onClose(event, true);
     }
   };
 
