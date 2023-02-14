@@ -171,7 +171,7 @@ describe('Navigation plugin', () => {
   describe('search and filter', () => {
     it('should set focus to search input if plugin opened by keyboard', () => {
       mockKalturaBe();
-      preparePage({muted: true, autoplay: true});
+      preparePage();
       cy.get('[data-testid="navigation_pluginButton"]').should('exist').trigger('keydown', {
         keyCode: 32, // Space
         force: true
