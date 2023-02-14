@@ -87,11 +87,19 @@ describe('Navigation plugin', () => {
       cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'hidden');
     });
 
-    it('should open the navigation side panel if expandOnFirstPlay configuration is true ', () => {
+    it('should open the navigation side panel if expandOnFirstPlay configuration is true', () => {
       mockKalturaBe();
       preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
       cy.get('[data-testid="navigation_pluginButton"]').should('exist');
       cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
+    });
+
+    it('should close plugin if ESC button pressed', () => {
+      mockKalturaBe();
+      preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
+      cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
+      cy.get("[aria-label='Search in video']").type('{esc}');
+      cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'hidden');
     });
   });
 
@@ -161,6 +169,15 @@ describe('Navigation plugin', () => {
   });
 
   describe('search and filter', () => {
+    it('should set focus to search input if plugin opened by keyboard', () => {
+      mockKalturaBe();
+      preparePage();
+      cy.get('[data-testid="navigation_pluginButton"]').should('exist').trigger('keydown', {
+        keyCode: 32, // Space
+        force: true
+      });
+      cy.get("[aria-label='Search in video']").should('have.focus');
+    });
     it('should test search bar', () => {
       mockKalturaBe();
       preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});

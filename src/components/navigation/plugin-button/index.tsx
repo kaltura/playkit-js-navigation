@@ -16,14 +16,18 @@ const translates = ({isActive}: PluginButtonProps) => {
 interface PluginButtonProps {
   isActive: boolean;
   onClick: OnClick;
+  setRef: (ref: HTMLButtonElement | null) => void;
   label?: string;
 }
 
-export const PluginButton = withText(translates)(({isActive, onClick, ...otherProps}: PluginButtonProps) => {
+export const PluginButton = withText(translates)(({isActive, onClick, setRef, ...otherProps}: PluginButtonProps) => {
   return (
     <Tooltip label={otherProps.label} type="bottom">
       <A11yWrapper onClick={onClick}>
         <button
+          ref={node => {
+            setRef(node);
+          }}
           aria-label={otherProps.label}
           className={[ui.style.upperBarIcon, styles.pluginButton, isActive ? styles.active : ''].join(' ')}
           data-testid={'navigation_pluginButton'}>
