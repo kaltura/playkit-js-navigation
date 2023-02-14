@@ -159,7 +159,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return (
       <A11yWrapper onClick={this._handleExpandChange}>
         <div
-          role={'button'}
           tabIndex={0}
           className={styles.showMoreButton}
           ref={node => {
@@ -188,7 +187,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const {imageLoaded} = this.state;
 
     const a11yProps: Record<string, any> = {
-      role: selectedItem ? 'text' : 'listitem',
       ariaCurrent: selectedItem,
       onFocus: this._handleFocus,
       onBlur: this._handleBlur,
@@ -197,10 +195,13 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     };
 
     return (
-      <A11yWrapper onClick={this._handleClick} onDownKeyPressed={this.props.onNext} onUpKeyPressed={this.props.onPrev}>
+      <A11yWrapper
+        onClick={this._handleClick}
+        onDownKeyPressed={this.props.onNext}
+        onUpKeyPressed={this.props.onPrev}
+        role={selectedItem ? 'text' : 'listitem'}>
         <div
           tabIndex={0}
-          role="listitem"
           area-label={displayTitle || displayDescription}
           ref={node => {
             this._itemElementRef = node;

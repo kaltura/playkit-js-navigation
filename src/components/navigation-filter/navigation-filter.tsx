@@ -70,17 +70,18 @@ class NavigationFilterComponent extends Component<FilterProps> {
     this._getTabRef(currentIndex + 1)?.focus();
   };
 
-
   public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label?: string}, index: number) => {
     return (
       <Tooltip label={tab.label}>
-        <A11yWrapper onClick={() => this._handleChange(tab.type)} onDownKeyPressed={this._handleDownKeyPressed(index)}
-                     onUpKeyPressed={this._handleUpKeyPressed(index)}>
+        <A11yWrapper
+          onClick={() => this._handleChange(tab.type)}
+          onDownKeyPressed={this._handleDownKeyPressed(index)}
+          onUpKeyPressed={this._handleUpKeyPressed(index)}
+          role="radio">
           <button
             aria-label={tab.label}
             key={tab.type}
             tabIndex={0}
-            role="radio"
             type="checkbox"
             aria-checked={tab.isActive}
             className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
