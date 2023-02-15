@@ -167,7 +167,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
             } else {
               this._showMoreButtonRef = node;
             }
-          }}>
+          }}
+          aria-label={`Read ${expandText ? 'less' : 'more'} about this ${this.props.data.cuePointType}`}>
           {expandText ? <Text id="navigation.read_less">Less</Text> : <Text id="navigation.read_more">More</Text>}
         </div>
       </A11yWrapper>
