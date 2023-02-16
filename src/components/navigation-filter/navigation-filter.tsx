@@ -79,7 +79,7 @@ class NavigationFilterComponent extends Component<FilterProps> {
           onUpKeyPressed={this._handleUpKeyPressed(index)}
           role="radio">
           <button
-            aria-label={tab.label}
+            aria-label={`list ${tab.label}`}
             key={tab.type}
             tabIndex={0}
             type="checkbox"
