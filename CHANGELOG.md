@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.2.3](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.2...v3.2.3) (2023-02-23)
+
+
+### Bug Fixes
+
+* **FEC-12918:** handle focus change ([#298](https://github.com/kaltura/playkit-js-navigation/issues/298)) ([ce8321e](https://github.com/kaltura/playkit-js-navigation/commit/ce8321e930d31c516d70824e982b0d72c0e9eeaa))
+* **FEC-12918:** When users close a menu by clicking the close button, focus should go back to the button that opened the plugin ([#297](https://github.com/kaltura/playkit-js-navigation/issues/297)) ([d3366ec](https://github.com/kaltura/playkit-js-navigation/commit/d3366ece3233fafdba1a295677cf5ce61e154b88))
+* **FEC-12919:** add aria labels ([#299](https://github.com/kaltura/playkit-js-navigation/issues/299)) ([bf7d718](https://github.com/kaltura/playkit-js-navigation/commit/bf7d7186a0758840f699874c93d7ddc8343cb0a4))
+
 ### [3.2.2](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.1...v3.2.2) (2023-02-06)
 
 
