@@ -161,7 +161,7 @@ describe('Navigation plugin', () => {
           cy.get("[aria-label='Search in video']").type('c');
           kalturaPlayer.currentTime = 12;
           cy.get('[data-entry-id="1_nkiuwh50-1"]').should('have.attr', 'aria-current', 'true');
-          cy.get("[aria-label='Chapters']").click();
+          cy.get("[aria-label='list Chapters']").click();
           cy.get('[data-entry-id="1_02sihd5j"]').should('have.attr', 'aria-current', 'true');
         });
       });
@@ -199,10 +199,10 @@ describe('Navigation plugin', () => {
       preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
       cy.get('[data-testid="navigation_root"]').within(() => {
         // default state
-        const tabAll = cy.get("[aria-label='All']").should('be.visible').should('have.attr', 'aria-checked', 'true');
-        const tabChapters = cy.get("[aria-label='Chapters']").should('be.visible').should('have.attr', 'aria-checked', 'false');
-        const tabSlides = cy.get("[aria-label='Slides']").should('be.visible').should('have.attr', 'aria-checked', 'false');
-        const tabHotspots = cy.get("[aria-label='Hotspots']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+        const tabAll = cy.get("[aria-label='list All']").should('be.visible').should('have.attr', 'aria-checked', 'true');
+        const tabChapters = cy.get("[aria-label='list Chapters']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+        const tabSlides = cy.get("[aria-label='list Slides']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+        const tabHotspots = cy.get("[aria-label='list Hotspots']").should('be.visible').should('have.attr', 'aria-checked', 'false');
         cy.get("[aria-label='Captions']").should('not.exist');
         cy.get("[aria-label='AoA']").should('not.exist');
 
@@ -219,12 +219,12 @@ describe('Navigation plugin', () => {
         // apply search
         cy.get("[aria-label='Captions']").should('not.exist');
         cy.get("[aria-label='Search in video']").type('c');
-        cy.get("[aria-label='All']").should('be.visible');
-        cy.get("[aria-label='Chapters']").should('be.visible');
+        cy.get("[aria-label='list All']").should('be.visible');
+        cy.get("[aria-label='list Chapters']").should('be.visible');
         cy.get("[aria-label='Slides']").should('not.exist');
         cy.get("[aria-label='Hotspots']").should('not.exist');
         cy.get("[aria-label='AoA']").should('not.exist');
-        const tabCaptions = cy.get("[aria-label='Captions']").should('be.visible').click();
+        const tabCaptions = cy.get("[aria-label='list Captions']").should('be.visible').click();
         tabCaptions.should('have.attr', 'aria-checked', 'true');
         cy.get('[data-testid="navigation_list"]').children().should('have.length', 5);
       });
