@@ -9,5 +9,5 @@ const NAME = __NAME__;
 export {NavigationPlugin as Plugin};
 export {VERSION, NAME};
 
-const pluginName: string = 'navigation';
+const pluginName: string = 'navigationLocal';
 KalturaPlayer.core.registerPlugin(pluginName, NavigationPlugin);

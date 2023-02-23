@@ -1,6 +1,6 @@
 import {h, Component} from 'preact';
 import * as styles from './navigaton.scss';
-import {OnClick} from '@playkit-js/common';
+import {OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {NavigationList} from './navigation-list/NavigationList';
 import {NavigationSearch} from '../navigation-search/navigation-search';
 import {NavigationFilter} from '../navigation-filter';

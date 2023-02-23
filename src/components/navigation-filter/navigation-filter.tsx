@@ -1,5 +1,5 @@
 import {h, Component, Fragment} from 'preact';
-import {A11yWrapper} from '@playkit-js/common';
+import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './navigation-filter.scss';
 import {ItemTypes} from '../../types';
 import {IconsFactory} from '../navigation/icons/IconsFactory';

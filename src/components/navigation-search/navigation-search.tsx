@@ -1,5 +1,5 @@
 import {h, Component} from 'preact';
-import {InputField} from '@playkit-js/common';
+import {InputField} from '@playkit-js/common/dist/components/input-field';
 import {debounce} from '../../utils';
 
 const {withText, Text} = KalturaPlayer.ui.preacti18n;
@@ -38,7 +38,7 @@ class NavigationSearchComponent extends Component<SearchProps> {
   componentDidUpdate(previousProps: Readonly<SearchProps>): void {
     const {kitchenSinkActive, toggledWithEnter} = this.props;
     if (!previousProps.kitchenSinkActive && kitchenSinkActive && toggledWithEnter) {
-      this._inputField?.setFocus();
+      this._inputField?.setFocus({ preventScroll: true });
     }
   }
 
