@@ -42,6 +42,7 @@ class NavigationFilterComponent extends Component<FilterProps> {
   componentWillUnmount() {
     this._tabsRefMap = new Map();
   }
+
   shouldComponentUpdate(nextProps: Readonly<FilterProps>) {
     const {activeTab, availableTabs, totalResults} = this.props;
     if (activeTab !== nextProps.activeTab || availableTabs !== nextProps.availableTabs || totalResults !== nextProps.totalResults) {
