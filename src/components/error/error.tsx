@@ -1,5 +1,5 @@
 import {h} from 'preact';
-import {A11yWrapper} from '@playkit-js/common';
+import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './error.scss';
 import {ErrorIconSVG} from '../icons/error-icon';
 const {withText, Text} = KalturaPlayer.ui.preacti18n;

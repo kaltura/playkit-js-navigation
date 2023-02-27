@@ -1,5 +1,5 @@
 import {Component, h} from 'preact';
-import {A11yWrapper, OnClickEvent} from '@playkit-js/common';
+import {A11yWrapper, OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';

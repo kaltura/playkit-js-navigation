@@ -2,7 +2,7 @@
 import {core} from 'kaltura-player-js';
 import {h} from 'preact';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
-import {OnClickEvent} from '@playkit-js/common';
+import {OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject, getLastItem} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
