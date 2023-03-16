@@ -17,10 +17,11 @@ import {
   makeDisplayTime
 } from '../../utils';
 import {AutoscrollButton} from './autoscroll-button';
-import {ItemTypes, ItemData, HighlightedMap} from '../../types';
+import {ItemTypes, ItemData, HighlightedMap, ItemTypesTranslates} from '../../types';
 import {CloseButton} from '../close-button';
 
 const {KeyMap} = KalturaPlayer.ui.utils;
+const {withText, Text} = KalturaPlayer.ui.preacti18n;
 
 export interface SearchFilter {
   searchQuery: string;
@@ -61,7 +62,17 @@ const initialSearchFilter = {
   totalResults: 0
 };
 
-export class Navigation extends Component<NavigationProps, NavigationState> {
+const translates = {
+  [ItemTypes.All]: <Text id="navigation.all_types">All</Text>,
+  [ItemTypes.AnswerOnAir]: <Text id="navigation.aoa_type">Answer On Air</Text>,
+  [ItemTypes.Chapter]: <Text id="navigation.chapter_type">Chapters</Text>,
+  [ItemTypes.Slide]: <Text id="navigation.slide_type">Slides</Text>,
+  [ItemTypes.Hotspot]: <Text id="navigation.hotspot_type">Hotspots</Text>,
+  [ItemTypes.Caption]: <Text id="navigation.caption_type">Captions</Text>
+};
+
+@withText(translates)
+export class Navigation extends Component<NavigationProps & ItemTypesTranslates, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
   private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
@@ -161,6 +172,17 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     this._prepareNavigationData(searchFilter);
   };
 
+  private _getItemTypesTranslates = (): ItemTypesTranslates => {
+    return {
+      [ItemTypes.All]: this.props[ItemTypes.All],
+      [ItemTypes.AnswerOnAir]: this.props[ItemTypes.AnswerOnAir],
+      [ItemTypes.Chapter]: this.props[ItemTypes.Chapter],
+      [ItemTypes.Slide]: this.props[ItemTypes.Slide],
+      [ItemTypes.Hotspot]: this.props[ItemTypes.Hotspot],
+      [ItemTypes.Caption]: this.props[ItemTypes.Caption]
+    }
+  }
+
   private _renderHeader = () => {
     const {toggledWithEnter, kitchenSinkActive, hasError} = this.props;
     const {searchFilter, convertedData, listDataContainCaptions} = this.state;
@@ -187,6 +209,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
             availableTabs={searchFilter.availableTabs}
             totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : null}
             listDataContainCaptions={listDataContainCaptions}
+            itemTypesTranslates={this._getItemTypesTranslates()}
           />
         )}
       </div>
@@ -228,6 +251,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         highlightedTime={highlightedTime}
         showItemsIcons={searchFilter.activeTab === ItemTypes.All}
         listDataContainCaptions={listDataContainCaptions}
+        itemTypesTranslates={this._getItemTypesTranslates()}
       />
     );
   };

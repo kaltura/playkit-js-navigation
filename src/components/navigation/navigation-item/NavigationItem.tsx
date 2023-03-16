@@ -15,6 +15,10 @@ export interface NavigationItemProps {
   showIcon: boolean;
   onNext: () => void;
   onPrev: () => void;
+  readLessTranslate: string;
+  readMoreTranslate: string;
+  readMoreLabel: string;
+  readLessLabel: string;
 }
 
 export interface NavigationItemState {
@@ -168,8 +172,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               this._showMoreButtonRef = node;
             }
           }}
-          aria-label={`Read ${expandText ? 'less' : 'more'} about this ${this.props.data.cuePointType}`}>
-          {expandText ? <Text id="navigation.read_less">Less</Text> : <Text id="navigation.read_more">More</Text>}
+          aria-label={expandText ? this.props.readMoreLabel : this.props.readLessLabel}>
+          {expandText ? this.props.readLessTranslate : this.props.readMoreTranslate}
         </div>
       </A11yWrapper>
     );

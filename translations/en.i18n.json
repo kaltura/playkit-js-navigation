@@ -5,6 +5,8 @@
       "show_plugin": "Show Navigation",
       "read_less": "Less",
       "read_more": "More",
+      "read_more_about": "Read more about this",
+      "read_less_about": "Read less about this",
       "whoops": "Whoops!",
       "error_message": "We couldn't retrieve your Data.",
       "retry": "Retry",
@@ -32,7 +34,8 @@
       "search_no_results_description": "Try a more general keyword",
       "loading": "Loading",
       "auto_scroll": "Resume AutoScroll",
-      "image_alt": "Slide Preview"
+      "image_alt": "Slide Preview",
+      "list_type": "List"
     }
   }
 }
