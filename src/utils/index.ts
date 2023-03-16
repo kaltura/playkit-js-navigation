@@ -250,35 +250,3 @@ export const findCuepointType = (list: ItemData[], cuePointType: ItemTypes): boo
 export const filterCuepointsByStartTime = (list: ItemData[], startTime: number): ItemData[] => {
   return list.filter(item => item.startTime >= startTime);
 };
-
-type Procedure = (...args: any[]) => void;
-export function debounce<F extends Procedure>(
-  func: F,
-  waitMilliseconds = 50,
-  options = {
-    isImmediate: false
-  }
-): F {
-  let timeoutId: any;
-
-  return function (this: any, ...args: any[]) {
-    const doLater = () => {
-      timeoutId = undefined;
-      if (!options.isImmediate) {
-        func.apply(this, args);
-      }
-    };
-
-    const shouldCallNow = options.isImmediate && timeoutId === undefined;
-
-    if (timeoutId !== undefined) {
-      clearTimeout(timeoutId);
-    }
-
-    timeoutId = setTimeout(doLater, waitMilliseconds);
-
-    if (shouldCallNow) {
-      func.apply(this, args);
-    }
-  } as any;
-}

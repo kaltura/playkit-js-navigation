@@ -1,19 +1,56 @@
 import {h, Component, Fragment} from 'preact';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './navigation-filter.scss';
-import {ItemTypes} from '../../types';
+import {ItemTypes, ItemTypesTranslates} from '../../types';
 import {IconsFactory} from '../navigation/icons/IconsFactory';
 
 const {Tooltip} = KalturaPlayer.ui.components;
 const {withText, Text} = KalturaPlayer.ui.preacti18n;
 
-const translates = {
-  [ItemTypes.All]: <Text id="navigation.all_types">All</Text>,
-  [ItemTypes.AnswerOnAir]: <Text id="navigation.aoa_type">Answer On Air</Text>,
-  [ItemTypes.Chapter]: <Text id="navigation.chapter_type">Chapters</Text>,
-  [ItemTypes.Slide]: <Text id="navigation.slide_type">Slides</Text>,
-  [ItemTypes.Hotspot]: <Text id="navigation.hotspot_type">Hotspots</Text>,
-  [ItemTypes.Caption]: <Text id="navigation.caption_type">Captions</Text>
+const translates = (props: FilterProps) => {
+  const {activeTab, totalResults, listDataContainCaptions} = props;
+  const resultDefaultTranslate = `result${totalResults && totalResults > 1 ? 's' : ''}`;
+  const componentTranslates = {
+    listType: <Text id="navigation.list_type">List</Text>
+  };
+  if (activeTab === ItemTypes.All) {
+    if (listDataContainCaptions) {
+      return {
+        ...componentTranslates,
+        searchResultsLabel: (
+          <Text
+            id="navigation.search_result_all_types_with_captions"
+            fields={{
+              totalResults
+            }}
+            plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in all content including captions`}</Text>
+        )
+      };
+    }
+    return {
+      ...componentTranslates,
+      searchResultsLabel: (
+        <Text
+          id="navigation.search_result_all_types"
+          fields={{
+            totalResults
+          }}
+          plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in all content`}</Text>
+      )
+    };
+  }
+  return {
+    ...componentTranslates,
+    searchResultsLabel: (
+      <Text
+        id="navigation.search_result_one_type"
+        fields={{
+          totalResults,
+          type: props.itemTypesTranslates[activeTab]
+        }}
+        plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in ${props.itemTypesTranslates[activeTab]?.toLowerCase()}`}</Text>
+    )
+  };
 };
 
 export interface FilterProps {
@@ -22,21 +59,19 @@ export interface FilterProps {
   availableTabs: ItemTypes[];
   totalResults: number | null;
   listDataContainCaptions: boolean;
-  [ItemTypes.All]?: string;
-  [ItemTypes.AnswerOnAir]?: string;
-  [ItemTypes.Chapter]?: string;
-  [ItemTypes.Slide]?: string;
-  [ItemTypes.Hotspot]?: string;
-  [ItemTypes.Caption]?: string;
+  itemTypesTranslates: ItemTypesTranslates;
+  searchResultsLabel?: string;
+  listType?: string;
 }
 
 export interface TabData {
   type: ItemTypes;
   isActive: boolean;
-  label?: string;
+  label: string;
 }
 
-class NavigationFilterComponent extends Component<FilterProps> {
+@withText(translates)
+export class NavigationFilter extends Component<FilterProps> {
   private _tabsRefMap: Map<number, HTMLButtonElement | null> = new Map();
 
   componentWillUnmount() {
@@ -70,7 +105,7 @@ class NavigationFilterComponent extends Component<FilterProps> {
     this._getTabRef(currentIndex + 1)?.focus();
   };
 
-  public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label?: string}, index: number) => {
+  public _renderTab = (tab: {isActive: boolean; type: ItemTypes; label: string}, index: number) => {
     return (
       <Tooltip label={tab.label}>
         <A11yWrapper
@@ -79,7 +114,7 @@ class NavigationFilterComponent extends Component<FilterProps> {
           onUpKeyPressed={this._handleUpKeyPressed(index)}
           role="radio">
           <button
-            aria-label={`list ${tab.label}`}
+            aria-label={`${this.props.listType} ${tab.label}`}
             key={tab.type}
             tabIndex={0}
             type="checkbox"
@@ -89,7 +124,7 @@ class NavigationFilterComponent extends Component<FilterProps> {
               this._setTabRef(index, node);
             }}>
             {tab.type === ItemTypes.All ? (
-              <span>{this.props[ItemTypes.All]}</span>
+              <span>{this.props.itemTypesTranslates[ItemTypes.All]}</span>
             ) : (
               <Fragment>
                 <IconsFactory iconType={tab.type} />
@@ -108,51 +143,16 @@ class NavigationFilterComponent extends Component<FilterProps> {
       return {
         type: tab,
         isActive: activeTab === tab,
-        label: this.props[tab]
+        label: this.props.itemTypesTranslates[tab]!
       };
     });
     return tabs;
   };
 
-  private _getResultLabel = () => {
-    const {activeTab, totalResults, listDataContainCaptions} = this.props;
-    const resultDefaultTranslate = `result${totalResults && totalResults > 1 ? 's' : ''}`;
-    if (activeTab === ItemTypes.All) {
-      if (listDataContainCaptions) {
-        return (
-          <Text
-            id="navigation.search_result_all_types_with_captions"
-            fields={{
-              totalResults
-            }}
-            plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in all content including captions`}</Text>
-        );
-      }
-      return (
-        <Text
-          id="navigation.search_result_all_types"
-          fields={{
-            totalResults
-          }}
-          plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in all content`}</Text>
-      );
-    }
-    return (
-      <Text
-        id="navigation.search_result_one_type"
-        fields={{
-          totalResults,
-          type: this.props[activeTab]
-        }}
-        plural={totalResults}>{`${totalResults} ${resultDefaultTranslate} in ${this.props[activeTab]?.toLowerCase()}`}</Text>
-    );
-  };
-
   private _renderSearchResult = () => {
-    const searchResultsLabel = this._getResultLabel();
     return (
-      <div className={styles.totalResults} aria-label={searchResultsLabel}>
-        {searchResultsLabel}
+      <div className={styles.totalResults} aria-label={this.props.searchResultsLabel}>
+        {this.props.searchResultsLabel}
       </div>
     );
   };
@@ -177,5 +177,3 @@ class NavigationFilterComponent extends Component<FilterProps> {
     );
   }
 }
-
-export const NavigationFilter = withText(translates)(NavigationFilterComponent);

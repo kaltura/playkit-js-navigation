@@ -4,7 +4,16 @@ import {NavigationItem} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';
 import {EmptyState} from '../icons/EmptyState';
 import {isDataEqual} from '../../../utils';
-import {ItemData} from '../../../types';
+import {ItemData, ItemTypesTranslates} from '../../../types';
+
+const {withText, Text} = KalturaPlayer.ui.preacti18n;
+
+const translates = {
+  readLess: <Text id="navigation.read_less">Less</Text>,
+  readMore: <Text id="navigation.read_more">More</Text>,
+  readMoreLabel: <Text id="navigation.read_more_about">Read more about this</Text>,
+  readLessLabel: <Text id="navigation.read_less_about">Read less about this</Text>
+};
 
 export interface Props {
   data: Array<ItemData>;
@@ -16,8 +25,14 @@ export interface Props {
   showItemsIcons: boolean;
   listDataContainCaptions: boolean;
   searchActive: boolean;
+  itemTypesTranslates: ItemTypesTranslates;
+  readLess?: string;
+  readMore?: string;
+  readMoreLabel?: string;
+  readLessLabel?: string;
 }
 
+@withText(translates)
 export class NavigationList extends Component<Props> {
   private _selectedElementY = 0;
   private _itemsRefMap: Map<number, NavigationItem | null> = new Map();
@@ -76,6 +91,7 @@ export class NavigationList extends Component<Props> {
     return (
       <div className={styles.navigationList} data-testid="navigation_list">
         {data.map((item: ItemData, index: number) => {
+          const itemTypeTranslate = this.props.itemTypesTranslates[item.itemType];
           return (
             <NavigationItem
               ref={node => {
@@ -84,12 +100,15 @@ export class NavigationList extends Component<Props> {
               widgetWidth={widgetWidth}
               onClick={onSeek}
               selectedItem={highlightedTime === item.displayTime}
-              key={item.id}
               data={item}
               onSelected={this.updateSelected}
               showIcon={showItemsIcons}
               onNext={() => this._handleDownKeyPressed(index)}
               onPrev={() => this._handleUpKeyPressed(index)}
+              readLessTranslate={this.props.readLess!}
+              readMoreTranslate={this.props.readMore!}
+              readMoreLabel={`${this.props.readMoreLabel} ${itemTypeTranslate}`}
+              readLessLabel={`${this.props.readLessLabel} ${itemTypeTranslate}`}
             />
           );
         })}

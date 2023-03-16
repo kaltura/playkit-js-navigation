@@ -1,6 +1,6 @@
 import {h, Component} from 'preact';
 import {InputField} from '@playkit-js/common/dist/components/input-field';
-import {debounce} from '../../utils';
+import {debounce} from '@playkit-js/common/dist/utils-common/utils';
 
 const {withText, Text} = KalturaPlayer.ui.preacti18n;
 

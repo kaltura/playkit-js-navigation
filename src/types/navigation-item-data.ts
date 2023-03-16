@@ -13,6 +13,15 @@ export enum ItemTypes {
   Caption = 'Caption'
 }
 
+export interface ItemTypesTranslates {
+  [ItemTypes.All]?: string;
+  [ItemTypes.AnswerOnAir]?: string;
+  [ItemTypes.Chapter]?: string;
+  [ItemTypes.Slide]?: string;
+  [ItemTypes.Hotspot]?: string;
+  [ItemTypes.Caption]?: string;
+}
+
 export interface CuePoint {
   startTime: number;
   endTime?: number;
