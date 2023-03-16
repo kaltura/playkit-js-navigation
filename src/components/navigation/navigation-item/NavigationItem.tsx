@@ -192,7 +192,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const {imageLoaded} = this.state;
 
     const a11yProps: Record<string, any> = {
-      ariaCurrent: selectedItem,
+      ['aria-current']: selectedItem,
       onFocus: this._handleFocus,
       onBlur: this._handleBlur,
       tabIndex: 0,
@@ -207,7 +207,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
         role={selectedItem ? 'text' : 'listitem'}>
         <div
           tabIndex={0}
-          area-label={displayTitle || displayDescription}
+          aria-label={displayTitle || displayDescription}
           ref={node => {
             this._itemElementRef = node;
           }}

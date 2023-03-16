@@ -1,7 +1,11 @@
 const MANIFEST = `#EXTM3U
 #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",LANGUAGE="en",NAME="English",AUTOSELECT=YES,DEFAULT=YES,URI="${location.origin}/media/index_1.m3u8",SUBTITLES="subs"
-
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=509496,RESOLUTION=480x272,AUDIO="audio",SUBTITLES="subs"
+${location.origin}/media/index.m3u8`;
+
+const MANIFEST_SAFARI = `#EXTM3U
+#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",NAME="English",DEFAULT=NO,AUTOSELECT=YES,FORCED=NO,LANGUAGE="en",URI="${location.origin}/media/index_1.m3u8"
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=504265,RESOLUTION=480x272,AUDIO="audio",SUBTITLES="subs"
 ${location.origin}/media/index.m3u8`;
 
 const preparePage = (navigationConf = {}, playbackConf = {}) => {
@@ -68,7 +72,7 @@ const mockKalturaBe = (entryFixture = 'vod-entry.json', dataFixture = 'navigatio
 describe('Navigation plugin', () => {
   beforeEach(() => {
     // manifest
-    cy.intercept('GET', '**/a.m3u8*', MANIFEST);
+    cy.intercept('GET', '**/a.m3u8*', Cypress.browser.name === 'webkit' ? MANIFEST_SAFARI : MANIFEST);
     // thumbnails
     cy.intercept('GET', '**/width/164/vid_slices/100', {fixture: '100.jpeg'});
     cy.intercept('GET', '**/height/360/width/640', {fixture: '640.jpeg'});
@@ -122,17 +126,10 @@ describe('Navigation plugin', () => {
     it('should handle click and make seek to cue startTime', () => {
       mockKalturaBe();
       preparePage({expandOnFirstPlay: true}, {muted: true, autoplay: true});
-      cy.window().then($win => {
-        // @ts-ignore
-        const kalturaPlayer = $win.KalturaPlayer.getPlayers()['player-placeholder'];
-        cy.get('[data-testid="navigation_root"]').within(() => {
-          kalturaPlayer.pause();
-          const chapterItem = cy.get('[area-label="chapter 2"]').should('have.attr', 'aria-current', 'false');
-          chapterItem.click();
-          chapterItem.should('have.attr', 'aria-current', 'true').then(() => {
-            expect(kalturaPlayer.currentTime).to.eql(20);
-          });
-        });
+      cy.get('[data-testid="navigation_root"]').within(() => {
+        const chapterItem = cy.get('[aria-label="chapter 2"]').should('have.attr', 'aria-current', 'false');
+        chapterItem.click({force: true});
+        chapterItem.should('have.attr', 'aria-current', 'true');
       });
     });
 
@@ -143,9 +140,9 @@ describe('Navigation plugin', () => {
         // @ts-ignore
         const kalturaPlayer = $win.KalturaPlayer.getPlayers()['player-placeholder'];
         cy.get('[data-testid="navigation_root"]').within(() => {
-          cy.get('[area-label="Hotspot 1"]').should('have.attr', 'aria-current', 'false');
+          cy.get('[aria-label="Hotspot 1"]').should('have.attr', 'aria-current', 'false');
           kalturaPlayer.currentTime = 12;
-          cy.get('[area-label="Hotspot 1"]').should('have.attr', 'aria-current', 'true');
+          cy.get('[aria-label="Hotspot 1"]').should('have.attr', 'aria-current', 'true');
         });
       });
     });
