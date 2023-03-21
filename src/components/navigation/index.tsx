@@ -208,7 +208,7 @@ export class Navigation extends Component<NavigationProps & ItemTypesTranslates,
             onChange={this._handleSearchFilterChange('activeTab')}
             activeTab={searchFilter.activeTab}
             availableTabs={searchFilter.availableTabs}
-            totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : 0}
+            totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : null}
             listDataContainCaptions={listDataContainCaptions}
             itemTypesTranslates={this._getItemTypesTranslates()}
           />

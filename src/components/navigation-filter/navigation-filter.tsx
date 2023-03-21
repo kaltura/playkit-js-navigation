@@ -14,6 +14,9 @@ const translates = (props: FilterProps) => {
   const componentTranslates = {
     listType: <Text id="navigation.list_type">List</Text>
   };
+  if (!totalResults) {
+    return componentTranslates;
+  }
   if (activeTab === ItemTypes.All) {
     if (listDataContainCaptions) {
       return {
@@ -58,7 +61,7 @@ export interface FilterProps {
   onChange(value: ItemTypes): void;
   activeTab: ItemTypes;
   availableTabs: ItemTypes[];
-  totalResults: number;
+  totalResults: number | null;
   listDataContainCaptions: boolean;
   itemTypesTranslates: ItemTypesTranslates;
   searchResultsLabel?: string;
