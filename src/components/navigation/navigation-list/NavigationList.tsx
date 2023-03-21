@@ -1,4 +1,5 @@
 import {Component, h} from 'preact';
+import {ui} from 'kaltura-player-js';
 import * as styles from './NavigationList.scss';
 import {NavigationItem} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';
@@ -6,7 +7,7 @@ import {EmptyState} from '../icons/EmptyState';
 import {isDataEqual} from '../../../utils';
 import {ItemData, ItemTypesTranslates} from '../../../types';
 
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {withText, Text} = ui.preacti18n;
 
 const translates = {
   readLess: <Text id="navigation.read_less">Less</Text>,

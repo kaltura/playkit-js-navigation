@@ -1,5 +1,5 @@
 // @ts-ignore
-import {core} from 'kaltura-player-js';
+import {core, ui} from 'kaltura-player-js';
 import {h} from 'preact';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrapper';
@@ -7,11 +7,9 @@ import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareI
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
+import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 
 const {TimedMetadata} = core;
-
-import {ui} from 'kaltura-player-js';
-import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
 const liveCuePointTimeThreshold = 20 * 1000; // 20 seconds threshold
 

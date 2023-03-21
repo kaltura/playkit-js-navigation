@@ -1,8 +1,9 @@
 import {h, Component} from 'preact';
+import {ui} from 'kaltura-player-js';
 import {InputField} from '@playkit-js/common/dist/components/input-field';
 import {debounce} from '@playkit-js/common/dist/utils-common/utils';
 
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {withText, Text} = ui.preacti18n;
 
 const translates = {
   searchPlaceholder: <Text id="navigation.search_placeholder">Search in video</Text>,
@@ -38,7 +39,7 @@ class NavigationSearchComponent extends Component<SearchProps> {
   componentDidUpdate(previousProps: Readonly<SearchProps>): void {
     const {kitchenSinkActive, toggledWithEnter} = this.props;
     if (!previousProps.kitchenSinkActive && kitchenSinkActive && toggledWithEnter) {
-      this._inputField?.setFocus({ preventScroll: true });
+      this._inputField?.setFocus({preventScroll: true});
     }
   }
 
