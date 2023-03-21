@@ -1,11 +1,12 @@
 import {h, Component, Fragment} from 'preact';
+import {ui} from 'kaltura-player-js';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './navigation-filter.scss';
 import {ItemTypes, ItemTypesTranslates} from '../../types';
 import {IconsFactory} from '../navigation/icons/IconsFactory';
 
 const {Tooltip} = KalturaPlayer.ui.components;
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {withText, Text} = ui.preacti18n;
 
 const translates = (props: FilterProps) => {
   const {activeTab, totalResults, listDataContainCaptions} = props;
@@ -13,6 +14,9 @@ const translates = (props: FilterProps) => {
   const componentTranslates = {
     listType: <Text id="navigation.list_type">List</Text>
   };
+  if (!totalResults) {
+    return componentTranslates;
+  }
   if (activeTab === ItemTypes.All) {
     if (listDataContainCaptions) {
       return {

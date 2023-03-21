@@ -1,4 +1,5 @@
 import {h, Component} from 'preact';
+import {ui} from 'kaltura-player-js';
 import * as styles from './navigaton.scss';
 import {OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {NavigationList} from './navigation-list/NavigationList';
@@ -20,8 +21,8 @@ import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap, ItemTypesTranslates} from '../../types';
 import {CloseButton} from '../close-button';
 
-const {KeyMap} = KalturaPlayer.ui.utils;
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {KeyMap} = ui.utils;
+const {withText, Text} = ui.preacti18n;
 
 export interface SearchFilter {
   searchQuery: string;
@@ -180,8 +181,8 @@ export class Navigation extends Component<NavigationProps & ItemTypesTranslates,
       [ItemTypes.Slide]: this.props[ItemTypes.Slide],
       [ItemTypes.Hotspot]: this.props[ItemTypes.Hotspot],
       [ItemTypes.Caption]: this.props[ItemTypes.Caption]
-    }
-  }
+    };
+  };
 
   private _renderHeader = () => {
     const {toggledWithEnter, kitchenSinkActive, hasError} = this.props;

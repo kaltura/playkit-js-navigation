@@ -1,8 +1,9 @@
 import {h} from 'preact';
+import {ui} from 'kaltura-player-js';
 import * as styles from './autoscroll-button.scss';
 import {A11yWrapper, OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {withText, Text} = ui.preacti18n;
 const {Tooltip} = KalturaPlayer.ui.components;
 
 interface AutoscrollButtonProps {

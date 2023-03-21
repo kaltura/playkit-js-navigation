@@ -1,8 +1,10 @@
 import {h} from 'preact';
+import {ui} from 'kaltura-player-js';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './error.scss';
 import {ErrorIconSVG} from '../icons/error-icon';
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+
+const {withText, Text} = ui.preacti18n;
 
 export interface ErrorProps {
   onRetryLoad: () => void;
