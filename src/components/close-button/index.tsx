@@ -1,4 +1,5 @@
 import {h} from 'preact';
+import {ui} from 'kaltura-player-js';
 import * as styles from './close-button.scss';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {icons} from '../icons';
@@ -9,7 +10,7 @@ interface CloseButtonProps {
   closeButtonLabel?: string;
 }
 
-const {withText, Text} = KalturaPlayer.ui.preacti18n;
+const {withText, Text} = ui.preacti18n;
 
 const translates = {
   closeButtonLabel: <Text id="navigation.hide_plugin">Hide Navigation</Text>
