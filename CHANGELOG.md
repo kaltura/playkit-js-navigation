@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.2.4](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.3...v3.2.4) (2023-03-22)
+
+
+### Bug Fixes
+
+* **FEC-12964:** Navigation Plugin - translate aria labels ([#305](https://github.com/kaltura/playkit-js-navigation/issues/305)) ([0bacdcb](https://github.com/kaltura/playkit-js-navigation/commit/0bacdcbe74eeef639aa49a947455653c55bf16b0))
+* **FEC-12964:** Navigation plugin break i18n lib ([#307](https://github.com/kaltura/playkit-js-navigation/issues/307)) ([68bd356](https://github.com/kaltura/playkit-js-navigation/commit/68bd3565575466fab2310ba7f66e9864cb3276b8))
+* **FEV-1623:** The transition animation is broken when the side panel is activated ([#302](https://github.com/kaltura/playkit-js-navigation/issues/302)) ([eb6fbf6](https://github.com/kaltura/playkit-js-navigation/commit/eb6fbf6b3cf6acdeb56e22fa41e193405f334716))
+
 ### [3.2.3](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.2...v3.2.3) (2023-02-23)
 
 
