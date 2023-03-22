@@ -1,4 +1,5 @@
-import {GroupTypes, CuePoint, ItemData, ItemTypes, HighlightedMap} from '../types';
+import {CuePoint, GroupTypes, HighlightedMap, ItemData, ItemTypes} from '../types';
+
 const {toHHMMSS} = KalturaPlayer.ui.utils;
 
 export const itemTypesOrder: Record<string, number> = {
@@ -7,7 +8,8 @@ export const itemTypesOrder: Record<string, number> = {
   [ItemTypes.Slide]: 2,
   [ItemTypes.Hotspot]: 3,
   [ItemTypes.AnswerOnAir]: 4,
-  [ItemTypes.Caption]: 5
+  [ItemTypes.Caption]: 5,
+  [ItemTypes.QuizQuestion]: 6
 };
 
 export const getLastItem = <T>(arr: Array<T>) => {
