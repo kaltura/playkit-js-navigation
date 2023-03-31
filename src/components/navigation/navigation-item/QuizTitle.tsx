@@ -1,5 +1,5 @@
 import {h, Component} from "preact";
-import * as quizStyles from "./QuizItem.scss";
+import * as styles from "./QuizTitle.scss";
 import {ui} from "kaltura-player-js";
 const {withText, Text} = ui.preacti18n;
 
@@ -53,12 +53,12 @@ export class QuizTitle extends Component<QuizItemProps> {
   private _renderStateLabel = () => {
     let labelClass = '';
     if (this.props.questionState === 3) {
-      labelClass = quizStyles.incorrect;
+      labelClass = styles.incorrect;
     } else if (this.props.questionState === 4) {
-      labelClass = quizStyles.correct;
+      labelClass = styles.correct;
     }
     return (
-      <div className={`${quizStyles.labelWrapper} ${labelClass}`}>
+      <div className={`${styles.labelWrapper} ${labelClass}`}>
         <span>{this.props.stateLabel}</span>
       </div>
     );
@@ -66,8 +66,8 @@ export class QuizTitle extends Component<QuizItemProps> {
 
   render(props: QuizItemProps) {
     return (
-      <div className={quizStyles.titleWrapper}>
-        <div className={quizStyles.title}>
+      <div className={styles.titleWrapper}>
+        <div className={styles.title}>
           <span>{this.props.title}</span>
         </div>
         {this.props.questionState !== 1 ? this._renderStateLabel() : undefined}
