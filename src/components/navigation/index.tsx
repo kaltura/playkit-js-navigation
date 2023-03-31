@@ -59,7 +59,7 @@ const HEADER_HEIGHT_WITH_AMOUNT = 120;
 const initialSearchFilter = {
   searchQuery: '',
   activeTab: ItemTypes.All,
-  availableTabs: [ItemTypes.All, ItemTypes.Chapter, ItemTypes.Slide, ItemTypes.Hotspot, ItemTypes.AnswerOnAir],
+  availableTabs: [ItemTypes.All, ItemTypes.Chapter, ItemTypes.Slide, ItemTypes.Hotspot, ItemTypes.AnswerOnAir, ItemTypes.QuizQuestion],
   totalResults: 0
 };
 
@@ -69,7 +69,8 @@ const translates = {
   [ItemTypes.Chapter]: <Text id="navigation.chapter_type">Chapters</Text>,
   [ItemTypes.Slide]: <Text id="navigation.slide_type">Slides</Text>,
   [ItemTypes.Hotspot]: <Text id="navigation.hotspot_type">Hotspots</Text>,
-  [ItemTypes.Caption]: <Text id="navigation.caption_type">Captions</Text>
+  [ItemTypes.Caption]: <Text id="navigation.caption_type">Captions</Text>,
+  [ItemTypes.QuizQuestion]: <Text id="navigation.quiz_question_type">Questions</Text>
 };
 
 @withText(translates)
@@ -180,7 +181,8 @@ export class Navigation extends Component<NavigationProps & ItemTypesTranslates,
       [ItemTypes.Chapter]: this.props[ItemTypes.Chapter],
       [ItemTypes.Slide]: this.props[ItemTypes.Slide],
       [ItemTypes.Hotspot]: this.props[ItemTypes.Hotspot],
-      [ItemTypes.Caption]: this.props[ItemTypes.Caption]
+      [ItemTypes.Caption]: this.props[ItemTypes.Caption],
+      [ItemTypes.QuizQuestion]: this.props[ItemTypes.QuizQuestion]
     };
   };
 

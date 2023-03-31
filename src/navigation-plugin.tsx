@@ -80,7 +80,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       [ItemTypes.Caption, -1],
       [ItemTypes.Chapter, -1],
       [ItemTypes.Hotspot, -1],
-      [ItemTypes.Slide, -1]
+      [ItemTypes.Slide, -1],
+      [ItemTypes.QuizQuestion, -1]
     ]);
   };
 
@@ -114,6 +115,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
     if (this._itemsFilter[ItemTypes.Caption]) {
       cuePointTypes.push(this.cuePointManager.CuepointType.CAPTION);
+    }
+    if (this._itemsFilter[ItemTypes.QuizQuestion]) {
+      cuePointTypes.push(this.cuePointManager.CuepointType.QUIZ_QUESTION);
     }
     this.cuePointManager.registerTypes(cuePointTypes);
   };
@@ -169,6 +173,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (metadata?.cuePointType === KalturaCuePointType.CAPTION) {
       return ItemTypes.Caption;
     }
+    if (metadata?.cuePointType === KalturaCuePointType.QUIZ_QUESTION) {
+      return ItemTypes.QuizQuestion;
+    }
     return null;
   };
 
@@ -211,6 +218,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
       if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
         captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
+      }
+      if (this._getCuePointType(cue) === ItemTypes.QuizQuestion && this._itemsFilter[ItemTypes.QuizQuestion]) {
+        navigationData.push(prepareCuePoint(cue, ItemTypes.QuizQuestion, isLive));
       }
     });
     if (navigationData.length) {

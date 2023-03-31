@@ -10,7 +10,8 @@ export enum ItemTypes {
   Chapter = 'Chapter',
   Slide = 'Slide',
   Hotspot = 'Hotspot',
-  Caption = 'Caption'
+  Caption = 'Caption',
+  QuizQuestion = 'QuizQuestion'
 }
 
 export interface ItemTypesTranslates {
@@ -20,6 +21,7 @@ export interface ItemTypesTranslates {
   [ItemTypes.Slide]?: string;
   [ItemTypes.Hotspot]?: string;
   [ItemTypes.Caption]?: string;
+  [ItemTypes.QuizQuestion]?: string;
 }
 
 export interface CuePoint {
