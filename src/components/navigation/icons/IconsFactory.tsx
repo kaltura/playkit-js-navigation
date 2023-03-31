@@ -6,7 +6,7 @@ import {ChapterIcon} from './ChapterIcon';
 import {SlideIcon} from './SlideIcon';
 import {CaptionIcon} from './CaptionIcon';
 import * as styles from './IconsFactory.scss';
-import {Icons} from "@playkit-js/common/dist/icon/icons";
+import {QuizIcon} from "@playkit-js/common/dist/icon/icons/quiz";
 export interface Props {
   iconType: ItemTypes;
   color?: any;
@@ -21,7 +21,7 @@ export const IconsFactory = (props: Props) => {
       {props.iconType === ItemTypes.Chapter && <ChapterIcon />}
       {props.iconType === ItemTypes.Slide && <SlideIcon />}
       {props.iconType === ItemTypes.Caption && <CaptionIcon />}
-      {props.iconType === ItemTypes.QuizQuestion && Icons['quiz']()}
+      {props.iconType === ItemTypes.QuizQuestion && <QuizIcon />}
     </div>
   );
 };
