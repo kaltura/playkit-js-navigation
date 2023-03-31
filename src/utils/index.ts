@@ -228,6 +228,25 @@ export const isDataEqual = (prevData: ItemData[], nextData: ItemData[]): boolean
     if (prevDataLast.text && nextDataLast.text && prevDataLast.text !== nextDataLast.text) {
       return false;
     }
+    const prevQuizData = prevData.filter(item => item.itemType === ItemTypes.QuizQuestion);
+    const nextQuizData = nextData.filter(item => item.itemType === ItemTypes.QuizQuestion);
+    if (prevQuizData.length && nextQuizData.length) {
+      if (!isQuizDataEqual(prevQuizData, nextQuizData)) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
+const isQuizDataEqual = (prevQuizData: ItemData[], nextQuizData: ItemData[]): boolean => {
+  if (prevQuizData.length !== nextQuizData.length) {
+    return false;
+  }
+  for (let i=0; i<prevQuizData.length; i++) {
+    if (prevQuizData[i].quizState !== nextQuizData[i].quizState) {
+      return false;
+    }
   }
   return true;
 };

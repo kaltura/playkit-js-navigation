@@ -1,3 +1,5 @@
+import {VNode} from 'preact';
+
 export enum GroupTypes {
   mid = 'mid',
   first = 'first',
@@ -49,6 +51,7 @@ export interface RawItemData {
       objects: Array<{xml: string}>;
     };
   };
+  quizState?: number;
 }
 
 export interface ItemData extends RawItemData {
@@ -58,7 +61,7 @@ export interface ItemData extends RawItemData {
   itemType: ItemTypes;
   displayTime?: string;
   groupData: GroupTypes | null;
-  displayTitle: string;
+  displayTitle: VNode | string;
   displayDescription: string | null;
   liveCuePoint: boolean;
 }
