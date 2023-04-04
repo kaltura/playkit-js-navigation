@@ -1,0 +1,39 @@
+{
+    "nl": {
+        "navigation": {
+            "hide_plugin": "Navigatie verbergen",
+            "show_plugin": "Navigatie tonen",
+            "read_less": "Minder",
+            "read_more": "Meer",
+            "whoops": "Oeps!",
+            "error_message": "We kunnen je gegevens niet ophalen.",
+            "retry": "Opnieuw proberen",
+            "search_placeholder": "Zoeken in video",
+            "clear_search": "Zoekopdracht wissen",
+            "all_types": "Alle",
+            "aoa_type": "Live beantwoorden",
+            "chapter_type": "Hoofdstukken",
+            "slide_type": "Dia's",
+            "hotspot_type": "Hotspots",
+            "caption_type": "Onderschriften",
+            "search_result_one_type": {
+              "one": "{{totalResults}} resultaat in {{type}}",
+              "many": "{{totalResults}} resultaten in {{type}}"
+            },
+            "search_result_all_types": {
+              "one": "{{totalResults}} resultaat in alle inhoud",
+              "many": "{{totalResults}} resultaten in alle inhoud"
+            },
+            "search_result_all_types_with_captions": {
+              "one": "{{totalResults}} resultaat in alle inhoud inclusief onderschriften",
+              "many": "{{totalResults}} resultaten in alle inhoud inclusief onderschriften"
+            },
+            "search_no_results_title": "Geen resultaten gevonden",
+            "search_no_results_description": "Probeer een algemener trefwoord",
+            "loading": "Laden",
+            "auto_scroll": "AutoScroll hervatten",
+            "image_alt": "Voorbeeldweergave"
+        }
+    }
+}
+  

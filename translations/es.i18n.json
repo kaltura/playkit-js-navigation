@@ -1,0 +1,38 @@
+{
+  "es": {
+    "navigation": {
+      "hide_plugin": "Ocultar navegación",
+      "show_plugin": "Mostrar navegación",
+      "read_less": "Menos",
+      "read_more": "Más",
+      "whoops": "¡Vaya!",
+      "error_message": "No hemos podido recuperar sus datos.",
+      "retry": "Reintentar",
+      "search_placeholder": "Buscar en video",
+      "clear_search": "Borrar búsqueda",
+      "all_types": "Todos",
+      "aoa_type": "Respuesta al aire",
+      "chapter_type": "Capítulos",
+      "slide_type": "Diapositivas",
+      "hotspot_type": "Puntos de acceso",
+      "caption_type": "Subtítulos",
+      "search_result_one_type": {
+        "one": "{{totalResults}} resultado en {{type}}",
+        "many": "{{totalResults}} resultados en {{type}}"
+      },
+      "search_result_all_types": {
+        "one": "{{totalResults}} resultado en todo el contenido",
+        "many": "{{totalResults}} resultados en todo el contenido"
+      },
+      "search_result_all_types_with_captions": {
+        "one": "{{totalResults}} resultado en todo el contenido incluyendo los subtítulos",
+        "many": "{{totalResults}} resultados en todo el contenido incluyendo los subtítulos"
+      },
+      "search_no_results_title": "No se encontraron resultados",
+      "search_no_results_description": "Pruebe con una palabra clave más general",
+      "loading": "Cargando",
+      "auto_scroll": "Reanudar desplazamiento automático",
+      "image_alt": "Previsualización de diapositiva"
+    }
+  }
+}

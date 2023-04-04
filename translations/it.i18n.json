@@ -1,0 +1,38 @@
+{
+    "it": {
+        "navigation": {
+            "hide_plugin": "Nascondi spostamento",
+            "show_plugin": "Mostra spostamento",
+            "read_less": "Meno",
+            "read_more": "Altro",
+            "whoops": "Operazione non riuscita!",
+            "error_message": "Impossibile recuperare i tuoi dati.",
+            "retry": "Riprova",
+            "search_placeholder": "Cerca nel video",
+            "clear_search": "Cancella ricerca",
+            "all_types": "Tutti",
+            "aoa_type": "Risposta in diretta",
+            "chapter_type": "Capitoli",
+            "slide_type": "Diapositive",
+            "hotspot_type": "Hotspots",
+            "caption_type": "Sottotitoli",
+            "search_result_one_type": {
+              "one": "{{totalResults}} risultato in {{type}}",
+              "many": "{{totalResults}} risultati in {{type}}"
+            },
+            "search_result_all_types": {
+              "one": "{{totalResults}} risultato in tutti i contenuti",
+              "many": "{{totalResults}} risultati in tutti i contenuti"
+            },
+            "search_result_all_types_with_captions": {
+              "one": "{{totalResults}} risultato in tutti i contenuti inclusi i sottotitoli",
+              "many": "{{totalResults}} risultati in tutti i contenuti inclusi i sottotitoli"
+            },
+            "search_no_results_title": "Nessun risultato trovato",
+            "search_no_results_description": "Prova con una parola chiave più generica",
+            "loading": "Caricamento",
+            "auto_scroll": "Riprendi Scorrimento automatico",
+            "image_alt": "Anteprima diapositiva"
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "zh_tw": {
+        "navigation": {
+          "hide_plugin": "隱藏導覽",
+          "show_plugin": "顯示導覽",
+          "read_less": "更少",
+          "read_more": "更多",
+          "whoops": "糟糕！",
+          "error_message": "我們無法擷取您的資料。",
+          "retry": "重試",
+          "search_placeholder": "在影片中搜尋",
+          "clear_search": "清除搜尋",
+          "all_types": "所有",
+          "aoa_type": "廣播回答",
+          "chapter_type": "章節",
+          "slide_type": "投影片",
+          "hotspot_type": "熱點",
+          "caption_type": "字幕",
+          "search_result_one_type": {
+            "one": "{{totalResults}} 結果為 {{type}}",
+            "many": "{{totalResults}} 結果為 {{type}}"
+          },
+          "search_result_all_types": {
+            "one": "{{totalResults}} 結果為全部內容",
+            "many": "{{totalResults}} 結果為全部內容"
+          },
+          "search_result_all_types_with_captions": {
+            "one": "{{totalResults}} 結果為包括字幕在內的所有內容",
+            "many": "{{totalResults}} 結果為包括字幕在內的所有內容"
+          },
+          "search_no_results_title": "找不到結果",
+          "search_no_results_description": "嘗試更一般的關鍵字",
+          "loading": "載入中",
+          "auto_scroll": "恢復自動捲動",
+          "image_alt": "投影片預覽"
+        }
+    }
+}
+  

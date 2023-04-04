@@ -1,0 +1,38 @@
+{
+    "fr_ca": {
+        "navigation": {
+            "hide_plugin": "Masquer la navigation",
+            "show_plugin": "Afficher la navigation",
+            "read_less": "Moins",
+            "read_more": "Plus",
+            "whoops": "Oups!",
+            "error_message": "Nous n'avons pas pu récupérer vos données.",
+            "retry": "Réessayer",
+            "search_placeholder": "Rechercher dans la vidéo",
+            "clear_search": "Effacer la recherche",
+            "all_types": "Tout",
+            "aoa_type": "Répondre en direct",
+            "chapter_type": "Chapitres",
+            "slide_type": "Diapositives",
+            "hotspot_type": "Points sensibles",
+            "caption_type": "Sous-titres",
+            "search_result_one_type": {
+              "one": "{{totalResults}} résultat en {{type}}",
+              "many": "{{totalResults}} résultats en {{type}}"
+            },
+            "search_result_all_types": {
+              "one": "{{totalResults}} résultat de tous les contenus",
+              "many": "{{totalResults}} résultat de tous les contenus"
+            },
+            "search_result_all_types_with_captions": {
+              "one": "{{totalResults}} résultat de tous les contenus y compris les sous-titres",
+              "many": "{{totalResults}} résultats de tous les contenus y compris les sous-titres"
+            },
+            "search_no_results_title": "Aucun résultat trouvé",
+            "search_no_results_description": "Essayez un mot-clé plus général",
+            "loading": "Chargement en cours",
+            "auto_scroll": "Reprendre AutoScroll",
+            "image_alt": "Aperçu de la diapositive"      
+        }
+    }
+}

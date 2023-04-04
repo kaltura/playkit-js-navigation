@@ -1,0 +1,38 @@
+{
+    "fi": {
+        "navigation": {
+            "hide_plugin": "Piilota navigointi",
+            "show_plugin": "Näytä navigointi",
+            "read_less": "Vähemmän",
+            "read_more": "Lisää",
+            "whoops": "Ups!",
+            "error_message": "Tietojasi ei voitu noutaa.",
+            "retry": "Yritä uudelleen",
+            "search_placeholder": "Hae videosta",
+            "clear_search": "Tyhjennä haku",
+            "all_types": "Kaikki",
+            "aoa_type": "Vastaa lähetyksessä",
+            "chapter_type": "Osat",
+            "slide_type": "Diat",
+            "hotspot_type": "Tukiasemat",
+            "caption_type": "Tekstitykset",
+            "search_result_one_type": {
+              "one": "{{totalResults}} tulos tyypissä {{type}}",
+              "many": "{{totalResults}} tulosta tyypissä {{type}}"
+            },
+            "search_result_all_types": {
+              "one": "{{totalResults}} tulos kaikessa sisällössä",
+              "many": "{{totalResults}} tulosta kaikessa sisällössä"
+            },
+            "search_result_all_types_with_captions": {
+              "one": "{{totalResults}} tulos kaikessa sisällössä tekstitykset mukaan lukien",
+              "many": "{{totalResults}} tulosta kaikessa sisällössä tekstitykset mukaan lukien"
+            },
+            "search_no_results_title": "Tuloksia ei löytynyt",
+            "search_no_results_description": "Kokeile yleisempää hakusanaa",
+            "loading": "Ladataan",
+            "auto_scroll": "Jatka automaattista vieritystä",
+            "image_alt": "Dian esikatselu"      
+        }
+    }
+}

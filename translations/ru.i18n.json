@@ -1,0 +1,38 @@
+{
+  "ru": {
+    "navigation": {
+      "hide_plugin": "Скрыть навигацию",
+      "show_plugin": "Показать навигацию",
+      "read_less": "Меньше",
+      "read_more": "Дополнительно",
+      "whoops": "Ой!",
+      "error_message": "Нам не удалось извлечь ваши Данные.",
+      "retry": "Повторить попытку",
+      "search_placeholder": "Поиск в видео",
+      "clear_search": "Очистить результаты поиска",
+      "all_types": "Все",
+      "aoa_type": "Ответить в прямом эфире",
+      "chapter_type": "Главы",
+      "slide_type": "Слайды",
+      "hotspot_type": "Точки доступа",
+      "caption_type": "Субтитры",
+      "search_result_one_type": {
+        "one": "{{totalResults}} результат в {{type}}",
+        "many": "{{totalResults}} результатов в {{type}}"
+      },
+      "search_result_all_types": {
+        "one": "{{totalResults}} результат во всем контенте",
+        "many": "{{totalResults}} результатов во всем контенте"
+      },
+      "search_result_all_types_with_captions": {
+        "one": "{{totalResults}} результат во всем контенте, включая субтитры",
+        "many": "{{totalResults}} результатов во всем контенте, включая субтитры"
+      },
+      "search_no_results_title": "Результатов не найдено",
+      "search_no_results_description": "Попробуйте более общее ключевое слово",
+      "loading": "Загрузка",
+      "auto_scroll": "Возобновить автоматическую прокрутку",
+      "image_alt": "Предварительный просмотр слайда"
+    }
+  }
+}
