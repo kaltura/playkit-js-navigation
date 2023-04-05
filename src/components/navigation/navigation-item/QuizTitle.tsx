@@ -14,12 +14,12 @@ const translates = (props: QuizItemProps) => {
       break;
     case 3:
       labelTranslate = {
-        stateLabel: <Text id="navigation.question_answered">Incorrect</Text>
+        stateLabel: <Text id="navigation.question_incorrect">Incorrect</Text>
       };
       break;
     case 4:
       labelTranslate = {
-        stateLabel: <Text id="navigation.question_answered">Correct</Text>
+        stateLabel: <Text id="navigation.question_correct">Correct</Text>
       };
       break;
   }
@@ -50,6 +50,7 @@ export interface QuizItemProps {
 
 @withText(translates)
 export class QuizTitle extends Component<QuizItemProps> {
+
   private _renderStateLabel = () => {
     let labelClass = '';
     if (this.props.questionState === 3) {

@@ -7,7 +7,6 @@
 
   .title {
     display: flex;
-    align-self: center;
   }
 
   .label-wrapper {
@@ -17,6 +16,8 @@
     font-size: 12px;
     font-weight: 700;
     line-height: 11px;
+    max-height: 16px;
+    max-width: fit-content;
 
     span {
       padding: 3px 4px;
@@ -33,3 +34,12 @@
   }
 }
 
+:global(.playkit-size-sm),
+:global(.playkit-size-ty) {
+  .title-wrapper {
+    flex-direction: column;
+  }
+  .label-wrapper {
+    margin-top: 4px;
+  }
+}
