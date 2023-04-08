@@ -1,0 +1,38 @@
+{
+  "pt_br": {
+    "navigation": {
+      "hide_plugin": "Ocultar navegação",
+      "show_plugin": "Mostrar navegação",
+      "read_less": "Menos",
+      "read_more": "Mais",
+      "whoops": "Ops!",
+      "error_message": "Não foi possível recuperar seus dados.",
+      "retry": "Tentar novamente",
+      "search_placeholder": "Buscar no vídeo",
+      "clear_search": "Limpar pesquisa",
+      "all_types": "Tudo",
+      "aoa_type": "Resposta no ar",
+      "chapter_type": "Capítulos",
+      "slide_type": "Slides",
+      "hotspot_type": "Hotspots",
+      "caption_type": "Legendas",
+      "search_result_one_type": {
+        "one": "{{totalResults}} resultado em {{type}}",
+        "many": "{{totalResults}} resultados em {{type}}"
+      },
+      "search_result_all_types": {
+        "one": "{{totalResults}} resultado em todo o conteúdo",
+        "many": "{{totalResults}} resultados em todo o conteúdo"
+      },
+      "search_result_all_types_with_captions": {
+        "one": "{{totalResults}} resultado em todo o conteúdo, incluindo legendas",
+        "many": "{{totalResults}} resultados em todo o conteúdo, incluindo legendas"
+      },
+      "search_no_results_title": "Nenhum resultado foi encontrado",
+      "search_no_results_description": "Tente uma palavra-chave mais geral",
+      "loading": "Carregando",
+      "auto_scroll": "Retomar rolagem automática",
+      "image_alt": "Pré-visualização de slide"
+    }
+  }
+}

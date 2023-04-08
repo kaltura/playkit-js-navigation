@@ -1,0 +1,38 @@
+{
+  "de": {
+    "navigation": {
+      "hide_plugin": "Navigation ausblenden",
+      "show_plugin": "Navigation anzeigen",
+      "read_less": "Weniger",
+      "read_more": "Mehr",
+      "whoops": "Hoppla!",
+      "error_message": "Wir konnten Ihre Daten nicht wiederherstellen.",
+      "retry": "Erneut versuchen",
+      "search_placeholder": "In Video suchen",
+      "clear_search": "Suche leeren",
+      "all_types": "Alle",
+      "aoa_type": "Antworten während der Übertragung",
+      "chapter_type": "Kapitel",
+      "slide_type": "Folien",
+      "hotspot_type": "Hotspots",
+      "caption_type": "Untertitel",
+      "search_result_one_type": {
+        "one": "{{totalResults}} führen zu {{type}}",
+        "many": "{{totalResults}} führt zu {{type}}"
+      },
+      "search_result_all_types": {
+        "one": "{{totalResults}} führen zu allen Inhalten",
+        "many": "{{totalResults}} führt zu allen Inhalten"
+      },
+      "search_result_all_types_with_captions": {
+        "one": "{{totalResults}} führen zu allen Inhalten, einschließlich Untertitel",
+        "many": "{{totalResults}} führt zu allen Inhalten, einschließlich Untertitel"
+      },
+      "search_no_results_title": "Keine Ergebnisse gefunden",
+      "search_no_results_description": "Versuchen Sie es mit einem allgemeineren Schlüsselwort",
+      "loading": "Wird geladen",
+      "auto_scroll": "AutoScroll fortsetzen",
+      "image_alt": "Folienvorschau"
+    }
+  }
+}
