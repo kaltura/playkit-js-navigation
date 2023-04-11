@@ -59,7 +59,9 @@
     "objectType": "KalturaCuePointListResponse"
   },
   {
-    "objects": []
+    "objects": [],
+    "totalCount": 0,
+    "objectType": "KalturaCuePointListResponse"
   },
   {
     "objects": [

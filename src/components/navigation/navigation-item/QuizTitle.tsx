@@ -50,7 +50,6 @@ export interface QuizItemProps {
 
 @withText(translates)
 export class QuizTitle extends Component<QuizItemProps> {
-
   private _renderStateLabel = () => {
     let labelClass = '';
     if (this.props.questionState === 3) {
@@ -59,7 +58,7 @@ export class QuizTitle extends Component<QuizItemProps> {
       labelClass = styles.correct;
     }
     return (
-      <div className={`${styles.labelWrapper} ${labelClass}`}>
+      <div className={`${styles.labelWrapper} ${labelClass}`} data-testid='navigation_questionStateLabel'>
         <span>{this.props.stateLabel}</span>
       </div>
     );
@@ -68,7 +67,7 @@ export class QuizTitle extends Component<QuizItemProps> {
   render(props: QuizItemProps) {
     return (
       <div className={styles.titleWrapper}>
-        <div className={styles.title}>
+        <div className={styles.title} data-testid='navigation_questionTitle'>
           <span>{this.props.title}</span>
         </div>
         {this.props.questionState !== 1 ? this._renderStateLabel() : undefined}
