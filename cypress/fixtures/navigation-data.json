@@ -59,6 +59,11 @@
     "objectType": "KalturaCuePointListResponse"
   },
   {
+    "objects": [],
+    "totalCount": 0,
+    "objectType": "KalturaCuePointListResponse"
+  },
+  {
     "objects": [
       {
         "text": "Hotspot 1",

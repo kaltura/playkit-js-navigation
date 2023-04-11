@@ -3,11 +3,21 @@ import {core, ui} from 'kaltura-player-js';
 import {h} from 'preact';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrapper';
-import {itemTypesOrder, sortItems, filterDuplications, prepareCuePoint, prepareItemTypesOrder, isEmptyObject, getLastItem} from './utils';
+import {
+  itemTypesOrder,
+  sortItems,
+  filterDuplications,
+  prepareCuePoint,
+  prepareItemTypesOrder,
+  isEmptyObject,
+  getLastItem,
+  decodeString
+} from './utils';
 import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
+import {QuizTitle} from "./components/navigation/navigation-item/QuizTitle";
 
 const {TimedMetadata} = core;
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
@@ -29,6 +39,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _activeCuePointsMap: HighlightedMap;
   private _captionMap: Map<string, Array<ItemData>> = new Map();
   private _activeCaptionMapId: string = '';
+  private _quizQuestionData: ItemData[] = [];
   private _pluginButtonRef: HTMLButtonElement | null = null;
 
   private _player: KalturaPlayerTypes.Player;
@@ -66,7 +77,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
   private get _data() {
     const activeCaptions: Array<ItemData> = this._captionMap.get(this._activeCaptionMapId) || [];
-    return sortItems([...this._navigationData, ...activeCaptions], this._itemsOrder);
+    return sortItems([...this._navigationData, ...activeCaptions, ...this._quizQuestionData], this._itemsOrder);
   }
 
   private set _data(data: Array<ItemData>) {
@@ -117,7 +128,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       cuePointTypes.push(this.cuePointManager.CuepointType.CAPTION);
     }
     if (this._itemsFilter[ItemTypes.QuizQuestion]) {
-      cuePointTypes.push(this.cuePointManager.CuepointType.QUIZ_QUESTION);
+      cuePointTypes.push(this.cuePointManager.CuepointType.QUIZ);
     }
     this.cuePointManager.registerTypes(cuePointTypes);
   };
@@ -132,6 +143,35 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._captionMap.set(this._activeCaptionMapId, newData);
     this._createOrUpdatePlugin();
   };
+
+  private _addQuizData = (newData: ItemData[]) => {
+    this._quizQuestionData = newData;
+    this._createOrUpdatePlugin();
+  };
+
+  private _handleQuizQuestionChanged = (event: any) => {
+    const qqa = event.payload.qqa;
+    const quizQuestions = qqa.map((quizQuestion: { id: string, index: number, type: number, question: string, startTime: number, state: number }) => {
+      const cue: CuePoint = {
+        id: quizQuestion.id,
+        metadata: {
+          cuePointType: ItemTypes.QuizQuestion
+        },
+        startTime: quizQuestion.startTime,
+        type: ItemTypes.QuizQuestion
+      };
+      const itemData = prepareCuePoint(cue, ItemTypes.QuizQuestion, false);
+      itemData.quizState = quizQuestion.state;
+      itemData.displayTitle = this._makeQuizTitle(quizQuestion.state, quizQuestion.index, quizQuestion.type);
+      itemData.displayDescription = decodeString(quizQuestion.question);
+      return itemData;
+    });
+    this._addQuizData(quizQuestions);
+  };
+
+  private _makeQuizTitle = (state: number, index: number, type: number) => {
+    return <QuizTitle questionState={state} questionIndex={index} questionType={type}/>;
+  }
 
   private _handleLanguageChange = () => {
     this._activeCaptionMapId = this._getCaptionMapId();
@@ -218,9 +258,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
       if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
         captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
-      }
-      if (this._getCuePointType(cue) === ItemTypes.QuizQuestion && this._itemsFilter[ItemTypes.QuizQuestion]) {
-        navigationData.push(prepareCuePoint(cue, ItemTypes.QuizQuestion, isLive));
       }
     });
     if (navigationData.length) {
@@ -329,20 +366,25 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._activeCuePointsMap = new Map();
       this._updateNavigationPlugin();
       // need to trigger _onTimedMetadataChange in a case where there is an active cp at position 0
-      const fakeEvent = {
-        payload: {
-          cues: this._player.cuePointManager.getActiveCuePoints()
-        }
-      };
-      this._onTimedMetadataChange(fakeEvent);
+      this._triggerOnTimedMetadataChange();
     });
   };
+
+  private _triggerOnTimedMetadataChange = () => {
+    const fakeEvent = {
+      payload: {
+        cues: this._player.cuePointManager.getActiveCuePoints()
+      }
+    };
+    this._onTimedMetadataChange(fakeEvent);
+  }
 
   private _addPlayerListeners() {
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_CHANGE, this._onTimedMetadataChange);
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_ADDED, this._onTimedMetadataAdded);
     this.eventManager.listen(this._player, this._player.Event.RESIZE, this._updateNavigationPlugin);
     this.eventManager.listen(this._player, this._player.Event.PLAYBACK_ENDED, this._onPlaybackEnded);
+    this.eventManager.listen(this._player, 'QuizQuestionChanged', this._handleQuizQuestionChanged);
     if (this._itemsFilter[ItemTypes.Caption]) {
       this.eventManager.listen(this._player, this._player.Event.TEXT_TRACK_CHANGED, this._handleLanguageChange);
     }
@@ -350,6 +392,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
   private _seekTo = (time: number) => {
     this.player.currentTime = time;
+    // need to trigger _onTimedMetadataChange in a case where the highlightedMap wasn't updated
+    this._triggerOnTimedMetadataChange();
   };
 
   private _handleClickOnPluginIcon = (e: OnClickEvent, byKeyboard?: boolean) => {
@@ -399,6 +443,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._captionMap = new Map();
     this._liveFutureCuePointsMap = new Map();
     this._navigationData = [];
+    this._quizQuestionData = [];
     this._isLoading = false;
     this._hasError = false;
     this._triggeredByKeyboard = false;

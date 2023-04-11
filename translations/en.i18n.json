@@ -19,6 +19,11 @@
       "hotspot_type": "Hotspots",
       "caption_type": "Captions",
       "quiz_question_type": "Questions",
+      "reflection_point_title": "Reflection point {{index}}",
+      "question_title": "Question {{index}}",
+      "question_answered": "Answered",
+      "question_incorrect": "Incorrect",
+      "question_correct": "Correct",
       "search_result_one_type": {
         "one": "{{totalResults}} result in {{type}}",
         "many": "{{totalResults}} results in {{type}}"

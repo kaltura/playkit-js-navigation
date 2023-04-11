@@ -1,0 +1,45 @@
+@import '../../../theme.scss';
+
+.title-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .title {
+    display: flex;
+  }
+
+  .label-wrapper {
+    display: flex;
+    background: $tone-6-color;
+    border-radius: $roundness-1;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 11px;
+    max-height: 16px;
+    max-width: fit-content;
+
+    span {
+      padding: 3px 4px;
+      color: white;
+    }
+
+    &.correct {
+      background: $success-darker-color;
+    }
+
+    &.incorrect {
+      background: $danger-darker-color;
+    }
+  }
+}
+
+:global(.playkit-size-sm),
+:global(.playkit-size-ty) {
+  .title-wrapper {
+    flex-direction: column;
+  }
+  .label-wrapper {
+    margin-top: 4px;
+  }
+}

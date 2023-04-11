@@ -95,6 +95,7 @@ export class NavigationList extends Component<Props> {
           const itemTypeTranslate = this.props.itemTypesTranslates[item.itemType];
           return (
             <NavigationItem
+              key={item.id}
               ref={node => {
                 this._setNavigationItemRef(index, node);
               }}

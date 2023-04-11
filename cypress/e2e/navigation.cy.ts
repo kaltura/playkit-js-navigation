@@ -1,3 +1,7 @@
+// @ts-ignore
+import {core, KalturaPlayer} from 'kaltura-player-js';
+
+const {FakeEvent} = core;
 const MANIFEST = `#EXTM3U
 #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",LANGUAGE="en",NAME="English",AUTOSELECT=YES,DEFAULT=YES,URI="${location.origin}/media/index_1.m3u8",SUBTITLES="subs"
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=509496,RESOLUTION=480x272,AUDIO="audio",SUBTITLES="subs"
@@ -91,7 +95,6 @@ describe('Navigation plugin', () => {
         cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'hidden');
       });
     });
-
     it('should open the navigation side panel if expandOnFirstPlay configuration is true', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
@@ -99,7 +102,6 @@ describe('Navigation plugin', () => {
         cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
       });
     });
-
     it('should close plugin if ESC button pressed', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
@@ -231,6 +233,155 @@ describe('Navigation plugin', () => {
           const tabCaptions = cy.get("[aria-label='List Captions']").should('be.visible').click();
           tabCaptions.should('have.attr', 'aria-checked', 'true');
           cy.get('[data-testid="navigation_list"]').children().should('have.length', 5);
+        });
+      });
+    });
+  });
+
+  describe('navigation data with quiz', () => {
+    it('should render quiz question items in navigation side panel', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
+        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
+          qqa: [
+            {
+              id: '1_6zqqj2e6',
+              index: 0,
+              type: 3,
+              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+              startTime: 10.647,
+              state: 1
+            }
+          ]
+        }));
+        cy.get('[data-testid="navigation_root"]').within(() => {
+          cy.get('[data-testid="navigation_list"]').children().should('have.length', 7);
+        });
+        const tabQuestions = cy.get("[aria-label='List Questions']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+        tabQuestions.click();
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 1);
+      });
+    });
+    it('should indicate that a question has been answered', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
+        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
+          qqa: [
+            {
+              id: '1_6zqqj2e6',
+              index: 0,
+              type: 3,
+              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+              startTime: 10.647,
+              state: 2
+            }
+          ]
+        }));
+        cy.get('[data-testid="navigation_questionStateLabel"]').should('be.visible');
+        cy.get('[data-testid="navigation_questionStateLabel"]').should($div => {
+          expect($div.text()).to.eq('Answered');
+        });
+      });
+    });
+    it('should render a quiz item in the side panel, only after it reached the quiz cuepoint startTime', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
+        cy.get('[data-testid="navigation_list"]').children().should('have.length', 6);
+        const timeout = setTimeout(() => {
+          kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
+            qqa: [
+              {
+                id: '1_6zqqj2e6',
+                index: 0,
+                type: 3,
+                question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+                startTime: 10.647,
+                state: 2
+              }
+            ]
+          }));
+          cy.get('[data-testid="navigation_list"]').children().should('have.length', 7);
+        }, 500);
+        clearTimeout(timeout);
+      });
+    });
+    it('should indicate that a question is correct', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
+        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
+          qqa: [
+            {
+              id: '1_6zqqj2e6',
+              index: 0,
+              type: 3,
+              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+              startTime: 10.647,
+              state: 4
+            }
+          ]
+        }));
+        cy.get('[data-testid="navigation_questionStateLabel"]').should('be.visible').should($div => {
+          expect($div.text()).to.eq('Correct');
+        });
+      });
+    });
+    it('should indicate that a question is incorrect', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
+        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
+          qqa: [
+            {
+              id: '1_6zqqj2e6',
+              index: 0,
+              type: 3,
+              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+              startTime: 10.647,
+              state: 3
+            }
+          ]
+        }));
+        cy.get('[data-testid="navigation_questionStateLabel"]').should('be.visible').should($div => {
+          expect($div.text()).to.eq('Incorrect');
+        });
+      });
+    });
+    it('should set the question title to Reflection point', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
+        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
+          qqa: [
+            {
+              id: '1_6zqqj2e6',
+              index: 0,
+              type: 3,
+              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+              startTime: 10.647,
+              state: 1
+            }
+          ]
+        }));
+        cy.get('[data-testid="navigation_questionTitle"]').should('be.visible').should($div => {
+          expect($div.text()).to.eq('Reflection point 1');
+        });
+      });
+    });
+    it('should set the question title to Question', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
+        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
+          qqa: [
+            {
+              id: '1_6zqqj2e6',
+              index: 0,
+              type: 1,
+              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+              startTime: 10.647,
+              state: 1
+            }
+          ]
+        }));
+        cy.get('[data-testid="navigation_questionTitle"]').should('be.visible').should($div => {
+          expect($div.text()).to.eq('Question 1');
         });
       });
     });

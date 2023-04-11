@@ -36,7 +36,10 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   private _showMoreButtonRef: HTMLDivElement | null = null;
   private _showLessButtonRef: HTMLDivElement | null = null;
 
-  state = {expandText: false, imageLoaded: false, imageFailed: false, titleTrimmed: false, focused: false};
+  constructor(props: NavigationItemProps) {
+    super(props);
+    this.state = {expandText: !props.data.previewImage, imageLoaded: false, imageFailed: false, titleTrimmed: false, focused: false};
+  }
 
   public setFocus() {
     this._itemElementRef?.focus();
@@ -159,6 +162,9 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   };
 
   private _renderShowMoreLessButton = () => {
+    if (!this.props.data.previewImage) {
+      return null;
+    }
     const {expandText} = this.state;
     return (
       <A11yWrapper onClick={this._handleExpandChange}>
