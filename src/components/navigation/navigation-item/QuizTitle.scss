@@ -35,7 +35,8 @@
 }
 
 :global(.playkit-size-sm),
-:global(.playkit-size-ty) {
+:global(.playkit-size-xs),
+:global(.playkit-size-ty), {
   .title-wrapper {
     flex-direction: column;
   }
