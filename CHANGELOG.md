@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.3.0](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.4...v3.3.0) (2023-04-19)
+
+
+### Features
+
+* **FEC-13057:** add quiz to navigation plugin ([#309](https://github.com/kaltura/playkit-js-navigation/issues/309)) ([38058b7](https://github.com/kaltura/playkit-js-navigation/commit/38058b70627ed4f155b0df23ed34a51c0f3fabce))
+* **FEC-13059:** add quiz tab to filter bar ([#308](https://github.com/kaltura/playkit-js-navigation/issues/308)) ([fb4e65f](https://github.com/kaltura/playkit-js-navigation/commit/fb4e65f68565b9a63509fd21e4c04d64eeab66e6))
+
+
+### Bug Fixes
+
+* **FEC-13084:** add translations folder ([c71eb4c](https://github.com/kaltura/playkit-js-navigation/commit/c71eb4cb7d7dc3a0ab716463e020ad082d8df25c))
+* **FEC-13097:** IVQ in Navigation - for xs player, the "Answered" tag should be in a new line ([#312](https://github.com/kaltura/playkit-js-navigation/issues/312)) ([b5771df](https://github.com/kaltura/playkit-js-navigation/commit/b5771df73865baf2a1bdcee4eec9038bf23c7200))
+
 ### [3.2.4](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.3...v3.2.4) (2023-03-22)
 
 
