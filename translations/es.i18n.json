@@ -32,7 +32,8 @@
       "search_no_results_description": "Pruebe con una palabra clave más general",
       "loading": "Cargando",
       "auto_scroll": "Reanudar desplazamiento automático",
-      "image_alt": "Previsualización de diapositiva"
+      "image_alt": "Previsualización de diapositiva",
+      "search_description": "Puede buscar en los subtítulos del video palabras o frases específicas"
     }
   }
 }
