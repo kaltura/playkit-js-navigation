@@ -9,12 +9,10 @@ interface EmptyStateProps {
     searchDescription?: string;
 }
 
-
 const translates = {
     searchPlaceholder: <Text id="navigation.search_placeholder">Search in video</Text>,
     searchDescription: <Text id="navigation.search_description">You can search the video captions for specific words or phrases.</Text>
 };
-
 
 export const EmptyState = withText(translates)((props: EmptyStateProps) => {
   return (
