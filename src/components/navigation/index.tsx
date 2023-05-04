@@ -78,13 +78,13 @@ const getItemTypesTranslates = (props: any): ItemTypesTranslates => {
 const translates = (count: number) => {
   return {
     [ItemTypes.All]: <Text id="navigation.all_types">All</Text>,
-    [ItemTypes.AnswerOnAir]: <Text id="navigation.aoa_type" plural={count}>Answer On Air</Text>,
-    [ItemTypes.Chapter]: <Text id="navigation.chapter_type" plural={count}>Chapters</Text>,
-    [ItemTypes.Slide]: <Text id="navigation.slide_type" plural={count}>Slides</Text>,
-    [ItemTypes.Hotspot]: <Text id="navigation.hotspot_type" plural={count}>Hotspots</Text>,
-    [ItemTypes.Caption]: <Text id="navigation.caption_type" plural={count}>Captions</Text>,
-    [ItemTypes.QuizQuestion]: <Text id="navigation.quiz_question_type" plural={count}>Questions</Text>
-  }
+    [ItemTypes.AnswerOnAir]: <Text id="navigation.aoa_type" plural={count}>{`${count === 1 ? 'Answer On Air' : 'Answers On Air'}`}</Text>,
+    [ItemTypes.Chapter]: <Text id="navigation.chapter_type" plural={count}>{`${count === 1 ? 'Chapter' : 'Chapters'}`}</Text>,
+    [ItemTypes.Slide]: <Text id="navigation.slide_type" plural={count}>{`${count === 1 ? 'Slide' : 'Slides'}`}</Text>,
+    [ItemTypes.Hotspot]: <Text id="navigation.hotspot_type" plural={count}>{`${count === 1 ? 'Hotspot' : 'Hotspots'}`}</Text>,
+    [ItemTypes.Caption]: <Text id="navigation.caption_type" plural={count}>{`${count === 1 ? 'Caption' : 'Captions'}`}</Text>,
+    [ItemTypes.QuizQuestion]: <Text id="navigation.quiz_question_type" plural={count}>{`${count === 1 ? 'Question' : 'Questions'}`}</Text>
+  };
 };
 
 @withText(translates(2))
