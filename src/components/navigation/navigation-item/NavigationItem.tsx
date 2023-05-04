@@ -166,8 +166,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       return null;
     }
     const {expandText} = this.state;
-    const readMoreLessLabel = expandText ? this.props.readLessLabel : this.props.readMoreLabel
-    const readMoreLessLabelAria = (readMoreLessLabel).charAt(readMoreLessLabel.length - 1) === 's' ? readMoreLessLabel.substring(0, readMoreLessLabel.length-1) : readMoreLessLabel;
     return (
       <A11yWrapper onClick={this._handleExpandChange}>
         <div
@@ -180,7 +178,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               this._showMoreButtonRef = node;
             }
           }}
-          aria-label={`${readMoreLessLabelAria} ${title}`}>
+          aria-label={`${expandText ? this.props.readLessLabel : this.props.readMoreLabel} ${title}`}>
           {expandText ? this.props.readLessTranslate : this.props.readMoreTranslate}
         </div>
       </A11yWrapper>
