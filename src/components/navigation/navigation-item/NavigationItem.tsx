@@ -161,11 +161,13 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return <img {...imageProps} />;
   };
 
-  private _renderShowMoreLessButton = () => {
+  private _renderShowMoreLessButton = (title: string) => {
     if (!this.props.data.previewImage) {
       return null;
     }
     const {expandText} = this.state;
+    const readMoreLessLabel = expandText ? this.props.readLessLabel : this.props.readMoreLabel
+    const readMoreLessLabelAria = (readMoreLessLabel).charAt(readMoreLessLabel.length - 1) === 's' ? readMoreLessLabel.substring(0, readMoreLessLabel.length-1) : readMoreLessLabel;
     return (
       <A11yWrapper onClick={this._handleExpandChange}>
         <div
@@ -178,7 +180,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               this._showMoreButtonRef = node;
             }
           }}
-          aria-label={expandText ? this.props.readMoreLabel : this.props.readLessLabel}>
+          aria-label={`${readMoreLessLabelAria} ${title}`}>
           {expandText ? this.props.readLessTranslate : this.props.readMoreTranslate}
         </div>
       </A11yWrapper>
@@ -204,6 +206,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       tabIndex: 0,
       ariaHidden: !(selectedItem || this.state.focused)
     };
+
+    const readLessMoreAriaTitle: string = displayTitle as string || displayDescription || '';
 
     return (
       <A11yWrapper
@@ -249,14 +253,14 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
                       {displayTitle || displayDescription}
                     </span>
                   </div>
-                  {this.state.titleTrimmed && this._renderShowMoreLessButton()}
+                  {this.state.titleTrimmed && this._renderShowMoreLessButton(readLessMoreAriaTitle)}
                 </div>
               )}
               {this.state.expandText && (
                 <div className={styles.expandTextWrapper}>
                   {displayTitle && <span>{displayTitle}</span>}
                   {displayDescription && <div className={styles.description}>{displayDescription}</div>}
-                  {this._renderShowMoreLessButton()}
+                  {this._renderShowMoreLessButton(readLessMoreAriaTitle)}
                 </div>
               )}
             </div>

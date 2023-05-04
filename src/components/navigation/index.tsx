@@ -2,9 +2,9 @@ import {h, Component} from 'preact';
 import {ui} from 'kaltura-player-js';
 import * as styles from './navigaton.scss';
 import {OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
-import {NavigationList} from './navigation-list/NavigationList';
+import {NavigationList, Props} from './navigation-list/NavigationList';
 import {NavigationSearch} from '../navigation-search/navigation-search';
-import {NavigationFilter} from '../navigation-filter';
+import {FilterProps, NavigationFilter} from '../navigation-filter';
 import {Error} from '../error';
 import {Loading} from '../loading';
 import {
@@ -63,18 +63,47 @@ const initialSearchFilter = {
   totalResults: 0
 };
 
-const translates = {
-  [ItemTypes.All]: <Text id="navigation.all_types">All</Text>,
-  [ItemTypes.AnswerOnAir]: <Text id="navigation.aoa_type">Answer On Air</Text>,
-  [ItemTypes.Chapter]: <Text id="navigation.chapter_type">Chapters</Text>,
-  [ItemTypes.Slide]: <Text id="navigation.slide_type">Slides</Text>,
-  [ItemTypes.Hotspot]: <Text id="navigation.hotspot_type">Hotspots</Text>,
-  [ItemTypes.Caption]: <Text id="navigation.caption_type">Captions</Text>,
-  [ItemTypes.QuizQuestion]: <Text id="navigation.quiz_question_type">Questions</Text>
+const getItemTypesTranslates = (props: any): ItemTypesTranslates => {
+  return {
+    [ItemTypes.All]: props[ItemTypes.All],
+    [ItemTypes.AnswerOnAir]: props[ItemTypes.AnswerOnAir],
+    [ItemTypes.Chapter]: props[ItemTypes.Chapter],
+    [ItemTypes.Slide]: props[ItemTypes.Slide],
+    [ItemTypes.Hotspot]: props[ItemTypes.Hotspot],
+    [ItemTypes.Caption]: props[ItemTypes.Caption],
+    [ItemTypes.QuizQuestion]: props[ItemTypes.QuizQuestion]
+  };
 };
 
-@withText(translates)
-export class Navigation extends Component<NavigationProps & ItemTypesTranslates, NavigationState> {
+const translates = (count: number) => {
+  return {
+    [ItemTypes.All]: <Text id="navigation.all_types">All</Text>,
+    [ItemTypes.AnswerOnAir]: <Text id="navigation.aoa_type" plural={count}>Answer On Air</Text>,
+    [ItemTypes.Chapter]: <Text id="navigation.chapter_type" plural={count}>Chapters</Text>,
+    [ItemTypes.Slide]: <Text id="navigation.slide_type" plural={count}>Slides</Text>,
+    [ItemTypes.Hotspot]: <Text id="navigation.hotspot_type" plural={count}>Hotspots</Text>,
+    [ItemTypes.Caption]: <Text id="navigation.caption_type" plural={count}>Captions</Text>,
+    [ItemTypes.QuizQuestion]: <Text id="navigation.quiz_question_type" plural={count}>Questions</Text>
+  }
+};
+
+@withText(translates(2))
+class TranslatedNavigationFilter extends Component<Omit<FilterProps, 'itemTypesTranslates'>> {
+  render() {
+    const itemTypesTranslates = getItemTypesTranslates(this.props);
+    return <NavigationFilter {...this.props} itemTypesTranslates={itemTypesTranslates}/>
+  }
+}
+
+@withText(translates(1))
+class TranslatedNavigationList extends Component<Omit<Props, 'itemTypesTranslates'>> {
+  render() {
+    const itemTypesTranslates = getItemTypesTranslates(this.props);
+    return <NavigationList {...this.props} itemTypesTranslates={itemTypesTranslates}/>
+  }
+}
+
+export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
   private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
@@ -174,18 +203,6 @@ export class Navigation extends Component<NavigationProps & ItemTypesTranslates,
     this._prepareNavigationData(searchFilter);
   };
 
-  private _getItemTypesTranslates = (): ItemTypesTranslates => {
-    return {
-      [ItemTypes.All]: this.props[ItemTypes.All],
-      [ItemTypes.AnswerOnAir]: this.props[ItemTypes.AnswerOnAir],
-      [ItemTypes.Chapter]: this.props[ItemTypes.Chapter],
-      [ItemTypes.Slide]: this.props[ItemTypes.Slide],
-      [ItemTypes.Hotspot]: this.props[ItemTypes.Hotspot],
-      [ItemTypes.Caption]: this.props[ItemTypes.Caption],
-      [ItemTypes.QuizQuestion]: this.props[ItemTypes.QuizQuestion]
-    };
-  };
-
   private _renderHeader = () => {
     const {toggledWithEnter, kitchenSinkActive, hasError} = this.props;
     const {searchFilter, convertedData, listDataContainCaptions} = this.state;
@@ -206,13 +223,12 @@ export class Navigation extends Component<NavigationProps & ItemTypesTranslates,
         <CloseButton onClick={this.props.onClose} />
 
         {!hasError && (
-          <NavigationFilter
+          <TranslatedNavigationFilter
             onChange={this._handleSearchFilterChange('activeTab')}
             activeTab={searchFilter.activeTab}
             availableTabs={searchFilter.availableTabs}
             totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : null}
             listDataContainCaptions={listDataContainCaptions}
-            itemTypesTranslates={this._getItemTypesTranslates()}
           />
         )}
       </div>
@@ -244,7 +260,7 @@ export class Navigation extends Component<NavigationProps & ItemTypesTranslates,
       return <Error onRetryLoad={retry} />;
     }
     return (
-      <NavigationList
+      <TranslatedNavigationList
         searchActive={searchFilter.searchQuery.length > 0}
         widgetWidth={widgetWidth}
         autoScroll={false} // TODO: temporary disable auto-scroll till https://kaltura.atlassian.net/browse/FEV-804 got a fix
@@ -254,7 +270,6 @@ export class Navigation extends Component<NavigationProps & ItemTypesTranslates,
         highlightedTime={highlightedTime}
         showItemsIcons={searchFilter.activeTab === ItemTypes.All}
         listDataContainCaptions={listDataContainCaptions}
-        itemTypesTranslates={this._getItemTypesTranslates()}
       />
     );
   };

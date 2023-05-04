@@ -12,8 +12,8 @@ const {withText, Text} = ui.preacti18n;
 const translates = {
   readLess: <Text id="navigation.read_less">Less</Text>,
   readMore: <Text id="navigation.read_more">More</Text>,
-  readMoreLabel: <Text id="navigation.read_more_about">Read more about this</Text>,
-  readLessLabel: <Text id="navigation.read_less_about">Read less about this</Text>
+  readMoreLabel: <Text id="navigation.read_more_of">Read more of</Text>,
+  readLessLabel: <Text id="navigation.read_less_of">Read less of</Text>
 };
 
 export interface Props {

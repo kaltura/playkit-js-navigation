@@ -5,20 +5,38 @@
       "show_plugin": "Show Navigation",
       "read_less": "Less",
       "read_more": "More",
-      "read_more_about": "Read more about this",
-      "read_less_about": "Read less about this",
+      "read_more_of": "Read more of",
+      "read_less_of": "Read less of",
       "whoops": "Whoops!",
       "error_message": "We couldn't retrieve your Data.",
       "retry": "Retry",
       "search_placeholder": "Search in video",
       "clear_search": "Clear search",
       "all_types": "All",
-      "aoa_type": "Answer On Air",
-      "chapter_type": "Chapters",
-      "slide_type": "Slides",
-      "hotspot_type": "Hotspots",
-      "caption_type": "Captions",
-      "quiz_question_type": "Questions",
+      "aoa_type": {
+        "one": "Answer On Air",
+        "many": "Answers On Air"
+      },
+      "chapter_type": {
+        "one": "Chapter",
+        "many": "Chapters"
+      },
+      "slide_type": {
+        "one": "Slide",
+        "many": "Slides"
+      },
+      "hotspot_type": {
+        "one": "Hotspot",
+        "many": "Hotspots"
+      },
+      "caption_type": {
+        "one": "Caption",
+        "many": "Captions"
+      },
+      "quiz_question_type": {
+        "one": "Question",
+        "many": "Questions"
+      },
       "reflection_point_title": "Reflection point {{index}}",
       "question_title": "Question {{index}}",
       "question_answered": "Answered",
