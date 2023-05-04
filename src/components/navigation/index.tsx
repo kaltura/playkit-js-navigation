@@ -2,9 +2,9 @@ import {h, Component} from 'preact';
 import {ui} from 'kaltura-player-js';
 import * as styles from './navigaton.scss';
 import {OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
-import {NavigationList} from './navigation-list/NavigationList';
+import {NavigationList, Props} from './navigation-list/NavigationList';
 import {NavigationSearch} from '../navigation-search/navigation-search';
-import {NavigationFilter} from '../navigation-filter';
+import {FilterProps, NavigationFilter} from '../navigation-filter';
 import {Error} from '../error';
 import {Loading} from '../loading';
 import {
@@ -88,18 +88,18 @@ const translates = (count: number) => {
 };
 
 @withText(translates(2))
-class TranslatedNavigationFilter extends Component<any> {
-  render(props: any) {
-    const itemTypesTranslates = getItemTypesTranslates(props);
-    return <NavigationFilter {...props} itemTypesTranslates={itemTypesTranslates}/>
+class TranslatedNavigationFilter extends Component<Omit<FilterProps, 'itemTypesTranslates'>> {
+  render() {
+    const itemTypesTranslates = getItemTypesTranslates(this.props);
+    return <NavigationFilter {...this.props} itemTypesTranslates={itemTypesTranslates}/>
   }
 }
 
 @withText(translates(1))
-class TranslatedNavigationList extends Component<any> {
-  render(props: any) {
-    const itemTypesTranslates = getItemTypesTranslates(props);
-    return <NavigationList {...props} itemTypesTranslates={itemTypesTranslates}/>
+class TranslatedNavigationList extends Component<Omit<Props, 'itemTypesTranslates'>> {
+  render() {
+    const itemTypesTranslates = getItemTypesTranslates(this.props);
+    return <NavigationList {...this.props} itemTypesTranslates={itemTypesTranslates}/>
   }
 }
 
