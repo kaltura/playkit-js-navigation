@@ -1,8 +1,20 @@
 import {h} from 'preact';
 import * as styles from './EmptyState.scss';
 import {ARROW_IMG, CURLY_LINE_IMG} from "../../constants/svgs";
+import {ui} from 'kaltura-player-js';
+const {withText, Text} = ui.preacti18n;
 
-export const EmptyState = () => {
+interface EmptyStateProps {
+    searchPlaceholder?: string;
+    searchDescription?: string;
+}
+
+const translates = {
+    searchPlaceholder: <Text id="navigation.search_placeholder">Search in video</Text>,
+    searchDescription: <Text id="navigation.search_description">You can search the video captions for specific words or phrases.</Text>
+};
+
+export const EmptyState = withText(translates)((props: EmptyStateProps) => {
   return (
       <div class={styles.emptyState}>
         <div class={styles.arrow}>
@@ -12,11 +24,12 @@ export const EmptyState = () => {
           </svg>
         </div>
         <p class={styles.title}>
-          Search in video
+            {props.searchPlaceholder}
         </p>
         <p class={styles.description}>
-          You can search the video captions for specific words or phrases.
+            {props.searchDescription}
+
         </p>
       </div>
   );
-};
+});
