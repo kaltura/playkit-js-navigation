@@ -1,7 +1,7 @@
 import {h} from 'preact';
 import * as styles from './EmptyState.scss';
 import {ARROW_IMG, CURLY_LINE_IMG} from "../../constants/svgs";
-import {ui} from 'kaltura-player-js';
+import {ui} from '@playkit-js/kaltura-player-js';
 const {withText, Text} = ui.preacti18n;
 
 interface EmptyStateProps {

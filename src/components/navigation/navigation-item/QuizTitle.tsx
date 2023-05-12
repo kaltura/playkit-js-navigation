@@ -1,6 +1,6 @@
-import {h, Component} from "preact";
-import * as styles from "./QuizTitle.scss";
-import {ui} from "kaltura-player-js";
+import {h, Component} from 'preact';
+import * as styles from './QuizTitle.scss';
+import {ui} from '@playkit-js/kaltura-player-js';
 const {withText, Text} = ui.preacti18n;
 
 const translates = (props: QuizItemProps) => {
@@ -30,15 +30,15 @@ const translates = (props: QuizItemProps) => {
     return {
       ...labelTranslate,
       title: <Text id="navigation.reflection_point_title" fields={{index: `${currentIndex}`}}>{`Reflection point ${currentIndex}`}</Text>
-    }
+    };
   } else {
     // Question
     return {
       ...labelTranslate,
       title: <Text id="navigation.question_title" fields={{index: `${currentIndex}`}}>{`Question ${currentIndex}`}</Text>
-    }
+    };
   }
-}
+};
 
 export interface QuizItemProps {
   questionState: number;
@@ -58,7 +58,7 @@ export class QuizTitle extends Component<QuizItemProps> {
       labelClass = styles.correct;
     }
     return (
-      <div className={`${styles.labelWrapper} ${labelClass}`} data-testid='navigation_questionStateLabel'>
+      <div className={`${styles.labelWrapper} ${labelClass}`} data-testid="navigation_questionStateLabel">
         <span>{this.props.stateLabel}</span>
       </div>
     );
@@ -67,12 +67,11 @@ export class QuizTitle extends Component<QuizItemProps> {
   render(props: QuizItemProps) {
     return (
       <div className={styles.titleWrapper}>
-        <div className={styles.title} data-testid='navigation_questionTitle'>
+        <div className={styles.title} data-testid="navigation_questionTitle">
           <span>{this.props.title}</span>
         </div>
         {this.props.questionState !== 1 ? this._renderStateLabel() : undefined}
       </div>
     );
   }
-
 }

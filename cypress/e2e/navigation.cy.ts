@@ -1,5 +1,5 @@
 // @ts-ignore
-import {core, KalturaPlayer} from 'kaltura-player-js';
+import {core, KalturaPlayer} from '@playkit-js/kaltura-player-js';
 
 const {FakeEvent} = core;
 const MANIFEST = `#EXTM3U
