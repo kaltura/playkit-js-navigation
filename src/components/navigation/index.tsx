@@ -20,6 +20,7 @@ import {
 import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap, ItemTypesTranslates} from '../../types';
 import {CloseButton} from '../close-button';
+import {ScreenReaderContext, ScreenReaderProvider} from '@playkit-js/common/dist/hoc/sr-wrapper';
 
 const {KeyMap} = ui.utils;
 const {withText, Text} = ui.preacti18n;
@@ -88,10 +89,16 @@ const translates = (count: number) => {
 };
 
 @withText(translates(2))
-class TranslatedNavigationFilter extends Component<Omit<FilterProps, 'itemTypesTranslates'>> {
+class TranslatedNavigationFilter extends Component<Omit<FilterProps, 'itemTypesTranslates' | 'setTextToRead'>> {
   render() {
     const itemTypesTranslates = getItemTypesTranslates(this.props);
-    return <NavigationFilter {...this.props} itemTypesTranslates={itemTypesTranslates}/>
+    return (
+      <ScreenReaderContext.Consumer>
+        {(setTextToRead: (textToRead: string, delay?: number | undefined) => void) => {
+          return <NavigationFilter {...this.props} itemTypesTranslates={itemTypesTranslates} setTextToRead={setTextToRead}/>;
+        }}
+      </ScreenReaderContext.Consumer>
+    )
   }
 }
 
@@ -311,31 +318,33 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   render(props: NavigationProps) {
     const {isLoading, kitchenSinkActive} = props;
     return (
-      <div
-        data-testid="navigation_root"
-        aria-live="polite"
-        className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
-        ref={node => {
-          this._widgetRootRef = node;
-        }}
-        onKeyUp={this._handleClose}>
-        {isLoading ? (
-          this._renderLoading()
-        ) : (
-          <div className={styles.globalContainer}>
-            {this._renderHeader()}
-            <div
-              className={styles.body}
-              onScroll={this._handleScroll}
-              ref={node => {
-                this._listElementRef = node;
-              }}>
-              {this._renderNavigation()}
-              {/* {this._renderAutoscrollButton()} // TODO: temporary disable auto-scroll till https://kaltura.atlassian.net/browse/FEV-804 got a fix */}
+      <ScreenReaderProvider>
+        <div
+          data-testid="navigation_root"
+          aria-live="polite"
+          className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
+          ref={node => {
+            this._widgetRootRef = node;
+          }}
+          onKeyUp={this._handleClose}>
+          {isLoading ? (
+            this._renderLoading()
+          ) : (
+            <div className={styles.globalContainer}>
+              {this._renderHeader()}
+              <div
+                className={styles.body}
+                onScroll={this._handleScroll}
+                ref={node => {
+                  this._listElementRef = node;
+                }}>
+                {this._renderNavigation()}
+                {/* {this._renderAutoscrollButton()} // TODO: temporary disable auto-scroll till https://kaltura.atlassian.net/browse/FEV-804 got a fix */}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </ScreenReaderProvider>
     );
   }
 }

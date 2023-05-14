@@ -130,7 +130,7 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@playkit-js/common@^1.2.2":
+"@playkit-js/common@^1.2.2", "@playkit-js/common@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@playkit-js/common/-/common-1.2.2.tgz#29c9a3cdeac27ec76c8e38a32c89f8dc0811d9ed"
   integrity sha512-hGAnBRJd+mu5InXNCm5XUozUdLAUzkBQOEo1kOsGlhB2cv6nrICJU0ZXaJQICG/aChxg2I8UFfd2Zq2W8yyzIA==

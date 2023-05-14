@@ -12,7 +12,9 @@ const translates = (props: FilterProps) => {
   const {activeTab, totalResults, listDataContainCaptions} = props;
   const resultDefaultTranslate = `result${totalResults && totalResults > 1 ? 's' : ''}`;
   const componentTranslates = {
-    listType: <Text id="navigation.list_type">List</Text>
+    listType: <Text id="navigation.list_type">List</Text>,
+    noResultTitle: <Text id="navigation.search_no_results_title">No Results Found</Text>,
+    noResultDescription: <Text id="navigation.search_no_results_description">Try a more general keyword</Text>
   };
   if (!totalResults) {
     return componentTranslates;
@@ -66,6 +68,9 @@ export interface FilterProps {
   itemTypesTranslates: ItemTypesTranslates;
   searchResultsLabel?: string;
   listType?: string;
+  noResultTitle?: string;
+  noResultDescription?: string;
+  setTextToRead: (textToRead: string, delay?: number) => void;
 }
 
 export interface TabData {
@@ -88,6 +93,14 @@ export class NavigationFilter extends Component<FilterProps> {
       return true;
     }
     return false;
+  }
+
+  componentDidUpdate(previousProps: Readonly<FilterProps>, previousState: Readonly<{}>, snapshot: any) {
+    if (previousProps.totalResults !== this.props.totalResults) {
+      const noResultsFound = `${this.props.noResultTitle}. ${this.props.noResultDescription}`;
+      const searchResultsLabel = this.props.totalResults === null ? '' : (this.props.totalResults > 0 ? this.props.searchResultsLabel! : noResultsFound);
+      this.props.setTextToRead(searchResultsLabel);
+    }
   }
 
   public _handleChange = (type: ItemTypes) => {
@@ -164,12 +177,9 @@ export class NavigationFilter extends Component<FilterProps> {
   render() {
     const {totalResults} = this.props;
     const tabs = this._getTabsData();
-    if (tabs.length < 2) {
-      return null;
-    }
     return (
       <div className={styles.filterRoot}>
-        {totalResults !== 0 && (
+        {totalResults !== 0 && tabs.length >= 2 && (
           <div className={styles.tabsWrapper} role="radiogroup">
             {tabs.map((tab, index) => {
               return this._renderTab(tab, index);
