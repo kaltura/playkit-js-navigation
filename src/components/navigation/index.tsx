@@ -321,7 +321,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       <ScreenReaderProvider>
         <div
           data-testid="navigation_root"
-          aria-live="polite"
           className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
           ref={node => {
             this._widgetRootRef = node;
