@@ -1,5 +1,5 @@
 import {Component, h} from 'preact';
-import {ui} from 'kaltura-player-js';
+import {ui} from '@playkit-js/kaltura-player-js';
 import * as styles from './NavigationList.scss';
 import {NavigationItem} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';

@@ -1,5 +1,5 @@
 import {h} from 'preact';
-import {ui} from 'kaltura-player-js';
+import {ui} from '@playkit-js/kaltura-player-js';
 import * as styles from './EmptyList.scss';
 
 const {withText, Text} = ui.preacti18n;

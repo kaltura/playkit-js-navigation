@@ -1,5 +1,5 @@
 import {h, Component} from 'preact';
-import {ui} from 'kaltura-player-js';
+import {ui} from '@playkit-js/kaltura-player-js';
 import * as styles from './navigaton.scss';
 import {OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {NavigationList, Props} from './navigation-list/NavigationList';

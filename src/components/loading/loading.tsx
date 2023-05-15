@@ -1,5 +1,5 @@
 import {h} from 'preact';
-import {ui} from 'kaltura-player-js';
+import {ui} from '@playkit-js/kaltura-player-js';
 import * as styles from './loading.scss';
 import {LoaderIconSVG} from '../icons/loader-icon';
 

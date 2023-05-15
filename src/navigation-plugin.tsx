@@ -1,5 +1,5 @@
 // @ts-ignore
-import {core, ui} from 'kaltura-player-js';
+import {core, ui} from '@playkit-js/kaltura-player-js';
 import {h} from 'preact';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrapper';
