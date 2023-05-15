@@ -90,7 +90,7 @@ export class NavigationList extends Component<Props> {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
     }
     return (
-      <div className={styles.navigationList} data-testid="navigation_list">
+      <div className={styles.navigationList} data-testid="navigation_list" aria-live="polite">
         {data.map((item: ItemData, index: number) => {
           const itemTypeTranslate = this.props.itemTypesTranslates[item.itemType];
           return (
