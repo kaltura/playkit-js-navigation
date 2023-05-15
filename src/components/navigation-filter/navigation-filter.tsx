@@ -1,5 +1,5 @@
 import {h, Component, Fragment} from 'preact';
-import {ui} from 'kaltura-player-js';
+import {ui} from '@playkit-js/kaltura-player-js';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './navigation-filter.scss';
 import {ItemTypes, ItemTypesTranslates} from '../../types';

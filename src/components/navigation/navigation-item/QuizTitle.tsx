@@ -1,6 +1,6 @@
 import {h, Component} from "preact";
 import * as styles from "./QuizTitle.scss";
-import {ui} from "kaltura-player-js";
+import {ui} from "@playkit-js/kaltura-player-js";
 const {withText, Text} = ui.preacti18n;
 
 const translates = (props: QuizItemProps) => {

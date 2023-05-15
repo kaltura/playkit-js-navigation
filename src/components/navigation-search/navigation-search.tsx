@@ -1,5 +1,5 @@
 import {h, Component} from 'preact';
-import {ui} from 'kaltura-player-js';
+import {ui} from '@playkit-js/kaltura-player-js';
 import {InputField} from '@playkit-js/common/dist/components/input-field';
 import {debounce} from '@playkit-js/common/dist/utils-common/utils';
 
