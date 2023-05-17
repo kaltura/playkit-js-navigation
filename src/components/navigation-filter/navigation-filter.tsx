@@ -168,7 +168,7 @@ export class NavigationFilter extends Component<FilterProps> {
 
   private _renderSearchResult = () => {
     return (
-      <div className={styles.totalResults} aria-label={this.props.searchResultsLabel}>
+      <div className={styles.totalResults} aria-label={this.props.searchResultsLabel} data-testid="navigation_searchResult">
         {this.props.searchResultsLabel}
       </div>
     );

@@ -205,7 +205,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       ariaHidden: !(selectedItem || this.state.focused)
     };
 
-    const readLessMoreAriaTitle: string = displayTitle as string || displayDescription || '';
+    const ariaLabelTitle: string = typeof displayTitle === 'string' ? displayTitle : displayDescription || '';
 
     return (
       <A11yWrapper
@@ -215,7 +215,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
         role={selectedItem ? 'text' : 'listitem'}>
         <div
           tabIndex={0}
-          aria-label={displayTitle || displayDescription}
+          aria-label={ariaLabelTitle}
           ref={node => {
             this._itemElementRef = node;
           }}
@@ -231,7 +231,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
             {!liveCuePoint && <span>{displayTime}</span>}
             {showIcon && (
               <div className={styles.iconWrapper}>
-                <IconsFactory iconType={itemType}></IconsFactory>
+                <IconsFactory iconType={itemType}/>
               </div>
             )}
           </div>
@@ -251,14 +251,14 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
                       {displayTitle || displayDescription}
                     </span>
                   </div>
-                  {this.state.titleTrimmed && this._renderShowMoreLessButton(readLessMoreAriaTitle)}
+                  {this.state.titleTrimmed && this._renderShowMoreLessButton(ariaLabelTitle)}
                 </div>
               )}
               {this.state.expandText && (
                 <div className={styles.expandTextWrapper}>
                   {displayTitle && <span>{displayTitle}</span>}
                   {displayDescription && <div className={styles.description}>{displayDescription}</div>}
-                  {this._renderShowMoreLessButton(readLessMoreAriaTitle)}
+                  {this._renderShowMoreLessButton(ariaLabelTitle)}
                 </div>
               )}
             </div>
