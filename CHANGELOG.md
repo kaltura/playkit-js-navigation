@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.3.1](https://github.com/kaltura/playkit-js-navigation/compare/v3.3.0...v3.3.1) (2023-05-17)
+
+
+### Bug Fixes
+
+* **FEC-13129:** search in video "more" should say more of what ([#314](https://github.com/kaltura/playkit-js-navigation/issues/314)) ([ccf6823](https://github.com/kaltura/playkit-js-navigation/commit/ccf68234e2c67fa0ffb2fc4cacdc59c46e3f4e78))
+* **FEC-13129:** search in video "more" should say more of what ([#315](https://github.com/kaltura/playkit-js-navigation/issues/315)) ([efacda3](https://github.com/kaltura/playkit-js-navigation/commit/efacda31e5400aec07592958821883ef0baaa8e9))
+* **FEC-13130:** #of/no results search should be announced ([#318](https://github.com/kaltura/playkit-js-navigation/issues/318)) ([23d3185](https://github.com/kaltura/playkit-js-navigation/commit/23d3185845eab1d1a49a084dee92080a43a4457f))
+* **FEC-13145:** upd dependencies ([#316](https://github.com/kaltura/playkit-js-navigation/issues/316)) ([a88ba17](https://github.com/kaltura/playkit-js-navigation/commit/a88ba17f813dd61a385120e98b281afdf995db30))
+* **FEC-13145:** upgrade dependancies for common and ui-managers etc ([#317](https://github.com/kaltura/playkit-js-navigation/issues/317)) ([0ce2d6f](https://github.com/kaltura/playkit-js-navigation/commit/0ce2d6f78c5113fbf390f9e034883c27d0eaa50a))
+
 ## [3.3.0](https://github.com/kaltura/playkit-js-navigation/compare/v3.2.4...v3.3.0) (2023-04-19)
 
 
