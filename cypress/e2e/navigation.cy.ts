@@ -238,6 +238,86 @@ describe('Navigation plugin', () => {
     });
   });
 
+  describe('search result and screen reader wrapper', () => {
+    it('should test screen reader wrapper', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
+        cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
+        const screenReaderWrapper = cy.get('[data-testid="screenReaderWrapper"]');
+        screenReaderWrapper.should('exist');
+        const searchInput = cy.get("[aria-label='Search in video']");
+        searchInput.type('ocean');
+
+        // no results
+        cy.get('[data-testid="screenReaderWrapper"]').children().should($div => {
+          expect($div.text()).to.eq('No Results Found. Try a more general keyword');
+        });
+
+        // clear search input
+        const clearSearchButton = cy.get("[aria-label='Clear search']");
+        clearSearchButton.should('be.visible');
+        clearSearchButton.click();
+        cy.get('[data-testid="screenReaderWrapper"]').children().should($div => {
+          expect($div.text()).to.eq('');
+        });
+
+        // 1 result
+        searchInput.type('1');
+        cy.get('[data-testid="screenReaderWrapper"]').children().should($div => {
+          expect($div.text()).to.eq('1 result in all content');
+        });
+      });
+    });
+    it('should test search result', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
+        cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
+        cy.get('[data-testid="navigation_root"]').within(() => {
+          cy.get('[data-testid="navigation_searchResult"]').should('not.exist');
+          const searchInput = cy.get("[aria-label='Search in video']");
+          searchInput.type('1');
+          cy.get('[data-testid="navigation_list"]').children().should('have.length', 1);
+
+          // 1 result
+          cy.get('[data-testid="navigation_searchResult"]').should('exist');
+          cy.get('[data-testid="navigation_searchResult"]').should('be.visible');
+          cy.get('[data-testid="navigation_searchResult"]').should($div => {
+            expect($div.text()).to.eq('1 result in all content');
+          });
+
+          // clear search input
+          const clearSearchButton = cy.get("[aria-label='Clear search']");
+          clearSearchButton.should('be.visible');
+          clearSearchButton.click();
+          cy.get('[data-testid="navigation_searchResult"]').should('not.exist');
+
+          // no results
+          searchInput.type('ocean');
+          cy.get('[data-testid="navigation_searchResult"]').should('not.exist');
+        });
+      });
+    });
+    it('should test search result in Chapters tab', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
+        cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
+        const screenReaderWrapper = cy.get('[data-testid="screenReaderWrapper"]');
+        screenReaderWrapper.should('exist');
+        cy.get('[data-testid="navigation_root"]').within(() => {
+          const tabChapters = cy.get("[aria-label='List Chapters']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+          tabChapters.click();
+          tabChapters.should('have.attr', 'aria-checked', 'true');
+          const searchInput = cy.get("[aria-label='Search in video']");
+          searchInput.type('c');
+          cy.get('[data-testid="navigation_list"]').children().should('have.length', 3);
+          screenReaderWrapper.children().should($div => {
+            expect($div.text()).to.eq('3 results in chapters');
+          });
+        });
+      });
+    });
+  });
+
   describe('navigation data with quiz', () => {
     it('should render quiz question items in navigation side panel', () => {
       mockKalturaBe();
