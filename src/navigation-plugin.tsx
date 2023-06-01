@@ -17,7 +17,7 @@ import {Navigation} from './components/navigation';
 import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
-import {QuizTitle} from "./components/navigation/navigation-item/QuizTitle";
+import {QuizTitle} from './components/navigation/navigation-item/QuizTitle';
 
 const {TimedMetadata} = core;
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
@@ -151,27 +151,30 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
   private _handleQuizQuestionChanged = (event: any) => {
     const qqa = event.payload.qqa;
-    const quizQuestions = qqa.map((quizQuestion: { id: string, index: number, type: number, question: string, startTime: number, state: number }) => {
-      const cue: CuePoint = {
-        id: quizQuestion.id,
-        metadata: {
-          cuePointType: ItemTypes.QuizQuestion
-        },
-        startTime: quizQuestion.startTime,
-        type: ItemTypes.QuizQuestion
-      };
-      const itemData = prepareCuePoint(cue, ItemTypes.QuizQuestion, false);
-      itemData.quizState = quizQuestion.state;
-      itemData.displayTitle = this._makeQuizTitle(quizQuestion.state, quizQuestion.index, quizQuestion.type);
-      itemData.displayDescription = decodeString(quizQuestion.question);
-      return itemData;
-    });
+    const quizQuestions = qqa.map(
+      (quizQuestion: {id: string; index: number; type: number; question: string; startTime: number; state: number; onClick: () => void}) => {
+        const cue: CuePoint = {
+          id: quizQuestion.id,
+          metadata: {
+            cuePointType: ItemTypes.QuizQuestion
+          },
+          startTime: quizQuestion.startTime,
+          type: ItemTypes.QuizQuestion
+        };
+        const itemData = prepareCuePoint(cue, ItemTypes.QuizQuestion, false);
+        itemData.quizState = quizQuestion.state;
+        itemData.displayTitle = this._makeQuizTitle(quizQuestion.state, quizQuestion.index, quizQuestion.type);
+        itemData.displayDescription = decodeString(quizQuestion.question);
+        itemData.onClick = quizQuestion.onClick;
+        return itemData;
+      }
+    );
     this._addQuizData(quizQuestions);
   };
 
   private _makeQuizTitle = (state: number, index: number, type: number) => {
-    return <QuizTitle questionState={state} questionIndex={index} questionType={type}/>;
-  }
+    return <QuizTitle questionState={state} questionIndex={index} questionType={type} />;
+  };
 
   private _handleLanguageChange = () => {
     this._activeCaptionMapId = this._getCaptionMapId();
@@ -377,7 +380,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
     };
     this._onTimedMetadataChange(fakeEvent);
-  }
+  };
 
   private _addPlayerListeners() {
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_CHANGE, this._onTimedMetadataChange);
