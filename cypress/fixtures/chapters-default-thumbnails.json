@@ -1,0 +1,43 @@
+[
+  {
+    "partnerId": 1091,
+    "ks": "",
+    "userId": 0,
+    "objectType": "KalturaStartWidgetSessionResponse"
+  },
+  {
+    "objects": [
+      {
+        "description": "",
+        "title": "no thumbnail",
+        "subType": 2,
+        "id": "1_02sihd5j",
+        "cuePointType": "thumbCuePoint.Thumb",
+        "startTime": 3000,
+        "objectType": "KalturaThumbCuePoint"
+      },
+      {
+        "assetId": "1_2l76qxkd",
+        "description": "",
+        "title": "uploaded thumbnail",
+        "subType": 2,
+        "id": "1_0h1uf07a",
+        "cuePointType": "thumbCuePoint.Thumb",
+        "startTime": 12000,
+        "objectType": "KalturaThumbCuePoint"
+      }
+    ],
+    "totalCount": 2,
+    "objectType": "KalturaCuePointListResponse"
+  },
+  {
+    "objects": [],
+    "totalCount": 0,
+    "objectType": "KalturaCuePointListResponse"
+  },
+  {
+    "objects": [],
+    "totalCount": 0,
+    "objectType": "KalturaCuePointListResponse"
+  }
+]
