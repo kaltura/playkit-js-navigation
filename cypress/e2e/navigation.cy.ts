@@ -1,76 +1,8 @@
 // @ts-ignore
-import {core, KalturaPlayer} from '@playkit-js/kaltura-player-js';
+import {core} from '@playkit-js/kaltura-player-js';
+import {mockKalturaBe, loadPlayer, MANIFEST, MANIFEST_SAFARI} from './env';
 
 const {FakeEvent} = core;
-const MANIFEST = `#EXTM3U
-#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",LANGUAGE="en",NAME="English",AUTOSELECT=YES,DEFAULT=YES,URI="${location.origin}/media/index_1.m3u8",SUBTITLES="subs"
-#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=509496,RESOLUTION=480x272,AUDIO="audio",SUBTITLES="subs"
-${location.origin}/media/index.m3u8`;
-
-const MANIFEST_SAFARI = `#EXTM3U
-#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",NAME="English",DEFAULT=NO,AUTOSELECT=YES,FORCED=NO,LANGUAGE="en",URI="${location.origin}/media/index_1.m3u8"
-#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=504265,RESOLUTION=480x272,AUDIO="audio",SUBTITLES="subs"
-${location.origin}/media/index.m3u8`;
-
-const getPlayer = () => {
-  // @ts-ignore
-  return cy.window().then($win => $win.KalturaPlayer.getPlayers()['player-placeholder']);
-};
-
-const preparePage = (navigationConf: Object, playbackConf: Object) => {
-  cy.visit('index.html');
-  return cy.window().then(win => {
-    try {
-      // @ts-ignore
-      var kalturaPlayer = win.KalturaPlayer.setup({
-        targetId: 'player-placeholder',
-        provider: {
-          partnerId: -1,
-          env: {
-            cdnUrl: 'http://mock-cdn',
-            serviceUrl: 'http://mock-api'
-          }
-        },
-        plugins: {
-          navigation: navigationConf,
-          uiManagers: {},
-          kalturaCuepoints: {}
-        },
-        playback: {muted: true, autoplay: true, ...playbackConf}
-      });
-      return kalturaPlayer.loadMedia({entryId: '0_wifqaipd'});
-    } catch (e: any) {
-      return Promise.reject(e.message);
-    }
-  });
-};
-
-const loadPlayer = (navigationConf = {}, playbackConf = {}) => {
-  return preparePage(navigationConf, playbackConf).then(() => getPlayer().then(kalturaPlayer => kalturaPlayer.ready().then(() => kalturaPlayer)));
-};
-
-const checkRequest = (reqBody: any, service: string, action: string) => {
-  return reqBody?.service === service && reqBody?.action === action;
-};
-
-const mockKalturaBe = (entryFixture = 'vod-entry.json', dataFixture = 'navigation-data.json', captionsFixture = 'captions-en-response.json') => {
-  cy.intercept('http://mock-api/service/multirequest', req => {
-    if (checkRequest(req.body[2], 'baseEntry', 'list')) {
-      return req.reply({fixture: entryFixture});
-    }
-    if (checkRequest(req.body[2], 'cuepoint_cuepoint', 'list')) {
-      return req.reply({fixture: dataFixture});
-    }
-    if (checkRequest(req.body[2], 'caption_captionasset', 'serveAsJson')) {
-      return req.reply({fixture: captionsFixture});
-    }
-    if (checkRequest(req.body[2], 'thumbAsset', 'getUrl')) {
-      return req.reply({fixture: 'thumb-url.json'});
-    }
-  });
-  cy.intercept('GET', '**/ks/123', {fixture: 'thumb-asset.jpeg'}).as('getSlides');
-  cy.intercept('GET', '**/vid_sec/*', {fixture: 'thumb-asset.jpeg'}).as('getChapters');
-};
 
 describe('Navigation plugin', () => {
   beforeEach(() => {
@@ -249,23 +181,29 @@ describe('Navigation plugin', () => {
         searchInput.type('ocean');
 
         // no results
-        cy.get('[data-testid="screenReaderWrapper"]').children().should($div => {
-          expect($div.text()).to.eq('No Results Found. Try a more general keyword');
-        });
+        cy.get('[data-testid="screenReaderWrapper"]')
+          .children()
+          .should($div => {
+            expect($div.text()).to.eq('No Results Found. Try a more general keyword');
+          });
 
         // clear search input
         const clearSearchButton = cy.get("[aria-label='Clear search']");
         clearSearchButton.should('be.visible');
         clearSearchButton.click();
-        cy.get('[data-testid="screenReaderWrapper"]').children().should($div => {
-          expect($div.text()).to.eq('');
-        });
+        cy.get('[data-testid="screenReaderWrapper"]')
+          .children()
+          .should($div => {
+            expect($div.text()).to.eq('');
+          });
 
         // 1 result
         searchInput.type('1');
-        cy.get('[data-testid="screenReaderWrapper"]').children().should($div => {
-          expect($div.text()).to.eq('1 result in all content');
-        });
+        cy.get('[data-testid="screenReaderWrapper"]')
+          .children()
+          .should($div => {
+            expect($div.text()).to.eq('1 result in all content');
+          });
       });
     });
     it('should test search result', () => {
@@ -322,18 +260,20 @@ describe('Navigation plugin', () => {
     it('should render quiz question items in navigation side panel', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
-        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
-          qqa: [
-            {
-              id: '1_6zqqj2e6',
-              index: 0,
-              type: 3,
-              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
-              startTime: 10.647,
-              state: 1
-            }
-          ]
-        }));
+        kalturaPlayer.dispatchEvent(
+          new FakeEvent('QuizQuestionChanged', {
+            qqa: [
+              {
+                id: '1_6zqqj2e6',
+                index: 0,
+                type: 3,
+                question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+                startTime: 10.647,
+                state: 1
+              }
+            ]
+          })
+        );
         cy.get('[data-testid="navigation_root"]').within(() => {
           cy.get('[data-testid="navigation_list"]').children().should('have.length', 7);
         });
@@ -345,18 +285,20 @@ describe('Navigation plugin', () => {
     it('should indicate that a question has been answered', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
-        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
-          qqa: [
-            {
-              id: '1_6zqqj2e6',
-              index: 0,
-              type: 3,
-              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
-              startTime: 10.647,
-              state: 2
-            }
-          ]
-        }));
+        kalturaPlayer.dispatchEvent(
+          new FakeEvent('QuizQuestionChanged', {
+            qqa: [
+              {
+                id: '1_6zqqj2e6',
+                index: 0,
+                type: 3,
+                question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+                startTime: 10.647,
+                state: 2
+              }
+            ]
+          })
+        );
         cy.get('[data-testid="navigation_questionStateLabel"]').should('be.visible');
         cy.get('[data-testid="navigation_questionStateLabel"]').should($div => {
           expect($div.text()).to.eq('Answered');
@@ -368,18 +310,20 @@ describe('Navigation plugin', () => {
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
         cy.get('[data-testid="navigation_list"]').children().should('have.length', 6);
         const timeout = setTimeout(() => {
-          kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
-            qqa: [
-              {
-                id: '1_6zqqj2e6',
-                index: 0,
-                type: 3,
-                question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
-                startTime: 10.647,
-                state: 2
-              }
-            ]
-          }));
+          kalturaPlayer.dispatchEvent(
+            new FakeEvent('QuizQuestionChanged', {
+              qqa: [
+                {
+                  id: '1_6zqqj2e6',
+                  index: 0,
+                  type: 3,
+                  question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+                  startTime: 10.647,
+                  state: 2
+                }
+              ]
+            })
+          );
           cy.get('[data-testid="navigation_list"]').children().should('have.length', 7);
         }, 500);
         clearTimeout(timeout);
@@ -388,81 +332,123 @@ describe('Navigation plugin', () => {
     it('should indicate that a question is correct', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
-        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
-          qqa: [
-            {
-              id: '1_6zqqj2e6',
-              index: 0,
-              type: 3,
-              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
-              startTime: 10.647,
-              state: 4
-            }
-          ]
-        }));
-        cy.get('[data-testid="navigation_questionStateLabel"]').should('be.visible').should($div => {
-          expect($div.text()).to.eq('Correct');
-        });
+        kalturaPlayer.dispatchEvent(
+          new FakeEvent('QuizQuestionChanged', {
+            qqa: [
+              {
+                id: '1_6zqqj2e6',
+                index: 0,
+                type: 3,
+                question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+                startTime: 10.647,
+                state: 4
+              }
+            ]
+          })
+        );
+        cy.get('[data-testid="navigation_questionStateLabel"]')
+          .should('be.visible')
+          .should($div => {
+            expect($div.text()).to.eq('Correct');
+          });
       });
     });
     it('should indicate that a question is incorrect', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
-        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
-          qqa: [
-            {
-              id: '1_6zqqj2e6',
-              index: 0,
-              type: 3,
-              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
-              startTime: 10.647,
-              state: 3
-            }
-          ]
-        }));
-        cy.get('[data-testid="navigation_questionStateLabel"]').should('be.visible').should($div => {
-          expect($div.text()).to.eq('Incorrect');
-        });
+        kalturaPlayer.dispatchEvent(
+          new FakeEvent('QuizQuestionChanged', {
+            qqa: [
+              {
+                id: '1_6zqqj2e6',
+                index: 0,
+                type: 3,
+                question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+                startTime: 10.647,
+                state: 3
+              }
+            ]
+          })
+        );
+        cy.get('[data-testid="navigation_questionStateLabel"]')
+          .should('be.visible')
+          .should($div => {
+            expect($div.text()).to.eq('Incorrect');
+          });
       });
     });
     it('should set the question title to Reflection point', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
-        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
-          qqa: [
-            {
-              id: '1_6zqqj2e6',
-              index: 0,
-              type: 3,
-              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
-              startTime: 10.647,
-              state: 1
-            }
-          ]
-        }));
-        cy.get('[data-testid="navigation_questionTitle"]').should('be.visible').should($div => {
-          expect($div.text()).to.eq('Reflection point 1');
-        });
+        kalturaPlayer.dispatchEvent(
+          new FakeEvent('QuizQuestionChanged', {
+            qqa: [
+              {
+                id: '1_6zqqj2e6',
+                index: 0,
+                type: 3,
+                question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+                startTime: 10.647,
+                state: 1
+              }
+            ]
+          })
+        );
+        cy.get('[data-testid="navigation_questionTitle"]')
+          .should('be.visible')
+          .should($div => {
+            expect($div.text()).to.eq('Reflection point 1');
+          });
       });
     });
     it('should set the question title to Question', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
-        kalturaPlayer.dispatchEvent(new FakeEvent('QuizQuestionChanged', {
-          qqa: [
-            {
-              id: '1_6zqqj2e6',
-              index: 0,
-              type: 1,
-              question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
-              startTime: 10.647,
-              state: 1
-            }
-          ]
-        }));
-        cy.get('[data-testid="navigation_questionTitle"]').should('be.visible').should($div => {
-          expect($div.text()).to.eq('Question 1');
-        });
+        kalturaPlayer.dispatchEvent(
+          new FakeEvent('QuizQuestionChanged', {
+            qqa: [
+              {
+                id: '1_6zqqj2e6',
+                index: 0,
+                type: 1,
+                question: 'Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.',
+                startTime: 10.647,
+                state: 1
+              }
+            ]
+          })
+        );
+        cy.get('[data-testid="navigation_questionTitle"]')
+          .should('be.visible')
+          .should($div => {
+            expect($div.text()).to.eq('Question 1');
+          });
+      });
+    });
+    it('should trigger custom onClick event for quiz cues', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
+        const onClick = cy.spy();
+        kalturaPlayer.dispatchEvent(
+          new FakeEvent('QuizQuestionChanged', {
+            qqa: [
+              {
+                id: '1_6zqqj2e6',
+                index: 0,
+                type: 1,
+                question: 'Quiz cue',
+                startTime: 10.647,
+                state: 1,
+                onClick
+              }
+            ]
+          })
+        );
+        cy.get('[aria-label="Quiz cue"]')
+          .click({force: true})
+          .then(() => {
+            expect(onClick).to.have.been.calledOnce;
+          });
       });
     });
   });

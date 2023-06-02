@@ -100,7 +100,7 @@ export class NavigationList extends Component<Props> {
                 this._setNavigationItemRef(index, node);
               }}
               widgetWidth={widgetWidth}
-              onClick={onSeek}
+              onClick={item.onClick ?? onSeek}
               selectedItem={highlightedTime === item.displayTime}
               data={item}
               onSelected={this.updateSelected}
