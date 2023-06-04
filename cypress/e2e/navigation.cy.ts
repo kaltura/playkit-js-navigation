@@ -48,8 +48,7 @@ describe('Navigation plugin', () => {
     it('should test fetch of slides and chapters image', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
-        cy.get('@getChapters.all').should('have.length', 3);
-        cy.get('@getSlides.all').should('have.length', 2);
+        cy.get('@getSlidesAndChapters.all').should('have.length', 2);
       });
     });
 
@@ -98,6 +97,24 @@ describe('Navigation plugin', () => {
           cy.get("[aria-label='List Chapters']").click();
           cy.get('[data-entry-id="1_02sihd5j"]').should('have.attr', 'aria-current', 'true');
         });
+      });
+    });
+
+    it('should only render non default thumbnails', () => {
+      mockKalturaBe('vod-entry.json', 'chapters-default-thumbnails.json');
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
+        cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
+        cy.get('[data-testid="navigation_root"]').within(() => {
+          cy.get('[data-entry-id="1_02sihd5j"]').children().last().within(() => cy.get('img').should('not.exist'));
+          cy.get('[data-entry-id="1_0h1uf07a"]').children().last().within(() => cy.get('img').should('exist'));
+        });
+      });
+    });
+
+    it('should fetch 1 chapter image out of 2', () => {
+      mockKalturaBe('vod-entry.json', 'chapters-default-thumbnails.json');
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
+        cy.get('@getSlidesAndChapters.all').should('have.length', 1);
       });
     });
   });

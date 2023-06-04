@@ -72,6 +72,5 @@ export const mockKalturaBe = (
       return req.reply({fixture: 'thumb-url.json'});
     }
   });
-  cy.intercept('GET', '**/ks/123', {fixture: 'thumb-asset.jpeg'}).as('getSlides');
-  cy.intercept('GET', '**/vid_sec/*', {fixture: 'thumb-asset.jpeg'}).as('getChapters');
+  cy.intercept('GET', '**/ks/123', {fixture: 'thumb-asset.jpeg'}).as('getSlidesAndChapters');
 };

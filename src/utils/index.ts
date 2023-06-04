@@ -52,7 +52,7 @@ export const prepareCuePoint = (cuePoint: CuePoint, cuePointType: ItemTypes, isL
     itemData.displayTitle = decodeString(metadata.text);
   } else if ([ItemTypes.Slide, ItemTypes.Chapter].includes(cuePointType)) {
     itemData.displayTitle = decodeString(metadata.title);
-    itemData.previewImage = metadata.assetUrl || null;
+    itemData.previewImage = !metadata.isDefaultThumb && metadata.assetUrl ? metadata.assetUrl : null;
   }
   return itemData;
 };

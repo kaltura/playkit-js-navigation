@@ -52,6 +52,7 @@ export interface RawItemData {
     };
   };
   quizState?: number;
+  isDefaultThumb?: boolean;
 }
 
 export interface ItemData extends RawItemData {
