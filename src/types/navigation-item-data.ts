@@ -65,6 +65,7 @@ export interface ItemData extends RawItemData {
   displayTitle: VNode | string;
   displayDescription: string | null;
   liveCuePoint: boolean;
+  onClick?: () => void;
 }
 
 export type HighlightedMap = Map<ItemTypes, number>;
