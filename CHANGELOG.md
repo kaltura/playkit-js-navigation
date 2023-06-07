@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.3.2 (2023-06-07)
+
+
+### Bug Fixes
+
+* **FEC-13216:** upd dependencies ([#325](https://github.com/kaltura/playkit-js-navigation/issues/325)) ([0fa592a](https://github.com/kaltura/playkit-js-navigation/commit/0fa592aaf2c4d1c7d196c977b72f01f2f7b9214e))
+
 ### [3.3.1](https://github.com/kaltura/playkit-js-navigation/compare/v3.3.0...v3.3.1) (2023-05-17)
 
 
