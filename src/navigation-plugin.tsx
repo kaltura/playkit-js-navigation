@@ -348,7 +348,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
-        return <PluginButton isActive={this._isPluginActive()} onClick={this._handleClickOnPluginIcon} setRef={this._setPluginButtonRef} />;
+        return <PluginButton isActive={this._isPluginActive()} setRef={this._setPluginButtonRef} />;
       }
     }) as number;
 
