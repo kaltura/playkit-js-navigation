@@ -16,6 +16,15 @@
       "slide_type": "Diapositivas",
       "hotspot_type": "Puntos de acceso",
       "caption_type": "Subtítulos",
+      "quiz_question_type": {
+        "one": "Pregunta",
+        "many": "Preguntas"
+      },
+      "reflection_point_title": "Punto de reflexión {{index}}",
+      "question_title": "Pregunta {{index}}",
+      "question_answered": "Contestada",
+      "question_incorrect": "Incorrecto",
+      "question_correct": "Correcto",
       "search_result_one_type": {
         "one": "{{totalResults}} resultado en {{type}}",
         "many": "{{totalResults}} resultados en {{type}}"
