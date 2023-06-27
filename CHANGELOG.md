@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.3.3 (2023-06-27)
+
+
+### Bug Fixes
+
+* **FEC-13214:** Top Bar Dropdown menu are not auto closed on Display Bar icons clicked ([#326](https://github.com/kaltura/playkit-js-navigation/issues/326)) ([d88accf](https://github.com/kaltura/playkit-js-navigation/commit/d88accf4f3103a086a260ddfdbee4d39a61e19e4))
+
 ### 3.3.2 (2023-06-07)
 
 
