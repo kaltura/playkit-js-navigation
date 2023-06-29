@@ -52,7 +52,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     position: SidePanelPositions.RIGHT,
     expandMode: SidePanelModes.ALONGSIDE,
     expandOnFirstPlay: false,
-    itemsOrder: {}
+    itemsOrder: {},
+    visible: true
   };
 
   constructor(name: string, player: KalturaPlayerTypes.Player, config: NavigationConfig) {
@@ -61,6 +62,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._activeCuePointsMap = this._getDefaultActiveCuePointsMap();
     this._itemsOrder = prepareItemTypesOrder(this.config.itemsOrder);
     this._itemsFilter = isEmptyObject(this.config.itemsOrder) ? itemTypesOrder : config.itemsOrder;
+    this._player.registerService('navigation', this);
   }
 
   get sidePanelsManager() {
@@ -73,6 +75,10 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
   get cuePointManager() {
     return this._player.getService('kalturaCuepoints') as any;
+  }
+
+  get timelineManager() {
+    return this._player.getService('timeline') as any;
   }
 
   private get _data() {
@@ -97,6 +103,10 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   loadMedia(): void {
+    if (!this.config.visible) {
+      this.logger.warn("visible configuration is false - not rendering the plugin.");
+      return;
+    }
     if (!this.cuePointManager || !this.sidePanelsManager || !this.upperBarManager) {
       this.logger.warn("kalturaCuepoints, sidePanelsManager or upperBarManager haven't registered");
       return;
@@ -104,6 +114,10 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
     this._addPlayerListeners();
     this._registerCuePointTypes();
+  }
+
+  isVisible(): boolean {
+    return this.config.visible;
   }
 
   static isValid(): boolean {
@@ -252,12 +266,15 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
       if (this._getCuePointType(cue) === ItemTypes.Chapter && this._itemsFilter[ItemTypes.Chapter]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Chapter, isLive));
+        this.timelineManager.addKalturaCuePoint(cue.startTime, ItemTypes.Chapter, cue.id, cue.metadata.title);
       }
       if (this._getCuePointType(cue) === ItemTypes.Hotspot && this._itemsFilter[ItemTypes.Hotspot]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Hotspot, isLive));
+        this.timelineManager.addKalturaCuePoint(cue.startTime, ItemTypes.Hotspot, cue.id);
       }
       if (this._getCuePointType(cue) === ItemTypes.AnswerOnAir && this._itemsFilter[ItemTypes.AnswerOnAir]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.AnswerOnAir, isLive));
+        this.timelineManager.addKalturaCuePoint(cue.startTime, ItemTypes.AnswerOnAir, cue.id);
       }
       if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
         captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
@@ -391,6 +408,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (this._itemsFilter[ItemTypes.Caption]) {
       this.eventManager.listen(this._player, this._player.Event.TEXT_TRACK_CHANGED, this._handleLanguageChange);
     }
+    this.eventManager.listen(this._player, 'TimelinePreviewArrowClicked', this._handleClickOnPluginIcon);
   }
 
   private _seekTo = (time: number) => {
@@ -432,6 +450,10 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _setPluginButtonRef = (ref: HTMLButtonElement) => {
     this._pluginButtonRef = ref;
   };
+
+  isPluginActive(): boolean {
+    return this._isPluginActive();
+  }
 
   reset(): void {
     if (Math.max(this._navigationPanel, this._navigationIcon) > 0) {
