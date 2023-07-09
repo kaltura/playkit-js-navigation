@@ -5,6 +5,8 @@
       "show_plugin": "Mostrar navegación",
       "read_less": "Menos",
       "read_more": "Más",
+      "read_more_of": "Mostrar más",
+      "read_less_of": "Mostrar menos",
       "whoops": "¡Vaya!",
       "error_message": "No hemos podido recuperar sus datos.",
       "retry": "Reintentar",
@@ -42,6 +44,7 @@
       "loading": "Cargando",
       "auto_scroll": "Reanudar desplazamiento automático",
       "image_alt": "Previsualización de diapositiva",
+      "list_type": "Enumerar",
       "search_description": "Puede buscar en los subtítulos del video palabras o frases específicas"
     }
   }
