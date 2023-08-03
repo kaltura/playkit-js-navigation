@@ -348,7 +348,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
             isLoading={this._isLoading}
             hasError={this._hasError}
             highlightedMap={this._activeCuePointsMap}
-            kitchenSinkActive={this._isPluginActive()}
+            kitchenSinkActive={this.isPluginActive()}
             toggledWithEnter={this._triggeredByKeyboard}
             itemsOrder={this._itemsOrder}
           />
@@ -365,7 +365,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
-        return <PluginButton isActive={this._isPluginActive()} setRef={this._setPluginButtonRef} />;
+        return <PluginButton isActive={this.isPluginActive()} setRef={this._setPluginButtonRef} />;
       }
     }) as number;
 
@@ -418,7 +418,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _handleClickOnPluginIcon = (e: OnClickEvent, byKeyboard?: boolean) => {
-    if (this._isPluginActive()) {
+    if (this.isPluginActive()) {
       this._triggeredByKeyboard = false;
       this._deactivatePlugin();
     } else {
@@ -443,16 +443,12 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     });
   };
 
-  private _isPluginActive = () => {
-    return this.sidePanelsManager!.isItemActive(this._navigationPanel);
-  };
-
   private _setPluginButtonRef = (ref: HTMLButtonElement) => {
     this._pluginButtonRef = ref;
   };
 
   isPluginActive(): boolean {
-    return this._isPluginActive();
+    return this.sidePanelsManager!.isItemActive(this._navigationPanel);
   }
 
   reset(): void {
