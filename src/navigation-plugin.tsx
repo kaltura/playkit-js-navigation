@@ -107,8 +107,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this.logger.warn("visible configuration is false - not rendering the plugin.");
       return;
     }
-    if (!this.cuePointManager || !this.sidePanelsManager || !this.upperBarManager || !this.timelineManager) {
-      this.logger.warn("kalturaCuepoints, sidePanelsManager, timelineManager or upperBarManager haven't registered");
+    if (!this.cuePointManager || !this.sidePanelsManager || !this.upperBarManager) {
+      this.logger.warn("kalturaCuepoints, sidePanelsManager or upperBarManager haven't registered");
       return;
     }
 
@@ -266,15 +266,15 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
       if (this._getCuePointType(cue) === ItemTypes.Chapter && this._itemsFilter[ItemTypes.Chapter]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Chapter, isLive));
-        this.timelineManager.addKalturaCuePoint(cue.startTime, ItemTypes.Chapter, cue.id, cue.metadata.title);
+        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Chapter, cue.id, cue.metadata.title);
       }
       if (this._getCuePointType(cue) === ItemTypes.Hotspot && this._itemsFilter[ItemTypes.Hotspot]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Hotspot, isLive));
-        this.timelineManager.addKalturaCuePoint(cue.startTime, ItemTypes.Hotspot, cue.id);
+        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Hotspot, cue.id);
       }
       if (this._getCuePointType(cue) === ItemTypes.AnswerOnAir && this._itemsFilter[ItemTypes.AnswerOnAir]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.AnswerOnAir, isLive));
-        this.timelineManager.addKalturaCuePoint(cue.startTime, ItemTypes.AnswerOnAir, cue.id);
+        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.AnswerOnAir, cue.id);
       }
       if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
         captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
