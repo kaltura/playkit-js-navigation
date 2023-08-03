@@ -73,7 +73,7 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 
 ## Documentation
 
-Navigation plugin configuration can been found here:
+Navigation plugin configuration can be found here:
 
 - **[Configuration](#configuration)**
 
@@ -119,7 +119,8 @@ Bump version: `yarn release`;<br/>
   expandOnFirstPlay?: boolean, // optional
   position?: string, // optional
   expandMode?: string, // optional
-  itemsOrder?: object< string, number > // optional
+  itemsOrder?: object< string, number >, // optional
+  visible?: boolean // optional
 }
 ```
 
@@ -131,7 +132,7 @@ Bump version: `yarn release`;<br/>
 >
 > ##### Default: `right`
 >
-> ##### Description: if plugin should automatically opens on first play.
+> ##### Description: if plugin should automatically open on first play.
 >
 
 ##
@@ -167,6 +168,16 @@ Bump version: `yarn release`;<br/>
 > ##### Change tab order: `navigation = {...itemsOrder: { "Slide": 1, "All": 4, "AnswerOnAir": 3, "Chapter": 5,  "Hotspot": 2, }, ...}`
 >
 > ##### Description: define order of Tabs (min value at the left) and Items inside group (min value at the top). itemsOrder also uses as tabs filter (all items that not included in "itemsOrder" object will be filtered out) (default: { "All": 0, "Chapter": 1, "Slide": 2, "Hotspot": 3, "AnswerOnAir": 4, }).
+
+##
+
+> ### config.visible
+>
+> ##### Type: `boolean`
+>
+> ##### Default: `true`
+>
+> ##### Description: if plugin's side panel should be displayed or not.
 >
 
 ## Additional flashvars
