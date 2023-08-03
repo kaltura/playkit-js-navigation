@@ -46,6 +46,8 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 ```html
 <script type="text/javascript" src="/PATH/TO/FILE/kaltura-player.js"></script>
 <!--Kaltura player-->
+<script type="text/javascript" src="/PATH/TO/FILE/playkit-js-timeline.js"></script>
+<!--PlayKit timeline plugin-->
 <script type="text/javascript" src="/PATH/TO/FILE/playkit-kaltura-cuepoints.js"></script>
 <!--PlayKit cuepoints plugin-->
 <script type="text/javascript" src="/PATH/TO/FILE/playkit-ui-managers.js"></script>
@@ -62,6 +64,7 @@ Finally, add the bundle as a script tag in your page, and initialize the player
       navigation: { ... },
       uiManagers: { ... },
       kalturaCuepoints: { ... },
+      timeline: { ... }
      }
      ...
     };
@@ -188,7 +191,8 @@ Bump version: `yarn release`;<br/>
 
 Plugin dependencies:<br/>
 <a href="https://github.com/kaltura/playkit-js-kaltura-cuepoints">Cue Points</a><br/>
-<a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a>
+<a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a><br/>
+<a href="https://github.com/kaltura/playkit-js-timeline">Timeline</a>
 
 ### Dev env
 Node version: up to 14+<br/>
