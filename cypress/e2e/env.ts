@@ -8,7 +8,7 @@ export const MANIFEST_SAFARI = `#EXTM3U
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=504265,RESOLUTION=480x272,AUDIO="audio",SUBTITLES="subs"
 ${location.origin}/media/index.m3u8`;
 
-export const preparePage = (puginConf = {}, playbackConf = {}): PromiseLike<any> => {
+export const preparePage = (pluginConf = {}, playbackConf = {}): PromiseLike<any> => {
   return cy.visit('index.html').then($win => {
     try {
       // @ts-ignore
@@ -22,9 +22,10 @@ export const preparePage = (puginConf = {}, playbackConf = {}): PromiseLike<any>
           }
         },
         plugins: {
-          navigation: puginConf,
+          navigation: pluginConf,
           uiManagers: {},
-          kalturaCuepoints: {}
+          kalturaCuepoints: {},
+          timeline: {}
         },
         playback: {muted: true, autoplay: true, ...playbackConf}
       });
@@ -40,8 +41,8 @@ export const preparePage = (puginConf = {}, playbackConf = {}): PromiseLike<any>
   });
 };
 
-export const loadPlayer = (puginConf: Record<string, any> = {}, playbackConf: Record<string, any> = {}): PromiseLike<any> => {
-  return preparePage(puginConf, playbackConf).then(kalturaPlayer => {
+export const loadPlayer = (pluginConf: Record<string, any> = {}, playbackConf: Record<string, any> = {}): PromiseLike<any> => {
+  return preparePage(pluginConf, playbackConf).then(kalturaPlayer => {
     if (playbackConf.autoplay) {
       return kalturaPlayer.ready().then(() => kalturaPlayer);
     }
