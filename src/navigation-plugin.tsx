@@ -107,8 +107,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this.logger.warn("visible configuration is false - not rendering the plugin.");
       return;
     }
-    if (!this.cuePointManager || !this.sidePanelsManager || !this.upperBarManager) {
-      this.logger.warn("kalturaCuepoints, sidePanelsManager or upperBarManager haven't registered");
+    if (!this.cuePointManager || !this.sidePanelsManager || !this.upperBarManager || !this.timelineManager) {
+      this.logger.warn("kalturaCuepoints, sidePanelsManager, timelineManager or upperBarManager haven't registered");
       return;
     }
 
