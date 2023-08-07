@@ -46,6 +46,8 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 ```html
 <script type="text/javascript" src="/PATH/TO/FILE/kaltura-player.js"></script>
 <!--Kaltura player-->
+<script type="text/javascript" src="/PATH/TO/FILE/playkit-js-timeline.js"></script>
+<!--PlayKit timeline plugin-->
 <script type="text/javascript" src="/PATH/TO/FILE/playkit-kaltura-cuepoints.js"></script>
 <!--PlayKit cuepoints plugin-->
 <script type="text/javascript" src="/PATH/TO/FILE/playkit-ui-managers.js"></script>
@@ -62,6 +64,7 @@ Finally, add the bundle as a script tag in your page, and initialize the player
       navigation: { ... },
       uiManagers: { ... },
       kalturaCuepoints: { ... },
+      timeline: { ... }
      }
      ...
     };
@@ -73,7 +76,7 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 
 ## Documentation
 
-Navigation plugin configuration can been found here:
+Navigation plugin configuration can be found here:
 
 - **[Configuration](#configuration)**
 
@@ -119,7 +122,8 @@ Bump version: `yarn release`;<br/>
   expandOnFirstPlay?: boolean, // optional
   position?: string, // optional
   expandMode?: string, // optional
-  itemsOrder?: object< string, number > // optional
+  itemsOrder?: object< string, number >, // optional
+  visible?: boolean // optional
 }
 ```
 
@@ -131,7 +135,7 @@ Bump version: `yarn release`;<br/>
 >
 > ##### Default: `right`
 >
-> ##### Description: if plugin should automatically opens on first play.
+> ##### Description: if plugin should automatically open on first play.
 >
 
 ##
@@ -167,6 +171,16 @@ Bump version: `yarn release`;<br/>
 > ##### Change tab order: `navigation = {...itemsOrder: { "Slide": 1, "All": 4, "AnswerOnAir": 3, "Chapter": 5,  "Hotspot": 2, }, ...}`
 >
 > ##### Description: define order of Tabs (min value at the left) and Items inside group (min value at the top). itemsOrder also uses as tabs filter (all items that not included in "itemsOrder" object will be filtered out) (default: { "All": 0, "Chapter": 1, "Slide": 2, "Hotspot": 3, "AnswerOnAir": 4, }).
+
+##
+
+> ### config.visible
+>
+> ##### Type: `boolean`
+>
+> ##### Default: `true`
+>
+> ##### Description: if plugin's side panel should be displayed or not.
 >
 
 ## Additional flashvars
@@ -177,7 +191,8 @@ Bump version: `yarn release`;<br/>
 
 Plugin dependencies:<br/>
 <a href="https://github.com/kaltura/playkit-js-kaltura-cuepoints">Cue Points</a><br/>
-<a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a>
+<a href="https://github.com/kaltura/playkit-js-ui-managers">UI Managers</a><br/>
+<a href="https://github.com/kaltura/playkit-js-timeline">Timeline</a>
 
 ### Dev env
 Node version: up to 14+<br/>

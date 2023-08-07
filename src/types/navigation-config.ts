@@ -3,4 +3,5 @@ export interface NavigationConfig {
   expandMode: string;
   expandOnFirstPlay: boolean;
   itemsOrder: Record<string, number>;
+  visible: boolean;
 }

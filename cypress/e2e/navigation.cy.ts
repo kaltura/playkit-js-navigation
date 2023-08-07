@@ -42,6 +42,13 @@ describe('Navigation plugin', () => {
         cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'hidden');
       });
     });
+    it('should not render the plugin button and side panel if visible configuration is false', () => {
+      mockKalturaBe();
+      loadPlayer({visible: false}, {muted: true, autoplay: true}).then(() => {
+        cy.get('[data-testid="navigation_pluginButton"]').should('not.exist');
+        cy.get('[data-testid="navigation_root"]').should('not.exist');
+      });
+    });
   });
 
   describe('navigation data', () => {
