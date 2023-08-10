@@ -103,15 +103,13 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   loadMedia(): void {
-    if (!this.config.visible) {
-      this.logger.warn("visible configuration is false - not rendering the plugin.");
-      return;
-    }
     if (!this.cuePointManager || !this.sidePanelsManager || !this.upperBarManager) {
       this.logger.warn("kalturaCuepoints, sidePanelsManager or upperBarManager haven't registered");
       return;
     }
-
+    if (!this.config.visible) {
+      this.logger.warn("visible configuration is false - not rendering the plugin.");
+    }
     this._addPlayerListeners();
     this._registerCuePointTypes();
   }
@@ -166,7 +164,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _handleQuizQuestionChanged = (event: any) => {
     const qqa = event.payload.qqa;
     const quizQuestions = qqa.map(
-      (quizQuestion: {id: string; index: number; type: number; question: string; startTime: number; state: number; onClick: () => void}) => {
+      (quizQuestion: { id: string; index: number; type: number; question: string; startTime: number; state: number; onClick: () => void }) => {
         const cue: CuePoint = {
           id: quizQuestion.id,
           metadata: {
@@ -187,7 +185,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _makeQuizTitle = (state: number, index: number, type: number) => {
-    return <QuizTitle questionState={state} questionIndex={index} questionType={type} />;
+    return <QuizTitle questionState={state} questionIndex={index} questionType={type}/>;
   };
 
   private _handleLanguageChange = () => {
@@ -317,6 +315,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _createOrUpdatePlugin = () => {
+    if (!this.config.visible) return;
     if (this._navigationPanel > 0) {
       this._updateNavigationPlugin();
     } else {
@@ -365,7 +364,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
-        return <PluginButton isActive={this.isPluginActive()} setRef={this._setPluginButtonRef} />;
+        return <PluginButton isActive={this.isPluginActive()} setRef={this._setPluginButtonRef}/>;
       }
     }) as number;
 
