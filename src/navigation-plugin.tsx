@@ -465,6 +465,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._navigationPanel = -1;
       this._navigationIcon = -1;
       this._pluginButtonRef = null;
+      this._navigationPluginRef = null;
     }
     this._activeCuePointsMap = this._getDefaultActiveCuePointsMap();
     this._activeCaptionMapId = '';
