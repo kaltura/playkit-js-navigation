@@ -202,7 +202,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return styles.smallWidth;
   };
 
-  private _handleSearchFilterChange = (property: string) => (data: ItemTypes | string | null) => {
+  public handleSearchFilterChange = (property: string) => (data: ItemTypes | string | null) => {
     const searchFilter: SearchFilter = {
       ...this.state.searchFilter,
       [property]: data
@@ -219,7 +219,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         {!hasError && (
           <div class={[styles.searchWrapper, this._getHeaderStyles()].join(' ')}>
             <NavigationSearch
-              onChange={this._handleSearchFilterChange('searchQuery')}
+              onChange={this.handleSearchFilterChange('searchQuery')}
               searchQuery={searchFilter.searchQuery}
               toggledWithEnter={toggledWithEnter}
               kitchenSinkActive={kitchenSinkActive}
@@ -231,7 +231,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
 
         {!hasError && (
           <TranslatedNavigationFilter
-            onChange={this._handleSearchFilterChange('activeTab')}
+            onChange={this.handleSearchFilterChange('activeTab')}
             activeTab={searchFilter.activeTab}
             availableTabs={searchFilter.availableTabs}
             totalResults={searchFilter.searchQuery.length > 0 ? convertedData.length : null}
