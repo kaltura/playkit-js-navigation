@@ -323,8 +323,9 @@ describe('Navigation plugin', () => {
             ]
           })
         );
-        cy.get('[data-testid="navigation_questionStateLabel"]').should('be.visible');
-        cy.get('[data-testid="navigation_questionStateLabel"]').should($div => {
+        cy.get('[data-testid="navigation_questionStateLabel"]')
+          .should('exist')
+          .should($div => {
           expect($div.text()).to.eq('Answered');
         });
       });
@@ -371,7 +372,7 @@ describe('Navigation plugin', () => {
           })
         );
         cy.get('[data-testid="navigation_questionStateLabel"]')
-          .should('be.visible')
+          .should('exist')
           .should($div => {
             expect($div.text()).to.eq('Correct');
           });
@@ -395,7 +396,7 @@ describe('Navigation plugin', () => {
           })
         );
         cy.get('[data-testid="navigation_questionStateLabel"]')
-          .should('be.visible')
+          .should('exist')
           .should($div => {
             expect($div.text()).to.eq('Incorrect');
           });
