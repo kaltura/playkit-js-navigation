@@ -41,6 +41,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _activeCaptionMapId: string = '';
   private _quizQuestionData: ItemData[] = [];
   private _pluginButtonRef: HTMLButtonElement | null = null;
+  private _navigationPluginRef: Navigation | null = null;
 
   private _player: KalturaPlayerTypes.Player;
   private _navigationPanel = -1;
@@ -350,6 +351,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
             kitchenSinkActive={this.isPluginActive()}
             toggledWithEnter={this._triggeredByKeyboard}
             itemsOrder={this._itemsOrder}
+            ref={node => this._navigationPluginRef = node}
           />
         );
       },
@@ -407,7 +409,13 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (this._itemsFilter[ItemTypes.Caption]) {
       this.eventManager.listen(this._player, this._player.Event.TEXT_TRACK_CHANGED, this._handleLanguageChange);
     }
-    this.eventManager.listen(this._player, 'TimelinePreviewArrowClicked', this._handleClickOnPluginIcon);
+    this.eventManager.listen(this._player, 'TimelinePreviewArrowClicked', this._handleTimelinePreviewClick);
+  }
+
+  private _handleTimelinePreviewClick = ({payload}: any) => {
+    const {e, byKeyboard, cuePointType} = payload;
+    this._handleClickOnPluginIcon(e, byKeyboard);
+    this._navigationPluginRef?.handleSearchFilterChange('activeTab')(cuePointType);
   }
 
   private _seekTo = (time: number) => {
