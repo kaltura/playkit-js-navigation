@@ -3,6 +3,9 @@ import {A11yWrapper, OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrappe
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
+import {ui} from '@playkit-js/kaltura-player-js';
+
+const {ExpandableText} = ui.Components;
 
 const {Text} = KalturaPlayer.ui.preacti18n;
 
@@ -22,11 +25,10 @@ export interface NavigationItemProps {
 }
 
 export interface NavigationItemState {
-  expandText: boolean;
-  titleTrimmed: boolean;
   imageLoaded: boolean;
   imageFailed: boolean;
   focused: boolean;
+  useExpandableText: boolean;
 }
 
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
@@ -38,7 +40,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
   constructor(props: NavigationItemProps) {
     super(props);
-    this.state = {expandText: !props.data.previewImage, imageLoaded: false, imageFailed: false, titleTrimmed: false, focused: false};
+    this.state = {imageLoaded: false, imageFailed: false, focused: false, useExpandableText: !props.data.previewImage};
   }
 
   public setFocus() {
@@ -59,8 +61,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       selectedItem !== nextProps.selectedItem ||
       this.state.focused !== nextState.focused ||
       data !== nextProps.data ||
-      nextState.expandText !== this.state.expandText ||
-      nextState.titleTrimmed !== this.state.titleTrimmed ||
       nextState.imageLoaded !== this.state.imageLoaded ||
       nextState.imageFailed !== this.state.imageFailed ||
       nextProps.widgetWidth !== widgetWidth
@@ -73,21 +73,14 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   componentDidUpdate(previousProps: Readonly<NavigationItemProps>, nextState: Readonly<NavigationItemState>) {
     this._getSelected();
     this.matchHeight();
-    if (nextState.imageLoaded !== this.state.imageLoaded) {
-      this.setState({
-        titleTrimmed: this._isEllipsisActive()
-      });
-    }
   }
 
   componentDidMount() {
     this._getSelected();
     this.matchHeight();
-    if (!this.props.data?.previewImage) {
-      this.setState({
-        titleTrimmed: this._isEllipsisActive()
-      });
-    }
+    this.setState({
+      useExpandableText: !this.props.data?.previewImage
+    });
   }
 
   private _getSelected = () => {
@@ -124,23 +117,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     this.props.onClick(this.props.data.startTime);
   };
 
-  private _handleExpandChange = (e: OnClickEvent, byKeyboard?: boolean) => {
-    this.setState(
-      {
-        expandText: !this.state.expandText
-      },
-      () => {
-        if (byKeyboard) {
-          if (this.state.expandText) {
-            this._showLessButtonRef?.focus();
-          } else {
-            this._showMoreButtonRef?.focus();
-          }
-        }
-      }
-    );
-  };
-
   private _renderThumbnail = () => {
     if (this.state.imageFailed) {
       return null;
@@ -159,30 +135,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       }
     };
     return <img {...imageProps} />;
-  };
-
-  private _renderShowMoreLessButton = (title: string) => {
-    if (!this.props.data.previewImage) {
-      return null;
-    }
-    const {expandText} = this.state;
-    return (
-      <A11yWrapper onClick={this._handleExpandChange}>
-        <div
-          tabIndex={0}
-          className={styles.showMoreButton}
-          ref={node => {
-            if (expandText) {
-              this._showLessButtonRef = node;
-            } else {
-              this._showMoreButtonRef = node;
-            }
-          }}
-          aria-label={`${expandText ? this.props.readLessLabel : this.props.readMoreLabel} ${title}`}>
-          {expandText ? this.props.readLessTranslate : this.props.readMoreTranslate}
-        </div>
-      </A11yWrapper>
-    );
   };
 
   private _isEllipsisActive() {
@@ -231,37 +183,26 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
             {!liveCuePoint && <span>{displayTime}</span>}
             {showIcon && (
               <div className={styles.iconWrapper}>
-                <IconsFactory iconType={itemType}/>
+                <IconsFactory iconType={itemType} />
               </div>
             )}
           </div>
           <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
-            <div
-              className={styles.contentText}
-              ref={node => {
-                this._textContainerRef = node;
-              }}>
-              {hasTitle && !this.state.expandText && (
+            {this.state.useExpandableText ? (
+              <ExpandableText text={ariaLabelTitle} lines={1}>
+                {displayTitle && <span>{displayTitle}</span>}
+                {displayDescription && <div className={styles.description}>{displayDescription}</div>}
+              </ExpandableText>
+            ) : (
+              hasTitle && (
                 <div className={styles.titleWrapper}>
                   <div className={styles.title}>
-                    <span
-                      ref={node => {
-                        this._titleRef = node;
-                      }}>
-                      {displayTitle || displayDescription}
-                    </span>
+                    <span>{displayTitle || displayDescription}</span>
                   </div>
-                  {this.state.titleTrimmed && this._renderShowMoreLessButton(ariaLabelTitle)}
                 </div>
-              )}
-              {this.state.expandText && (
-                <div className={styles.expandTextWrapper}>
-                  {displayTitle && <span>{displayTitle}</span>}
-                  {displayDescription && <div className={styles.description}>{displayDescription}</div>}
-                  {this._renderShowMoreLessButton(ariaLabelTitle)}
-                </div>
-              )}
-            </div>
+              )
+            )}
+
             {previewImage && this._renderThumbnail()}
           </div>
         </div>
