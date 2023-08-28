@@ -414,7 +414,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
 
   private _handleTimelinePreviewClick = ({payload}: any) => {
     const {e, byKeyboard, cuePointType} = payload;
-    this._handleClickOnPluginIcon(e, byKeyboard);
+    if (!this.isPluginActive()) this._handleClickOnPluginIcon(e, byKeyboard);
     this._navigationPluginRef?.handleSearchFilterChange('activeTab')(cuePointType);
   }
 
