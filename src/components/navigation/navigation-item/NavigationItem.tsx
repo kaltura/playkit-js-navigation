@@ -137,13 +137,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return <img {...imageProps} />;
   };
 
-  private _isEllipsisActive() {
-    if (!this._titleRef || !this._textContainerRef) {
-      return false;
-    }
-    return this._titleRef.getBoundingClientRect().width > this._textContainerRef.getBoundingClientRect().width;
-  }
-
   render({selectedItem, showIcon, data}: NavigationItemProps) {
     const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription} = data;
     const hasTitle = Boolean(displayTitle || displayDescription);
