@@ -1,39 +1,36 @@
 {
-    "zh_cn": {
-        "navigation": {
-          "hide_plugin": "隐藏导航菜单",
-          "show_plugin": "显示导航菜单",
-          "read_less": "收起",
-          "read_more": "展开",
-          "whoops": "哎呀！",
-          "error_message": "我们无法检索您的数据。",
-          "retry": "重试",
-          "search_placeholder": "在视频中搜索",
-          "clear_search": "清除搜索",
-          "all_types": "全部",
-          "aoa_type": "在直播中回答",
-          "chapter_type": "章节",
-          "slide_type": "幻灯片",
-          "hotspot_type": "热点",
-          "caption_type": "字幕",
-          "search_result_one_type": {
-            "one": " {{type}}中的{{totalResults}}个结果",
-            "many": " {{type}}中的{{totalResults}}个结果"
-          },
-          "search_result_all_types": {
-            "one": "所有内容中的{{totalResults}}个结果",
-            "many": "所有内容中的{{totalResults}}个结果"
-          },
-          "search_result_all_types_with_captions": {
-            "one": "所有内容中的{{totalResults}}个结果，包括字幕",
-            "many": "所有内容中的{{totalResults}}个结果，包括字幕"
-          },
-          "search_no_results_title": "未找到任何结果",
-          "search_no_results_description": "尝试一个更通用的关键字",
-          "loading": "正在加载",
-          "auto_scroll": "恢复自动滚动",
-          "image_alt": "幻灯片预览"
-      }
-   }
+  "zh_cn": {
+    "navigation": {
+      "hide_plugin": "隐藏导航菜单",
+      "show_plugin": "显示导航菜单",
+      "whoops": "哎呀！",
+      "error_message": "我们无法检索您的数据。",
+      "retry": "重试",
+      "search_placeholder": "在视频中搜索",
+      "clear_search": "清除搜索",
+      "all_types": "全部",
+      "aoa_type": "在直播中回答",
+      "chapter_type": "章节",
+      "slide_type": "幻灯片",
+      "hotspot_type": "热点",
+      "caption_type": "字幕",
+      "search_result_one_type": {
+        "one": " {{type}}中的{{totalResults}}个结果",
+        "many": " {{type}}中的{{totalResults}}个结果"
+      },
+      "search_result_all_types": {
+        "one": "所有内容中的{{totalResults}}个结果",
+        "many": "所有内容中的{{totalResults}}个结果"
+      },
+      "search_result_all_types_with_captions": {
+        "one": "所有内容中的{{totalResults}}个结果，包括字幕",
+        "many": "所有内容中的{{totalResults}}个结果，包括字幕"
+      },
+      "search_no_results_title": "未找到任何结果",
+      "search_no_results_description": "尝试一个更通用的关键字",
+      "loading": "正在加载",
+      "auto_scroll": "恢复自动滚动",
+      "image_alt": "幻灯片预览"
+    }
+  }
 }
-  

@@ -1,5 +1,5 @@
 import {Component, h} from 'preact';
-import {A11yWrapper, OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrapper';
+import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
@@ -18,10 +18,6 @@ export interface NavigationItemProps {
   showIcon: boolean;
   onNext: () => void;
   onPrev: () => void;
-  readLessTranslate: string;
-  readMoreTranslate: string;
-  readMoreLabel: string;
-  readLessLabel: string;
 }
 
 export interface NavigationItemState {
@@ -34,9 +30,6 @@ export interface NavigationItemState {
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
-  private _titleRef: HTMLSpanElement | null = null;
-  private _showMoreButtonRef: HTMLDivElement | null = null;
-  private _showLessButtonRef: HTMLDivElement | null = null;
 
   constructor(props: NavigationItemProps) {
     super(props);

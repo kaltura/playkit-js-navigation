@@ -1,38 +1,36 @@
 {
-    "fr": {
-        "navigation": {
-            "hide_plugin": "Cacher la navigation",
-            "show_plugin": "Afficher la navigation",
-            "read_less": "Moins",
-            "read_more": "Plus",
-            "whoops": "Oups !",
-            "error_message": "Nous n'avons pas pu récupérer vos données.",
-            "retry": "Recommencer",
-            "search_placeholder": "Rechercher dans la vidéo",
-            "clear_search": "Effacer la recherche",
-            "all_types": "Tout",
-            "aoa_type": "Répondre en direct",
-            "chapter_type": "Chapitres",
-            "slide_type": "Diapositives",
-            "hotspot_type": "Points chauds",
-            "caption_type": "Sous-titres",
-            "search_result_one_type": {
-              "one": "{{totalResults}} résultat dans {{type}}",
-              "many": "{{totalResults}} Résultats dans {{type}}"
-            },
-            "search_result_all_types": {
-              "one": "{{totalResults}} résultat dans tout le contenu",
-              "many": "{{totalResults}} résultats dans tout le contenu"
-            },
-            "search_result_all_types_with_captions": {
-              "one": "{{totalResults}} résultat dans tout le contenu y compris les sous-titres",
-              "many": "{{totalResults}} résultats dans tout le contenu y compris les sous-titres"
-            },
-            "search_no_results_title": "Aucun résultat trouvé",
-            "search_no_results_description": "Essayer un mot clé plus général",
-            "loading": "Chargement en cours",
-            "auto_scroll": "Reprendre AutoScroll",
-            "image_alt": "Aperçu de la diapositive"      
-        }
+  "fr": {
+    "navigation": {
+      "hide_plugin": "Cacher la navigation",
+      "show_plugin": "Afficher la navigation",
+      "whoops": "Oups !",
+      "error_message": "Nous n'avons pas pu récupérer vos données.",
+      "retry": "Recommencer",
+      "search_placeholder": "Rechercher dans la vidéo",
+      "clear_search": "Effacer la recherche",
+      "all_types": "Tout",
+      "aoa_type": "Répondre en direct",
+      "chapter_type": "Chapitres",
+      "slide_type": "Diapositives",
+      "hotspot_type": "Points chauds",
+      "caption_type": "Sous-titres",
+      "search_result_one_type": {
+        "one": "{{totalResults}} résultat dans {{type}}",
+        "many": "{{totalResults}} Résultats dans {{type}}"
+      },
+      "search_result_all_types": {
+        "one": "{{totalResults}} résultat dans tout le contenu",
+        "many": "{{totalResults}} résultats dans tout le contenu"
+      },
+      "search_result_all_types_with_captions": {
+        "one": "{{totalResults}} résultat dans tout le contenu y compris les sous-titres",
+        "many": "{{totalResults}} résultats dans tout le contenu y compris les sous-titres"
+      },
+      "search_no_results_title": "Aucun résultat trouvé",
+      "search_no_results_description": "Essayer un mot clé plus général",
+      "loading": "Chargement en cours",
+      "auto_scroll": "Reprendre AutoScroll",
+      "image_alt": "Aperçu de la diapositive"
     }
+  }
 }

@@ -1,38 +1,36 @@
 {
-    "ja": {
-        "navigation": {
-            "hide_plugin": "ナビゲーションを非表示にする",
-            "show_plugin": "ナビゲーションを表示する",
-            "read_less": "折りたたみ表示",
-            "read_more": "詳細",
-            "whoops": "おっと！",
-            "error_message": "あなたのデータを回収できませんでした",
-            "retry": "再試行",
-            "search_placeholder": "ビデオ内で検索する",
-            "clear_search": "検索をクリア",
-            "all_types": "すべて",
-            "aoa_type": "生放送で回答する",
-            "chapter_type": "チャプター",
-            "slide_type": "スライド",
-            "hotspot_type": "ホットスポット",
-            "caption_type": "キャプション",
-            "search_result_one_type": {
-              "one": " {{type}} における {{totalResults}} 結果",
-              "many": " {{type}}　における {{totalResults}} 結果"
-            },
-            "search_result_all_types": {
-              "one": "すべてのコンテンツにおける {{totalResults}} 結果",
-              "many": "すべてのコンテンツにおける {{totalResults}} 結果"
-            },
-            "search_result_all_types_with_captions": {
-              "one": "キャプションを含むすべてのコンテンツにおける {{totalResults}} 結果",
-              "many": "キャプションを含むすべてのコンテンツにおける {{totalResults}}　結果"
-            },
-            "search_no_results_title": "結果が見つかりませんでした",
-            "search_no_results_description": "もっと一般的なキーワードを試す",
-            "loading": "ロード中",
-            "auto_scroll": "AutoScrollを再開",
-            "image_alt": "スライドのプレビュー"
-        }
+  "ja": {
+    "navigation": {
+      "hide_plugin": "ナビゲーションを非表示にする",
+      "show_plugin": "ナビゲーションを表示する",
+      "whoops": "おっと！",
+      "error_message": "あなたのデータを回収できませんでした",
+      "retry": "再試行",
+      "search_placeholder": "ビデオ内で検索する",
+      "clear_search": "検索をクリア",
+      "all_types": "すべて",
+      "aoa_type": "生放送で回答する",
+      "chapter_type": "チャプター",
+      "slide_type": "スライド",
+      "hotspot_type": "ホットスポット",
+      "caption_type": "キャプション",
+      "search_result_one_type": {
+        "one": " {{type}} における {{totalResults}} 結果",
+        "many": " {{type}}　における {{totalResults}} 結果"
+      },
+      "search_result_all_types": {
+        "one": "すべてのコンテンツにおける {{totalResults}} 結果",
+        "many": "すべてのコンテンツにおける {{totalResults}} 結果"
+      },
+      "search_result_all_types_with_captions": {
+        "one": "キャプションを含むすべてのコンテンツにおける {{totalResults}} 結果",
+        "many": "キャプションを含むすべてのコンテンツにおける {{totalResults}}　結果"
+      },
+      "search_no_results_title": "結果が見つかりませんでした",
+      "search_no_results_description": "もっと一般的なキーワードを試す",
+      "loading": "ロード中",
+      "auto_scroll": "AutoScrollを再開",
+      "image_alt": "スライドのプレビュー"
     }
+  }
 }
