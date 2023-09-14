@@ -3,8 +3,6 @@
     "navigation": {
       "hide_plugin": "Navigation ausblenden",
       "show_plugin": "Navigation anzeigen",
-      "read_less": "Weniger",
-      "read_more": "Mehr",
       "whoops": "Hoppla!",
       "error_message": "Wir konnten Ihre Daten nicht wiederherstellen.",
       "retry": "Erneut versuchen",

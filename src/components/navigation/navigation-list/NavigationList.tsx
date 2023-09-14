@@ -7,15 +7,6 @@ import {EmptyState} from '../icons/EmptyState';
 import {isDataEqual} from '../../../utils';
 import {ItemData, ItemTypesTranslates} from '../../../types';
 
-const {withText, Text} = ui.preacti18n;
-
-const translates = {
-  readLess: <Text id="navigation.read_less">Less</Text>,
-  readMore: <Text id="navigation.read_more">More</Text>,
-  readMoreLabel: <Text id="navigation.read_more_of">Read more of</Text>,
-  readLessLabel: <Text id="navigation.read_less_of">Read less of</Text>
-};
-
 export interface Props {
   data: Array<ItemData>;
   onSeek: (n: number) => void;
@@ -27,13 +18,8 @@ export interface Props {
   listDataContainCaptions: boolean;
   searchActive: boolean;
   itemTypesTranslates: ItemTypesTranslates;
-  readLess?: string;
-  readMore?: string;
-  readMoreLabel?: string;
-  readLessLabel?: string;
 }
 
-@withText(translates)
 export class NavigationList extends Component<Props> {
   private _selectedElementY = 0;
   private _itemsRefMap: Map<number, NavigationItem | null> = new Map();
@@ -107,10 +93,6 @@ export class NavigationList extends Component<Props> {
               showIcon={showItemsIcons}
               onNext={() => this._handleDownKeyPressed(index)}
               onPrev={() => this._handleUpKeyPressed(index)}
-              readLessTranslate={this.props.readLess!}
-              readMoreTranslate={this.props.readMore!}
-              readMoreLabel={`${this.props.readMoreLabel} ${itemTypeTranslate}`}
-              readLessLabel={`${this.props.readLessLabel} ${itemTypeTranslate}`}
             />
           );
         })}

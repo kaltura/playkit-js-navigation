@@ -3,8 +3,6 @@
     "navigation": {
       "hide_plugin": "Ocultar navegação",
       "show_plugin": "Mostrar navegação",
-      "read_less": "Menos",
-      "read_more": "Mais",
       "whoops": "Ops!",
       "error_message": "Não foi possível recuperar seus dados.",
       "retry": "Tentar novamente",
