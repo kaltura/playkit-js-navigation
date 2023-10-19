@@ -5,6 +5,7 @@ import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
 import {ui} from '@playkit-js/kaltura-player-js';
 
+//@ts-ignore
 const {ExpandableText} = ui.Components;
 
 const {Text} = KalturaPlayer.ui.preacti18n;
