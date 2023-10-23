@@ -5,6 +5,7 @@ import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
 import {ui} from '@playkit-js/kaltura-player-js';
 
+//@ts-ignore
 const {ExpandableText} = ui.Components;
 
 const {Text} = KalturaPlayer.ui.preacti18n;
@@ -33,7 +34,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
   constructor(props: NavigationItemProps) {
     super(props);
-    this.state = {imageLoaded: false, imageFailed: false, focused: false, useExpandableText: !props.data.previewImage};
+    this.state = {imageLoaded: false, imageFailed: false, focused: false, useExpandableText: false};
   }
 
   public setFocus() {
@@ -72,7 +73,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     this._getSelected();
     this.matchHeight();
     this.setState({
-      useExpandableText: !this.props.data?.previewImage
+      useExpandableText: !(this.props.data?.previewImage || typeof this.props.data?.displayTitle !== 'string')
     });
   }
 
