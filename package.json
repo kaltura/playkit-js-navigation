@@ -14,8 +14,7 @@
   "dependencies": {
     "@playkit-js/common": "^1.2.10",
     "@playkit-js/playkit-js-ui": "^0.77.3",
-    "@playkit-js/ui-managers": "^1.3.11",
-    "sanitize-html": "^2.11.0"
+    "@playkit-js/ui-managers": "^1.3.11"
   },
   "devDependencies": {
     "@playkit-js/kaltura-player-js": "3.15.3-canary.0-d05bc55",

@@ -1,8 +1,6 @@
 // @ts-ignore
 import {core, ui} from '@playkit-js/kaltura-player-js';
 import {h} from 'preact';
-// @ts-ignore
-import * as sanitizeHtml from 'sanitize-html';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {
@@ -111,7 +109,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       return;
     }
     if (!this.config.visible) {
-      this.logger.warn('visible configuration is false - not rendering the plugin.');
+      this.logger.warn("visible configuration is false - not rendering the plugin.");
     }
     this._addPlayerListeners();
     this._registerCuePointTypes();
@@ -153,16 +151,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     this._createOrUpdatePlugin();
   };
 
-  private _sanitizeCaptions = (data: ItemData[]) => {
-    return data.map(itemData => ({
-      ...itemData,
-      displayTitle: sanitizeHtml(itemData.displayTitle || '', {allowedTags: []})
-    }));
-  };
-
   private _addCaptionData = (newData: ItemData[]) => {
     this._activeCaptionMapId = this._getCaptionMapId();
-    this._captionMap.set(this._activeCaptionMapId, this._sanitizeCaptions(newData));
+    this._captionMap.set(this._activeCaptionMapId, newData);
     this._createOrUpdatePlugin();
   };
 
@@ -174,7 +165,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _handleQuizQuestionChanged = (event: any) => {
     const qqa = event.payload.qqa;
     const quizQuestions = qqa.map(
-      (quizQuestion: {id: string; index: number; type: number; question: string; startTime: number; state: number; onClick: () => void}) => {
+      (quizQuestion: { id: string; index: number; type: number; question: string; startTime: number; state: number; onClick: () => void }) => {
         const cue: CuePoint = {
           id: quizQuestion.id,
           metadata: {
@@ -195,7 +186,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _makeQuizTitle = (state: number, index: number, type: number) => {
-    return <QuizTitle questionState={state} questionIndex={index} questionType={type} />;
+    return <QuizTitle questionState={state} questionIndex={index} questionType={type}/>;
   };
 
   private _handleLanguageChange = () => {
@@ -360,7 +351,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
             kitchenSinkActive={this.isPluginActive()}
             toggledWithEnter={this._triggeredByKeyboard}
             itemsOrder={this._itemsOrder}
-            ref={node => (this._navigationPluginRef = node)}
+            ref={node => this._navigationPluginRef = node}
           />
         );
       },
@@ -375,7 +366,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
-        return <PluginButton isActive={this.isPluginActive()} setRef={this._setPluginButtonRef} />;
+        return <PluginButton isActive={this.isPluginActive()} setRef={this._setPluginButtonRef}/>;
       }
     }) as number;
 
@@ -425,7 +416,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     const {e, byKeyboard, cuePointType} = payload;
     if (!this.isPluginActive()) this._handleClickOnPluginIcon(e, byKeyboard);
     this._navigationPluginRef?.handleSearchFilterChange('activeTab')(cuePointType);
-  };
+  }
 
   private _seekTo = (time: number) => {
     this.player.currentTime = time;
