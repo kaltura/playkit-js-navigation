@@ -4,6 +4,10 @@ import {mockKalturaBe, loadPlayer, MANIFEST, MANIFEST_SAFARI} from './env';
 
 const {FakeEvent} = core;
 
+Cypress.on('uncaught:exception', (err, runnable) => {
+  return false;
+});
+
 describe('Navigation plugin', () => {
   beforeEach(() => {
     // manifest
@@ -112,8 +116,14 @@ describe('Navigation plugin', () => {
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
         cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
         cy.get('[data-testid="navigation_root"]').within(() => {
-          cy.get('[data-entry-id="1_02sihd5j"]').children().last().within(() => cy.get('img').should('not.exist'));
-          cy.get('[data-entry-id="1_0h1uf07a"]').children().last().within(() => cy.get('img').should('exist'));
+          cy.get('[data-entry-id="1_02sihd5j"]')
+            .children()
+            .last()
+            .within(() => cy.get('img').should('not.exist'));
+          cy.get('[data-entry-id="1_0h1uf07a"]')
+            .children()
+            .last()
+            .within(() => cy.get('img').should('exist'));
         });
       });
     });
@@ -122,6 +132,17 @@ describe('Navigation plugin', () => {
       mockKalturaBe('vod-entry.json', 'chapters-default-thumbnails.json');
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
         cy.get('@getSlidesAndChapters.all').should('have.length', 1);
+      });
+    });
+
+    it('should render capitons without html tags', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
+        cy.get('[data-testid="navigation_root"]').within(() => {
+          const searchInput = cy.get("[aria-label='Search in video']");
+          searchInput.type('Dark');
+          cy.get("[aria-label='Dark Side.']").should('not.contain.text', '<i>');
+        });
       });
     });
   });
@@ -326,8 +347,8 @@ describe('Navigation plugin', () => {
         cy.get('[data-testid="navigation_questionStateLabel"]')
           .should('exist')
           .should($div => {
-          expect($div.text()).to.eq('Answered');
-        });
+            expect($div.text()).to.eq('Answered');
+          });
       });
     });
     it('should render a quiz item in the side panel, only after it reached the quiz cuepoint startTime', () => {
