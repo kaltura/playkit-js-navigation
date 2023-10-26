@@ -176,7 +176,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
           </div>
           <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
             {this.state.useExpandableText ? (
-              <ExpandableText text={ariaLabelTitle} lines={1}>
+              <ExpandableText text={displayDescription? ariaLabelTitle + displayDescription : ariaLabelTitle} lines={1}>
                 {displayTitle && <span>{displayTitle}</span>}
                 {displayDescription && <div className={styles.description}>{displayDescription}</div>}
               </ExpandableText>
