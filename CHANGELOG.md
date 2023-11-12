@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.4.1 (2023-11-12)
+
+
+### Bug Fixes
+
+* **SUP-39657:** Latest V7 Update Does not Display Description in Chapters ([#340](https://github.com/kaltura/playkit-js-navigation/issues/340)) ([8fdbac0](https://github.com/kaltura/playkit-js-navigation/commit/8fdbac06415eb7479623480be542160197ced49b))
+
 ## 3.4.0 (2023-10-08)
 
 
