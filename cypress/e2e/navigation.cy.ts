@@ -16,7 +16,7 @@ describe('Navigation plugin', () => {
     cy.intercept('GET', '**/width/164/vid_slices/100', {fixture: '100.jpeg'});
     cy.intercept('GET', '**/height/360/width/640', {fixture: '640.jpeg'});
     // kava
-    cy.intercept('GET', '**/index.php?service=analytics*', {});
+    cy.intercept('POST', '**/index.php?service=analytics*', {});
   });
 
   describe('plugin button and panel', () => {
@@ -142,6 +142,15 @@ describe('Navigation plugin', () => {
           const searchInput = cy.get("[aria-label='Search in video']");
           searchInput.type('Dark');
           cy.get("[aria-label='Dark Side.']").should('not.contain.text', '<i>');
+        });
+      });
+    });
+
+    it('should render More button for long title', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
+        cy.get('[data-entry-id="1_02sihd5j"]').within(() => {
+          cy.get('.playkit-more-button-text').should('be.visible');
         });
       });
     });

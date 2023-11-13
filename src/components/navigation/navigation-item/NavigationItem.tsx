@@ -34,7 +34,12 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
   constructor(props: NavigationItemProps) {
     super(props);
-    this.state = {imageLoaded: false, imageFailed: false, focused: false, useExpandableText: false};
+    this.state = {
+      imageLoaded: false,
+      imageFailed: false,
+      focused: false,
+      useExpandableText: typeof this.props.data?.displayTitle === 'string'
+    };
   }
 
   public setFocus() {
@@ -72,9 +77,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   componentDidMount() {
     this._getSelected();
     this.matchHeight();
-    this.setState({
-      useExpandableText: !(this.props.data?.previewImage || typeof this.props.data?.displayTitle !== 'string')
-    });
   }
 
   private _getSelected = () => {
@@ -176,7 +178,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
           </div>
           <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
             {this.state.useExpandableText ? (
-              <ExpandableText text={displayDescription? ariaLabelTitle + displayDescription : ariaLabelTitle} lines={1}>
+              <ExpandableText text={ariaLabelTitle || displayDescription || ''} lines={1} forceShowMore={Boolean(displayTitle && displayDescription)}>
                 {displayTitle && <span>{displayTitle}</span>}
                 {displayDescription && <div className={styles.description}>{displayDescription}</div>}
               </ExpandableText>
