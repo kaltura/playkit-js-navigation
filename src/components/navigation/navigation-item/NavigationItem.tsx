@@ -115,7 +115,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
   private _handleExpand = (e: MouseEvent) => {
     e.stopPropagation();
-  }
+  };
 
   private _renderThumbnail = () => {
     if (this.state.imageFailed) {
@@ -186,6 +186,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
                 text={ariaLabelTitle || displayDescription || ''}
                 lines={1}
                 forceShowMore={Boolean(displayTitle && displayDescription)}
+                //@ts-ignore
                 onClick={this._handleExpand}>
                 {displayTitle && <span>{displayTitle}</span>}
                 {displayDescription && <div className={styles.description}>{displayDescription}</div>}
