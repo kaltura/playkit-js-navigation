@@ -113,6 +113,10 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     this.props.onClick(this.props.data.startTime);
   };
 
+  private _handleExpand = (e: MouseEvent) => {
+    e.stopPropagation();
+  };
+
   private _renderThumbnail = () => {
     if (this.state.imageFailed) {
       return null;
@@ -178,7 +182,12 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
           </div>
           <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
             {this.state.useExpandableText ? (
-              <ExpandableText text={ariaLabelTitle || displayDescription || ''} lines={1} forceShowMore={Boolean(displayTitle && displayDescription)}>
+              <ExpandableText
+                text={ariaLabelTitle || displayDescription || ''}
+                lines={1}
+                forceShowMore={Boolean(displayTitle && displayDescription)}
+                //@ts-ignore
+                onClick={this._handleExpand}>
                 {displayTitle && <span>{displayTitle}</span>}
                 {displayDescription && <div className={styles.description}>{displayDescription}</div>}
               </ExpandableText>
