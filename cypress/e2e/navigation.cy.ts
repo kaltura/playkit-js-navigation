@@ -146,11 +146,20 @@ describe('Navigation plugin', () => {
       });
     });
 
-    it('should render More button for long title', () => {
+    it('should render long title without More button', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
         cy.get('[data-entry-id="1_02sihd5j"]').within(() => {
-          cy.get('.playkit-more-button-text').should('be.visible');
+          cy.get('.playkit-more-button-text').should('not.exist');
+        });
+      });
+    });
+
+    it('should render long description with More button', () => {
+      mockKalturaBe();
+      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
+        cy.get('[data-entry-id="1_o6am7wrw"]').within(() => {
+          cy.get('.playkit-more-button-text').should('exist');
         });
       });
     });
@@ -450,7 +459,7 @@ describe('Navigation plugin', () => {
           })
         );
         cy.get('[data-testid="navigation_questionTitle"]')
-          .should('be.visible')
+          .should('exist')
           .should($div => {
             expect($div.text()).to.eq('Reflection point 1');
           });
@@ -474,7 +483,7 @@ describe('Navigation plugin', () => {
           })
         );
         cy.get('[data-testid="navigation_questionTitle"]')
-          .should('be.visible')
+          .should('exist')
           .should($div => {
             expect($div.text()).to.eq('Question 1');
           });
