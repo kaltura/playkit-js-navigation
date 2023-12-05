@@ -1,4 +1,4 @@
-import {Component, h} from 'preact';
+import {Component, h, Fragment} from 'preact';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
@@ -8,7 +8,7 @@ import {ui} from '@playkit-js/kaltura-player-js';
 //@ts-ignore
 const {ExpandableText} = ui.Components;
 
-const {Text} = KalturaPlayer.ui.preacti18n;
+const {Text, Localizer} = KalturaPlayer.ui.preacti18n;
 
 export interface NavigationItemProps {
   data: ItemData;
@@ -114,7 +114,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   };
 
   private _handleExpand = (e: MouseEvent) => {
-    e.stopPropagation();
+    e?.stopPropagation();
+    e?.preventDefault();
   };
 
   private _renderThumbnail = () => {
@@ -137,9 +138,57 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return <img {...imageProps} />;
   };
 
+  private _renderTitleAndDescription = (ariaLabelTitle: string) => {
+    const {previewImage, displayTitle, displayDescription} = this.props.data;
+    const hasTitle = Boolean(displayTitle || displayDescription);
+    if (previewImage && hasTitle) {
+      if (this.state.useExpandableText) {
+        return (
+          <div className={styles.titleWrapper}>
+            <ExpandableText
+              text={ariaLabelTitle || displayDescription || ''}
+              lines={1}
+              forceShowMore={Boolean(displayTitle && displayDescription)}
+              //@ts-ignore
+              onClick={this._handleExpand}
+              buttonProps={{
+                tabIndex: 0
+              }}>
+              {displayTitle && <div className={styles.title}>{displayTitle}</div>}
+              {displayDescription && <div className={styles.descriptionWrapper}>{displayDescription}</div>}
+            </ExpandableText>
+          </div>
+        );
+      }
+      return <div className={styles.title}>{displayTitle || displayDescription}</div>;
+    }
+    return (
+      <Fragment>
+        {displayTitle && <div className={styles.title}>{displayTitle}</div>}
+        {displayDescription && (
+          <div className={styles.descriptionWrapper}>
+            <Localizer>
+              <ExpandableText
+                buttonProps={{
+                  tabIndex: 0,
+                  readMoreLabel: <Text id="navigation.read_more">Read more</Text>,
+                  readLessLabel: <Text id="navigation.read_less">Read less</Text>
+                }}
+                text={displayDescription}
+                lines={3}
+                //@ts-ignore
+                onClick={this._handleExpand}>
+                {displayDescription}
+              </ExpandableText>
+            </Localizer>
+          </div>
+        )}
+      </Fragment>
+    );
+  };
+
   render({selectedItem, showIcon, data}: NavigationItemProps) {
     const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription} = data;
-    const hasTitle = Boolean(displayTitle || displayDescription);
     const {imageLoaded} = this.state;
 
     const a11yProps: Record<string, any> = {
@@ -181,26 +230,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
             )}
           </div>
           <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
-            {this.state.useExpandableText ? (
-              <ExpandableText
-                text={ariaLabelTitle || displayDescription || ''}
-                lines={1}
-                forceShowMore={Boolean(displayTitle && displayDescription)}
-                //@ts-ignore
-                onClick={this._handleExpand}>
-                {displayTitle && <span>{displayTitle}</span>}
-                {displayDescription && <div className={styles.description}>{displayDescription}</div>}
-              </ExpandableText>
-            ) : (
-              hasTitle && (
-                <div className={styles.titleWrapper}>
-                  <div className={styles.title}>
-                    <span>{displayTitle || displayDescription}</span>
-                  </div>
-                </div>
-              )
-            )}
-
+            {this._renderTitleAndDescription(ariaLabelTitle)}
             {previewImage && this._renderThumbnail()}
           </div>
         </div>
