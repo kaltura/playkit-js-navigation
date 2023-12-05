@@ -12,8 +12,8 @@
   border-left: 2px solid transparent;
   -webkit-transition: background-color 0.3s;
   transition: background-color 0.3s;
-  &.hidden {
-    display: none;
+  &.hidden .thumbnail {
+    height: 0px;
   }
   &.selected {
     background-color: rgba(255, 255, 255, 0.12);
@@ -90,42 +90,21 @@
     font-size: 14px;
     margin-bottom: 2px;
 
-    &.has-image {
-      .title-wrapper,
-      .expand-text-wrapper {
-        margin-bottom: 8px;
-      }
+    &.has-image .title-wrapper {
+      margin-bottom: 8px;
     }
 
-    .title-wrapper {
-      display: flex;
-      justify-content: space-between;
-      min-width: 100%;
-      .title {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-      }
-    }
-
-    .show-more-button {
-      cursor: pointer;
-      font-size: 14px;
-      display: block;
-      background: none;
-      border: none;
+    .title {
       color: #ffffff;
-      margin: 0px 0px 0px 2px;
-      padding: 0;
-      width: fit-content;
-      outline-offset: -1px;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
     }
 
-    .description {
+    .descriptionWrapper {
       font-size: 12px;
       line-height: 18px;
       margin-top: 4px;
-      margin-bottom: 4px;
     }
   }
 
