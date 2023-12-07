@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.5.0 (2023-12-07)
+
+
+### Features
+
+* **FEC-13491:** Chapters and slides display in navigation plugin ([#344](https://github.com/kaltura/playkit-js-navigation/issues/344)) ([cef13ea](https://github.com/kaltura/playkit-js-navigation/commit/cef13eacd56239743f49b21f2e3b9d2aacb9cb46))
+
 ### 3.4.2 (2023-11-12)
 
 ### 3.4.1 (2023-11-12)
