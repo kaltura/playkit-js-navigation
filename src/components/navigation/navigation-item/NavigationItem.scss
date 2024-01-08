@@ -92,6 +92,11 @@
 
     &.has-image .title-wrapper {
       margin-bottom: 8px;
+      :global(.expandable-text-container:not(.text-expanded)) {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
     }
 
     .title {
