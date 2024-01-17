@@ -378,6 +378,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       // @ts-ignore
       ariaLabel: 'Navigation',
       displayName: 'Navigation',
+      order: 10,
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
