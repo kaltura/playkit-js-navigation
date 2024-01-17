@@ -20,6 +20,7 @@ import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 import {QuizTitle} from './components/navigation/navigation-item/QuizTitle';
+import { pluginName } from "./index";
 
 const {TimedMetadata} = core;
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
@@ -370,8 +371,13 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       onDeactivate: this._deactivatePlugin
     }) as number;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this._navigationIcon = this.upperBarManager!.add({
-      label: 'Navigation',
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ariaLabel: 'Navigation',
+      displayName: 'Navigation',
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
