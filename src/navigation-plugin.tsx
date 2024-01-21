@@ -20,7 +20,8 @@ import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 import {QuizTitle} from './components/navigation/navigation-item/QuizTitle';
-import { pluginName } from "./index";
+
+export const pluginName: string = 'navigation';
 
 const {TimedMetadata} = core;
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;

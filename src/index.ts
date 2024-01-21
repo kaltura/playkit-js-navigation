@@ -1,4 +1,4 @@
-import {NavigationPlugin} from './navigation-plugin';
+import { NavigationPlugin, pluginName } from "./navigation-plugin";
 
 declare var __VERSION__: string;
 declare var __NAME__: string;
@@ -9,5 +9,4 @@ const NAME = __NAME__;
 export {NavigationPlugin as Plugin};
 export {VERSION, NAME};
 
-export const pluginName: string = 'navigation';
 KalturaPlayer.core.registerPlugin(pluginName, NavigationPlugin);

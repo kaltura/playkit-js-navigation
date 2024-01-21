@@ -2,7 +2,7 @@ import {h} from 'preact';
 import {ui} from '@playkit-js/kaltura-player-js';
 import * as styles from './plugin-button.scss';
 import {icons} from '../../icons';
-import { pluginName } from "../../../index";
+import { pluginName } from "../../../navigation-plugin";
 
 const {Tooltip, Icon} = KalturaPlayer.ui.components;
 const {withText, Text} = ui.preacti18n;
