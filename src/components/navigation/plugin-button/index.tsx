@@ -2,6 +2,7 @@ import {h} from 'preact';
 import {ui} from '@playkit-js/kaltura-player-js';
 import * as styles from './plugin-button.scss';
 import {icons} from '../../icons';
+import { pluginName } from "../../../navigation-plugin";
 
 const {Tooltip, Icon} = KalturaPlayer.ui.components;
 const {withText, Text} = ui.preacti18n;
@@ -30,7 +31,7 @@ export const PluginButton = withText(translates)(({isActive, setRef, ...otherPro
           className={[ui.style.upperBarIcon, styles.pluginButton, isActive ? styles.active : ''].join(' ')}
           data-testid={'navigation_pluginButton'}>
           <Icon
-            id="navigation-plugin-button"
+            id={pluginName}
             height={icons.BigSize}
             width={icons.BigSize}
             viewBox={`0 0 ${icons.BigSize} ${icons.BigSize}`}

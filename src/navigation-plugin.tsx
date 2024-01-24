@@ -21,6 +21,8 @@ import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 import {QuizTitle} from './components/navigation/navigation-item/QuizTitle';
 
+export const pluginName: string = 'navigation';
+
 const {TimedMetadata} = core;
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
 const liveCuePointTimeThreshold = 20 * 1000; // 20 seconds threshold
@@ -370,8 +372,14 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       onDeactivate: this._deactivatePlugin
     }) as number;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this._navigationIcon = this.upperBarManager!.add({
-      label: 'Navigation',
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ariaLabel: 'Navigation',
+      displayName: 'Navigation',
+      order: 10,
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
