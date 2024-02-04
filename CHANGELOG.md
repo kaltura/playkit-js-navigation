@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.5 (2024-02-04)
+
+
+### Bug Fixes
+
+* **FEC-00000:** Upgrade Kaltura dependencies (automated) ([#349](https://github.com/kaltura/playkit-js-navigation/issues/349)) ([5a2b22a](https://github.com/kaltura/playkit-js-navigation/commit/5a2b22aba2369b04f02b17bb982f83914c52e37a))
+
 ### 3.5.4 (2024-01-18)
 
 
