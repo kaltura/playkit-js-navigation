@@ -1,10 +1,11 @@
 import {h} from 'preact';
 import {ui} from '@playkit-js/kaltura-player-js';
+import {preacti18n} from '@playkit-js/playkit-js-ui';
 import * as styles from './autoscroll-button.scss';
 import {A11yWrapper, OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 
-const {withText, Text} = ui.preacti18n;
-const {Tooltip} = KalturaPlayer.ui.components;
+const {withText, Text} = preacti18n;
+const {Tooltip} = ui.components;
 
 interface AutoscrollButtonProps {
   onClick: OnClick;
@@ -26,7 +27,7 @@ export const AutoscrollButton = withText(translates)(
           tabIndex={isAutoScrollEnabled ? -1 : 1}
           aria-label={autoScrollLabel}
           ref={setAutoscrollButtonRef}>
-          <Tooltip label={autoScrollLabel} type="left">
+          <Tooltip label={autoScrollLabel!} type="left">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M6.29289 15.2929C6.65338 14.9324 7.22061 14.9047 7.6129 15.2097L7.70711 15.2929L12 19.585L16.2929 15.2929C16.6534 14.9324 17.2206 14.9047 17.6129 15.2097L17.7071 15.2929C18.0676 15.6534 18.0953 16.2206 17.7903 16.6129L17.7071 16.7071L12.7071 21.7071C12.3466 22.0676 11.7794 22.0953 11.3871 21.7903L11.2929 21.7071L6.29289 16.7071C5.90237 16.3166 5.90237 15.6834 6.29289 15.2929Z"

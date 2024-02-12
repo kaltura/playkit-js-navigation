@@ -124,3 +124,9 @@
     border-radius: 3px;
   }
 }
+
+.expandable-text:not(.expanded) {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
