@@ -12,7 +12,7 @@
     "url": "git+https://github.com/kaltura/playkit-js-navigation.git"
   },
   "dependencies": {
-    "@playkit-js/common": "^1.5.4",
+    "@playkit-js/common": "1.5.5",
     "@playkit-js/playkit-js-ui": "0.78.1-canary.0-a561b43",
     "@playkit-js/ui-managers": "^1.5.2",
     "sanitize-html": "2.11.0"
