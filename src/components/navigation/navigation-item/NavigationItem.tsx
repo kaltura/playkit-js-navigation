@@ -1,14 +1,13 @@
 import {Component, h, Fragment} from 'preact';
+import {preacti18n} from '@playkit-js/playkit-js-ui';
+import {ui} from '@playkit-js/kaltura-player-js';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
-import {ui} from '@playkit-js/kaltura-player-js';
 
-//@ts-ignore
-const {ExpandableText} = ui.Components;
-
-const {Text, Localizer} = KalturaPlayer.ui.preacti18n;
+const {ExpandableText} = ui.components;
+const {Text, Localizer} = preacti18n;
 
 export interface NavigationItemProps {
   data: ItemData;
@@ -149,8 +148,9 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               text={ariaLabelTitle || displayDescription || ''}
               lines={1}
               forceShowMore={Boolean(displayTitle && displayDescription)}
-              //@ts-ignore
               onClick={this._handleExpand}
+              className={styles.expandableText}
+              classNameExpanded={styles.expanded}
               buttonProps={{
                 tabIndex: 0
               }}>
@@ -176,7 +176,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
                 }}
                 text={displayDescription}
                 lines={3}
-                //@ts-ignore
+                className={styles.expandableText}
+                classNameExpanded={styles.expanded}
                 onClick={this._handleExpand}>
                 {displayDescription}
               </ExpandableText>

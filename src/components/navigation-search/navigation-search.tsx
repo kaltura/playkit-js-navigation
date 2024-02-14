@@ -1,9 +1,9 @@
 import {h, Component} from 'preact';
-import {ui} from '@playkit-js/kaltura-player-js';
+import {preacti18n} from '@playkit-js/playkit-js-ui';
 import {InputField} from '@playkit-js/common/dist/components/input-field';
 import {debounce} from '@playkit-js/common/dist/utils-common/utils';
 
-const {withText, Text} = ui.preacti18n;
+const {withText, Text} = preacti18n;
 
 const translates = {
   searchPlaceholder: <Text id="navigation.search_placeholder">Search in video</Text>,

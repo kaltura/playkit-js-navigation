@@ -1,7 +1,5 @@
-// @ts-ignore
 import {core, ui} from '@playkit-js/kaltura-player-js';
 import {h} from 'preact';
-// @ts-ignore
 import * as sanitizeHtml from 'sanitize-html';
 import {UpperBarManager, SidePanelsManager} from '@playkit-js/ui-managers';
 import {OnClickEvent} from '@playkit-js/common/dist/hoc/a11y-wrapper';
@@ -158,7 +156,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _sanitizeCaptions = (data: ItemData[]) => {
     return data.map(itemData => ({
       ...itemData,
-      displayTitle: sanitizeHtml(itemData.displayTitle || '', {allowedTags: []})
+      displayTitle: sanitizeHtml(typeof itemData.displayTitle === 'string' ? itemData.displayTitle : '', {allowedTags: []})
     }));
   };
 
@@ -364,7 +362,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
             itemsOrder={this._itemsOrder}
             ref={node => (this._navigationPluginRef = node)}
           />
-        );
+        ) as any;
       },
       presets: [ReservedPresetNames.Playback, ReservedPresetNames.Live, ReservedPresetNames.Ads],
       position: this.config.position,
@@ -372,8 +370,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       onDeactivate: this._deactivatePlugin
     }) as number;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     this._navigationIcon = this.upperBarManager!.add({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -383,7 +379,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       svgIcon: {path: icons.PLUGIN_ICON, viewBox: `0 0 ${icons.BigSize} ${icons.BigSize}`},
       onClick: this._handleClickOnPluginIcon as () => void,
       component: () => {
-        return <PluginButton isActive={this.isPluginActive()} setRef={this._setPluginButtonRef} />;
+        return (<PluginButton isActive={this.isPluginActive()} setRef={this._setPluginButtonRef} />) as any;
       }
     }) as number;
 

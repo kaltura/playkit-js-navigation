@@ -1,5 +1,5 @@
 import {h, Component} from 'preact';
-import {ui} from '@playkit-js/kaltura-player-js';
+import {preacti18n, utils} from '@playkit-js/playkit-js-ui';
 import * as styles from './navigaton.scss';
 import {OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {NavigationList, Props} from './navigation-list/NavigationList';
@@ -22,8 +22,8 @@ import {ItemTypes, ItemData, HighlightedMap, ItemTypesTranslates} from '../../ty
 import {CloseButton} from '../close-button';
 import {ScreenReaderContext, ScreenReaderProvider} from '@playkit-js/common/dist/hoc/sr-wrapper';
 
-const {KeyMap} = ui.utils;
-const {withText, Text} = ui.preacti18n;
+const {KeyMap} = utils;
+const {withText, Text} = preacti18n;
 
 export interface SearchFilter {
   searchQuery: string;
@@ -95,10 +95,10 @@ class TranslatedNavigationFilter extends Component<Omit<FilterProps, 'itemTypesT
     return (
       <ScreenReaderContext.Consumer>
         {(setTextToRead: (textToRead: string, delay?: number | undefined) => void) => {
-          return <NavigationFilter {...this.props} itemTypesTranslates={itemTypesTranslates} setTextToRead={setTextToRead}/>;
+          return <NavigationFilter {...this.props} itemTypesTranslates={itemTypesTranslates} setTextToRead={setTextToRead} />;
         }}
       </ScreenReaderContext.Consumer>
-    )
+    );
   }
 }
 
@@ -106,7 +106,7 @@ class TranslatedNavigationFilter extends Component<Omit<FilterProps, 'itemTypesT
 class TranslatedNavigationList extends Component<Omit<Props, 'itemTypesTranslates'>> {
   render() {
     const itemTypesTranslates = getItemTypesTranslates(this.props);
-    return <NavigationList {...this.props} itemTypesTranslates={itemTypesTranslates}/>
+    return <NavigationList {...this.props} itemTypesTranslates={itemTypesTranslates} />;
   }
 }
 

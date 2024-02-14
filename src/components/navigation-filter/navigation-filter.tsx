@@ -1,12 +1,13 @@
 import {h, Component, Fragment} from 'preact';
 import {ui} from '@playkit-js/kaltura-player-js';
+import {preacti18n} from '@playkit-js/playkit-js-ui';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './navigation-filter.scss';
 import {ItemTypes, ItemTypesTranslates} from '../../types';
 import {IconsFactory} from '../navigation/icons/IconsFactory';
 
-const {Tooltip} = KalturaPlayer.ui.components;
-const {withText, Text} = ui.preacti18n;
+const {Tooltip} = ui.components;
+const {withText, Text} = preacti18n;
 
 const translates = (props: FilterProps) => {
   const {activeTab, totalResults, listDataContainCaptions} = props;
@@ -98,7 +99,8 @@ export class NavigationFilter extends Component<FilterProps> {
   componentDidUpdate(previousProps: Readonly<FilterProps>, previousState: Readonly<{}>, snapshot: any) {
     if (previousProps.totalResults !== this.props.totalResults) {
       const noResultsFound = `${this.props.noResultTitle}. ${this.props.noResultDescription}`;
-      const searchResultsLabel = this.props.totalResults === null ? '' : (this.props.totalResults > 0 ? this.props.searchResultsLabel! : noResultsFound);
+      const searchResultsLabel =
+        this.props.totalResults === null ? '' : this.props.totalResults > 0 ? this.props.searchResultsLabel! : noResultsFound;
       this.props.setTextToRead(searchResultsLabel);
     }
   }

@@ -1,8 +1,8 @@
 import {h} from 'preact';
-import {ui} from '@playkit-js/kaltura-player-js';
+import {preacti18n} from '@playkit-js/playkit-js-ui';
 import * as styles from './EmptyList.scss';
 
-const {withText, Text} = ui.preacti18n;
+const {withText, Text} = preacti18n;
 
 const translates = {
   noResultTitle: <Text id="navigation.search_no_results_title">No Results Found</Text>,
