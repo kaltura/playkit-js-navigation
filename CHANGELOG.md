@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.6 (2024-02-25)
+
+
+### Bug Fixes
+
+* **FEC-13535:** align more/less button with design ([#350](https://github.com/kaltura/playkit-js-navigation/issues/350)) ([e9dc686](https://github.com/kaltura/playkit-js-navigation/commit/e9dc686bb072ccbb9c3f718ed82c296c25ada992))
+
 ### 3.5.5 (2024-02-04)
 
 
