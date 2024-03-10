@@ -14,7 +14,7 @@ export interface NavigationItemProps {
   onSelected: (params: {time: number; itemY: number}) => void;
   selectedItem: boolean;
   widgetWidth: number;
-  onClick: (time: number) => void;
+  onClick: (time: number, itemType: string) => void;
   showIcon: boolean;
   onNext: () => void;
   onPrev: () => void;
@@ -109,9 +109,12 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   };
 
   private _handleClick = () => {
-    this.props.onClick(this.props.data.startTime);
+    this.props.onClick(this.props.data.startTime, this.props.data.itemType);
   };
 
+  private _onExpand = (isTextExpanded: boolean) => {
+    console.log('#@', {isTextExpanded, itemType: this.props.data.itemType});
+  }
   private _handleExpand = (e: MouseEvent) => {
     e?.stopPropagation();
     e?.preventDefault();
@@ -149,6 +152,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               lines={1}
               forceShowMore={Boolean(displayTitle && displayDescription)}
               onClick={this._handleExpand}
+              onExpand={this._onExpand}
               className={styles.expandableText}
               classNameExpanded={styles.expanded}
               buttonProps={{

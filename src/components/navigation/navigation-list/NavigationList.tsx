@@ -9,7 +9,7 @@ import {ItemData, ItemTypesTranslates} from '../../../types';
 
 export interface Props {
   data: Array<ItemData>;
-  onSeek: (n: number) => void;
+  onSeek: (n: number, itemType: string) => void;
   autoScroll: boolean;
   onScroll: (n: number) => void;
   widgetWidth: number;
