@@ -5,6 +5,7 @@ import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
+import { NavigationEvent } from "../../../events";
 
 const {ExpandableText} = ui.components;
 const {Text, Localizer} = preacti18n;
@@ -18,6 +19,7 @@ export interface NavigationItemProps {
   showIcon: boolean;
   onNext: () => void;
   onPrev: () => void;
+  dispatcher: (name: string, payload?: any) => void;
 }
 
 export interface NavigationItemState {
@@ -113,7 +115,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   };
 
   private _onExpand = (isTextExpanded: boolean) => {
-    console.log('#@', {isTextExpanded, itemType: this.props.data.itemType});
+    this.props.dispatcher(NavigationEvent.NAVIGATION_EXPANDABLE_TEXT_CLICK,  {isTextExpanded, itemType: this.props.data.itemType});
   }
   private _handleExpand = (e: MouseEvent) => {
     e?.stopPropagation();

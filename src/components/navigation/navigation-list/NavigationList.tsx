@@ -18,6 +18,7 @@ export interface Props {
   listDataContainCaptions: boolean;
   searchActive: boolean;
   itemTypesTranslates: ItemTypesTranslates;
+  dispatcher: (name: string, payload?: any) => void;
 }
 
 export class NavigationList extends Component<Props> {
@@ -93,6 +94,7 @@ export class NavigationList extends Component<Props> {
               showIcon={showItemsIcons}
               onNext={() => this._handleDownKeyPressed(index)}
               onPrev={() => this._handleUpKeyPressed(index)}
+              dispatcher={this.props.dispatcher}
             />
           );
         })}

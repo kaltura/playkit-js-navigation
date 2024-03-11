@@ -21,7 +21,7 @@ import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap, ItemTypesTranslates} from '../../types';
 import {CloseButton} from '../close-button';
 import {ScreenReaderContext, ScreenReaderProvider} from '@playkit-js/common/dist/hoc/sr-wrapper';
-import { NavigationEvent } from "../../event";
+import { NavigationEvent } from "../../events";
 
 const {KeyMap} = utils;
 const {withText, Text} = preacti18n;
@@ -209,7 +209,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       ...this.state.searchFilter,
       [property]: data
     };
-    this.props.dispatcher(NavigationEvent.NAVIGATION_FILTER_TAB, data);
+    this.props.dispatcher(NavigationEvent.NAVIGATION_SEARCH, searchFilter);
     this._prepareNavigationData(searchFilter);
   };
 
@@ -277,6 +277,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         onSeek={this._handleSeek}
         onScroll={this._scrollTo}
         data={convertedData}
+        dispatcher={this.props.dispatcher}
         highlightedTime={highlightedTime}
         showItemsIcons={searchFilter.activeTab === ItemTypes.All}
         listDataContainCaptions={listDataContainCaptions}

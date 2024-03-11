@@ -18,7 +18,7 @@ import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 import {QuizTitle} from './components/navigation/navigation-item/QuizTitle';
-import { NavigationEvent } from "./event";
+import { NavigationEvent } from "./events";
 
 export const pluginName: string = 'navigation';
 
@@ -386,7 +386,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }) as number;
 
     if ((this.config.expandOnFirstPlay && !this._pluginState) || this._pluginState === PluginStates.OPENED) {
-      this._activatePlugin();
+      this._activatePlugin(true);
     }
   };
 
@@ -450,12 +450,12 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }
   };
 
-  private _activatePlugin = () => {
+  private _activatePlugin = (isFirstOpen = false) => {
     this.ready.then(() => {
       this.sidePanelsManager?.activateItem(this._navigationPanel);
       this._pluginState === PluginStates.OPENED;
       this.upperBarManager?.update(this._navigationIcon);
-      this.dispatchEvent(NavigationEvent.NAVIGATION_OPEN, {auto: this.config.expandOnFirstPlay});
+      this.dispatchEvent(NavigationEvent.NAVIGATION_OPEN, {auto: isFirstOpen});
     });
   };
 
