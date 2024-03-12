@@ -21,6 +21,7 @@ import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap, ItemTypesTranslates} from '../../types';
 import {CloseButton} from '../close-button';
 import {ScreenReaderContext, ScreenReaderProvider} from '@playkit-js/common/dist/hoc/sr-wrapper';
+import { NavigationEvent } from "../../events";
 
 const {KeyMap} = utils;
 const {withText, Text} = preacti18n;
@@ -34,7 +35,7 @@ export interface SearchFilter {
 
 export interface NavigationProps {
   data: Array<ItemData>;
-  onItemClicked(time: number): void;
+  onItemClicked(time: number, itemType: string): void;
   onClose: OnClick;
   retry?: () => void;
   isLoading: boolean;
@@ -43,6 +44,7 @@ export interface NavigationProps {
   kitchenSinkActive: boolean;
   toggledWithEnter: boolean;
   itemsOrder: typeof itemTypesOrder;
+  dispatcher: (name: string, payload?: any) => void;
 }
 
 interface NavigationState {
@@ -207,6 +209,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       ...this.state.searchFilter,
       [property]: data
     };
+    this.props.dispatcher(NavigationEvent.NAVIGATION_SEARCH, searchFilter);
     this._prepareNavigationData(searchFilter);
   };
 
@@ -242,11 +245,11 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     );
   };
 
-  private _handleSeek = (time: number) => {
+  private _handleSeek = (time: number, itemType: string) => {
     // we want to also autoscroll to the item
     this._preventScrollEvent = true;
     this.setState({autoscroll: true}, () => {
-      this.props.onItemClicked(time);
+      this.props.onItemClicked(time, itemType);
     });
   };
 
@@ -274,6 +277,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         onSeek={this._handleSeek}
         onScroll={this._scrollTo}
         data={convertedData}
+        dispatcher={this.props.dispatcher}
         highlightedTime={highlightedTime}
         showItemsIcons={searchFilter.activeTab === ItemTypes.All}
         listDataContainCaptions={listDataContainCaptions}

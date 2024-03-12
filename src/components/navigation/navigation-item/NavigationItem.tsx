@@ -5,6 +5,7 @@ import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
+import { NavigationEvent } from "../../../events";
 
 const {ExpandableText} = ui.components;
 const {Text, Localizer} = preacti18n;
@@ -14,10 +15,11 @@ export interface NavigationItemProps {
   onSelected: (params: {time: number; itemY: number}) => void;
   selectedItem: boolean;
   widgetWidth: number;
-  onClick: (time: number) => void;
+  onClick: (time: number, itemType: string) => void;
   showIcon: boolean;
   onNext: () => void;
   onPrev: () => void;
+  dispatcher: (name: string, payload?: any) => void;
 }
 
 export interface NavigationItemState {
@@ -109,9 +111,12 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   };
 
   private _handleClick = () => {
-    this.props.onClick(this.props.data.startTime);
+    this.props.onClick(this.props.data.startTime, this.props.data.itemType);
   };
 
+  private _onExpand = (isTextExpanded: boolean) => {
+    this.props.dispatcher(NavigationEvent.NAVIGATION_EXPANDABLE_TEXT_CLICK,  {isTextExpanded, itemType: this.props.data.itemType});
+  }
   private _handleExpand = (e: MouseEvent) => {
     e?.stopPropagation();
     e?.preventDefault();
@@ -149,6 +154,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               lines={1}
               forceShowMore={Boolean(displayTitle && displayDescription)}
               onClick={this._handleExpand}
+              onExpand={this._onExpand}
               className={styles.expandableText}
               classNameExpanded={styles.expanded}
               buttonProps={{

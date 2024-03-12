@@ -9,7 +9,7 @@ import {ItemData, ItemTypesTranslates} from '../../../types';
 
 export interface Props {
   data: Array<ItemData>;
-  onSeek: (n: number) => void;
+  onSeek: (n: number, itemType: string) => void;
   autoScroll: boolean;
   onScroll: (n: number) => void;
   widgetWidth: number;
@@ -18,6 +18,7 @@ export interface Props {
   listDataContainCaptions: boolean;
   searchActive: boolean;
   itemTypesTranslates: ItemTypesTranslates;
+  dispatcher: (name: string, payload?: any) => void;
 }
 
 export class NavigationList extends Component<Props> {
@@ -93,6 +94,7 @@ export class NavigationList extends Component<Props> {
               showIcon={showItemsIcons}
               onNext={() => this._handleDownKeyPressed(index)}
               onPrev={() => this._handleUpKeyPressed(index)}
+              dispatcher={this.props.dispatcher}
             />
           );
         })}
