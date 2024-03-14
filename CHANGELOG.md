@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.8 (2024-03-14)
+
+
+### Bug Fixes
+
+* **FEC-13720:** [Navigation Plugin]: Add Events (used by kava analytics) ([#352](https://github.com/kaltura/playkit-js-navigation/issues/352)) ([5be67de](https://github.com/kaltura/playkit-js-navigation/commit/5be67de6e7b5bec86d2a2aef544a7912743a0c13))
+
 ### 3.5.7 (2024-02-25)
 
 ### 3.5.6 (2024-02-25)
