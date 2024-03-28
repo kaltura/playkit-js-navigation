@@ -11,7 +11,7 @@
 
   .label-wrapper {
     display: flex;
-    background: $tone-6-color;
+    background: var(--playkit-tone-6-color);
     border-radius: $roundness-1;
     font-size: 12px;
     font-weight: 700;
@@ -25,18 +25,18 @@
     }
 
     &.correct {
-      background: $success-darker-color;
+      background: var(--playkit-success-darker-color);
     }
 
     &.incorrect {
-      background: $danger-darker-color;
+      background: var(--playkit-danger-darker-color);
     }
   }
 }
 
 :global(.playkit-size-sm),
 :global(.playkit-size-xs),
-:global(.playkit-size-ty), {
+:global(.playkit-size-ty) {
   .title-wrapper {
     flex-direction: column;
   }
