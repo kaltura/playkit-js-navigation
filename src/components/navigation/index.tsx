@@ -21,7 +21,7 @@ import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap, ItemTypesTranslates} from '../../types';
 import {CloseButton} from '../close-button';
 import {ScreenReaderContext, ScreenReaderProvider} from '@playkit-js/common/dist/hoc/sr-wrapper';
-import { NavigationEvent } from "../../events";
+import { NavigationEvent } from "../../events/events";
 
 const {KeyMap} = utils;
 const {withText, Text} = preacti18n;

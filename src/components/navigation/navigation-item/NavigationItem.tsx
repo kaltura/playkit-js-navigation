@@ -5,7 +5,7 @@ import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
-import { NavigationEvent } from "../../../events";
+import { NavigationEvent } from "../../../events/events";
 
 const {ExpandableText} = ui.components;
 const {Text, Localizer} = preacti18n;
