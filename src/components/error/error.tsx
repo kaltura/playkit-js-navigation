@@ -1,8 +1,9 @@
 import {h} from 'preact';
-import {preacti18n} from '@playkit-js/playkit-js-ui';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './error.scss';
 import {ErrorIconSVG} from '../icons/error-icon';
+import {ui} from '@playkit-js/kaltura-player-js';
+const {preacti18n} = ui;
 
 const {withText, Text} = preacti18n;
 

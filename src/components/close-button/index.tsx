@@ -1,8 +1,9 @@
 import {h} from 'preact';
-import {preacti18n} from '@playkit-js/playkit-js-ui';
 import * as styles from './close-button.scss';
 import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {icons} from '../icons';
+import {ui} from '@playkit-js/kaltura-player-js';
+const {preacti18n} = ui;
 const {Icon} = KalturaPlayer.ui.components;
 
 interface CloseButtonProps {
