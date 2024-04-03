@@ -2,6 +2,6 @@
 
 .pluginButton {
   &.active {
-    background-color: var(--playkit-tone-6-color);
+    background-color: $tone-6-color;
   }
 }

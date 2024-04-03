@@ -27,7 +27,7 @@
       }
       &.active {
         padding-bottom: 0;
-        border-bottom: 3px solid var(--playkit-primary-color);
+        border-bottom: 3px solid $primary-color;
       }
       .label {
         margin-left: 10px;

@@ -11,7 +11,7 @@
 
   .label-wrapper {
     display: flex;
-    background: var(--playkit-tone-6-color);
+    background: $tone-6-color;
     border-radius: $roundness-1;
     font-size: 12px;
     font-weight: 700;
@@ -25,11 +25,11 @@
     }
 
     &.correct {
-      background: var(--playkit-success-darker-color);
+      background: $success-darker-color;
     }
 
     &.incorrect {
-      background: var(--playkit-danger-darker-color);
+      background: $danger-darker-color;
     }
   }
 }
