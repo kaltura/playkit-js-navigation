@@ -8,6 +8,6 @@ const NAME = __NAME__;
 
 export {NavigationPlugin as Plugin};
 export {VERSION, NAME};
-export {NavigationEvent} from './events'
+export {NavigationEvent} from './events/events'
 
 KalturaPlayer.core.registerPlugin(pluginName, NavigationPlugin);

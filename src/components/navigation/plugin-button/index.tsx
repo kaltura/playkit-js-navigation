@@ -1,9 +1,9 @@
 import {h} from 'preact';
-import {ui} from '@playkit-js/kaltura-player-js';
-import {preacti18n} from '@playkit-js/playkit-js-ui';
 import * as styles from './plugin-button.scss';
 import {icons} from '../../icons';
 import {pluginName} from '../../../navigation-plugin';
+import {ui} from '@playkit-js/kaltura-player-js';
+const {preacti18n} = ui;
 
 const {Tooltip, Icon} = ui.components;
 const {withText, Text} = preacti18n;

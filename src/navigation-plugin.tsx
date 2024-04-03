@@ -18,7 +18,7 @@ import {PluginButton} from './components/navigation/plugin-button';
 import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 import {QuizTitle} from './components/navigation/navigation-item/QuizTitle';
-import { NavigationEvent } from "./events";
+import {NavigationEvent} from './events/events';
 
 export const pluginName: string = 'navigation';
 

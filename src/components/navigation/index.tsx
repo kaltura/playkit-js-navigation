@@ -1,5 +1,4 @@
 import {h, Component} from 'preact';
-import {preacti18n, utils} from '@playkit-js/playkit-js-ui';
 import * as styles from './navigaton.scss';
 import {OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import {NavigationList, Props} from './navigation-list/NavigationList';
@@ -21,7 +20,9 @@ import {AutoscrollButton} from './autoscroll-button';
 import {ItemTypes, ItemData, HighlightedMap, ItemTypesTranslates} from '../../types';
 import {CloseButton} from '../close-button';
 import {ScreenReaderContext, ScreenReaderProvider} from '@playkit-js/common/dist/hoc/sr-wrapper';
-import { NavigationEvent } from "../../events";
+import { NavigationEvent } from "../../events/events";
+import {ui} from '@playkit-js/kaltura-player-js';
+const {preacti18n, utils} = ui;
 
 const {KeyMap} = utils;
 const {withText, Text} = preacti18n;

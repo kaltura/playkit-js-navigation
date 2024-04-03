@@ -1,8 +1,8 @@
 import {h} from 'preact';
-import {ui} from '@playkit-js/kaltura-player-js';
-import {preacti18n} from '@playkit-js/playkit-js-ui';
 import * as styles from './autoscroll-button.scss';
 import {A11yWrapper, OnClick} from '@playkit-js/common/dist/hoc/a11y-wrapper';
+import {ui} from '@playkit-js/kaltura-player-js';
+const {preacti18n} = ui;
 
 const {withText, Text} = preacti18n;
 const {Tooltip} = ui.components;
