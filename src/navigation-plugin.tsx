@@ -434,6 +434,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _seekTo = (time: number, itemType: string) => {
+    if (this.player.isLive() && !this.player.isDvr()) {
+      return; // prevent seek for live entry without DVR
+    }
     this.player.currentTime = time;
     // need to trigger _onTimedMetadataChange in a case where the highlightedMap wasn't updated
     this._triggerOnTimedMetadataChange();
