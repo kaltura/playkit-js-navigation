@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.10 (2024-04-09)
+
+
+### Bug Fixes
+
+* **FEC-13766:** prevent seek for live entry without DVR ([#355](https://github.com/kaltura/playkit-js-navigation/issues/355)) ([8ef238c](https://github.com/kaltura/playkit-js-navigation/commit/8ef238cb46498eab645dc107b5778cf7e4a93645))
+
 ### 3.5.9 (2024-03-31)
 
 ### 3.5.8 (2024-03-14)
