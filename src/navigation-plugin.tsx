@@ -369,7 +369,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       presets: [ReservedPresetNames.Playback, ReservedPresetNames.Live, ReservedPresetNames.Ads],
       position: this.config.position,
       expandMode: this.config.expandMode === SidePanelModes.ALONGSIDE ? SidePanelModes.ALONGSIDE : SidePanelModes.OVER,
-      onDeactivate: this._deactivatePlugin
     }) as number;
 
     this._navigationIcon = this.upperBarManager!.add({
