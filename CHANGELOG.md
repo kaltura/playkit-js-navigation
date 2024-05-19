@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.15 (2024-05-19)
+
+
+### Bug Fixes
+
+* **FEC-13889:** Download_close being reported too many times to application events ([#360](https://github.com/kaltura/playkit-js-navigation/issues/360)) ([85079e7](https://github.com/kaltura/playkit-js-navigation/commit/85079e714a98be8dfb311bd9a0aaf9edac9f7931))
+
 ### 3.5.14 (2024-05-05)
 
 ### 3.5.13 (2024-05-02)
