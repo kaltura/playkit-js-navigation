@@ -184,7 +184,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
                 lines={3}
                 className={styles.expandableText}
                 classNameExpanded={styles.expanded}
-                onClick={this._handleExpand}>
+                onClick={this._handleExpand}
+                onExpand={this._onExpand}>
                 {displayDescription}
               </ExpandableText>
             </Localizer>
