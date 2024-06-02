@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.17 (2024-06-02)
+
+
+### Bug Fixes
+
+* **FEC-13929:** Application events analytics reporting to kava | Navigation_chapters_see_more & less events doesn't sent for chapters without thumbnail. ([#361](https://github.com/kaltura/playkit-js-navigation/issues/361)) ([3d41b41](https://github.com/kaltura/playkit-js-navigation/commit/3d41b41af6a03f8b551d052b06d48f756fe77e25))
+
 ### 3.5.16 (2024-05-19)
 
 ### 3.5.15 (2024-05-19)
