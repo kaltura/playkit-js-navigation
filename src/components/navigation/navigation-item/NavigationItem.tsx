@@ -214,7 +214,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
         onClick={this._handleClick}
         onDownKeyPressed={this.props.onNext}
         onUpKeyPressed={this.props.onPrev}
-        role={selectedItem ? 'text' : 'listitem'}>
+        role='button'>
         <div
           tabIndex={0}
           aria-label={ariaLabelTitle}
