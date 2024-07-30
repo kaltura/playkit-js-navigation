@@ -226,7 +226,7 @@ describe('Navigation plugin', () => {
           cy.get("[aria-label='Hotspots']").should('not.exist');
           cy.get("[aria-label='AoA']").should('not.exist');
           const tabCaptions = cy.get("[aria-label='List Captions']").should('be.visible').click();
-          tabCaptions.should('have.attr', 'aria-checked', 'true');
+          tabCaptions.should('have.attr', 'aria-selected', 'true');
           cy.get('[data-testid="navigation_list"]').children().should('have.length', 5);
         });
       });
@@ -307,7 +307,7 @@ describe('Navigation plugin', () => {
         cy.get('[data-testid="navigation_root"]').within(() => {
           const tabChapters = cy.get("[aria-label='List Chapters']").should('be.visible').should('have.attr', 'aria-selected', 'false');
           tabChapters.click();
-          tabChapters.should('have.attr', 'selected-checked', 'true');
+          tabChapters.should('have.attr', 'aria-selected', 'true');
           const searchInput = cy.get("[aria-label='Search in video']");
           searchInput.type('c');
           cy.get('[data-testid="navigation_list"]').children().should('have.length', 3);
