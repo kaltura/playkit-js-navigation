@@ -131,13 +131,12 @@ export class NavigationFilter extends Component<FilterProps> {
           onClick={() => this._handleChange(tab.type)}
           onDownKeyPressed={this._handleDownKeyPressed(index)}
           onUpKeyPressed={this._handleUpKeyPressed(index)}
-          role="radio">
+          role="tab">
           <button
             aria-label={`${this.props.listType} ${tab.label}`}
             key={tab.type}
             tabIndex={0}
-            type="checkbox"
-            aria-checked={tab.isActive}
+            aria-selected={tab.isActive}
             className={[styles.tab, tab.isActive ? styles.active : ''].join(' ')}
             ref={node => {
               this._setTabRef(index, node);
@@ -182,7 +181,7 @@ export class NavigationFilter extends Component<FilterProps> {
     return (
       <div className={styles.filterRoot}>
         {totalResults !== 0 && tabs.length >= 2 && (
-          <div className={styles.tabsWrapper} role="radiogroup">
+          <div className={styles.tabsWrapper} role="tablist">
             {tabs.map((tab, index) => {
               return this._renderTab(tab, index);
             })}

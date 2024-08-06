@@ -200,10 +200,10 @@ describe('Navigation plugin', () => {
         cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
         cy.get('[data-testid="navigation_root"]').within(() => {
           // default state
-          const tabAll = cy.get("[aria-label='List All']").should('be.visible').should('have.attr', 'aria-checked', 'true');
-          const tabChapters = cy.get("[aria-label='List Chapters']").should('be.visible').should('have.attr', 'aria-checked', 'false');
-          const tabSlides = cy.get("[aria-label='List Slides']").should('be.visible').should('have.attr', 'aria-checked', 'false');
-          const tabHotspots = cy.get("[aria-label='List Hotspots']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+          const tabAll = cy.get("[aria-label='List All']").should('be.visible').should('have.attr', 'aria-selected', 'true');
+          const tabChapters = cy.get("[aria-label='List Chapters']").should('be.visible').should('have.attr', 'aria-selected', 'false');
+          const tabSlides = cy.get("[aria-label='List Slides']").should('be.visible').should('have.attr', 'aria-selected', 'false');
+          const tabHotspots = cy.get("[aria-label='List Hotspots']").should('be.visible').should('have.attr', 'aria-selected', 'false');
           cy.get("[aria-label='Captions']").should('not.exist');
           cy.get("[aria-label='AoA']").should('not.exist');
 
@@ -226,7 +226,7 @@ describe('Navigation plugin', () => {
           cy.get("[aria-label='Hotspots']").should('not.exist');
           cy.get("[aria-label='AoA']").should('not.exist');
           const tabCaptions = cy.get("[aria-label='List Captions']").should('be.visible').click();
-          tabCaptions.should('have.attr', 'aria-checked', 'true');
+          tabCaptions.should('have.attr', 'aria-selected', 'true');
           cy.get('[data-testid="navigation_list"]').children().should('have.length', 5);
         });
       });
@@ -305,9 +305,9 @@ describe('Navigation plugin', () => {
         const screenReaderWrapper = cy.get('[data-testid="screenReaderWrapper"]');
         screenReaderWrapper.should('exist');
         cy.get('[data-testid="navigation_root"]').within(() => {
-          const tabChapters = cy.get("[aria-label='List Chapters']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+          const tabChapters = cy.get("[aria-label='List Chapters']").should('be.visible').should('have.attr', 'aria-selected', 'false');
           tabChapters.click();
-          tabChapters.should('have.attr', 'aria-checked', 'true');
+          tabChapters.should('have.attr', 'aria-selected', 'true');
           const searchInput = cy.get("[aria-label='Search in video']");
           searchInput.type('c');
           cy.get('[data-testid="navigation_list"]').children().should('have.length', 3);
@@ -340,7 +340,7 @@ describe('Navigation plugin', () => {
         cy.get('[data-testid="navigation_root"]').within(() => {
           cy.get('[data-testid="navigation_list"]').children().should('have.length', 7);
         });
-        const tabQuestions = cy.get("[aria-label='List Questions']").should('be.visible').should('have.attr', 'aria-checked', 'false');
+        const tabQuestions = cy.get("[aria-label='List Questions']").should('be.visible').should('have.attr', 'aria-selected', 'false');
         tabQuestions.click();
         cy.get('[data-testid="navigation_list"]').children().should('have.length', 1);
       });
