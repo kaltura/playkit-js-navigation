@@ -204,7 +204,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       onFocus: this._handleFocus,
       onBlur: this._handleBlur,
       tabIndex: 0,
-      ariaHidden: !(selectedItem || this.state.focused)
     };
 
     const ariaLabelTitle: string = typeof displayTitle === 'string' ? displayTitle : displayDescription || '';
