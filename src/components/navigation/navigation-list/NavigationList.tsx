@@ -95,6 +95,7 @@ export class NavigationList extends Component<Props> {
               onNext={() => this._handleDownKeyPressed(index)}
               onPrev={() => this._handleUpKeyPressed(index)}
               dispatcher={this.props.dispatcher}
+              slideNumber={index}
             />
           );
         })}
