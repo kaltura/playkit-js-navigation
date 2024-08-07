@@ -3,7 +3,7 @@ import {A11yWrapper} from '@playkit-js/common/dist/hoc/a11y-wrapper';
 import * as styles from './NavigationItem.scss';
 import {GroupTypes, ItemData} from '../../../types';
 import {IconsFactory} from '../icons/IconsFactory';
-import { NavigationEvent } from "../../../events/events";
+import {NavigationEvent} from '../../../events/events';
 import {ui} from '@playkit-js/kaltura-player-js';
 const {preacti18n} = ui;
 
@@ -17,15 +17,12 @@ export interface NavigationItemProps {
   widgetWidth: number;
   onClick: (time: number, itemType: string) => void;
   showIcon: boolean;
-  onNext: () => void;
-  onPrev: () => void;
   dispatcher: (name: string, payload?: any) => void;
 }
 
 export interface NavigationItemState {
   imageLoaded: boolean;
   imageFailed: boolean;
-  focused: boolean;
   useExpandableText: boolean;
 }
 
@@ -38,7 +35,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     this.state = {
       imageLoaded: false,
       imageFailed: false,
-      focused: false,
       useExpandableText: typeof this.props.data?.displayTitle === 'string'
     };
   }
@@ -59,7 +55,6 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const {selectedItem, data, widgetWidth} = this.props;
     if (
       selectedItem !== nextProps.selectedItem ||
-      this.state.focused !== nextState.focused ||
       data !== nextProps.data ||
       nextState.imageLoaded !== this.state.imageLoaded ||
       nextState.imageFailed !== this.state.imageFailed ||
@@ -98,25 +93,13 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     }
   };
 
-  private _handleFocus = () => {
-    this.setState({
-      focused: true
-    });
-  };
-
-  private _handleBlur = () => {
-    this.setState({
-      focused: false
-    });
-  };
-
   private _handleClick = () => {
     this.props.onClick(this.props.data.startTime, this.props.data.itemType);
   };
 
   private _onExpand = (isTextExpanded: boolean) => {
-    this.props.dispatcher(NavigationEvent.NAVIGATION_EXPANDABLE_TEXT_CLICK,  {isTextExpanded, itemType: this.props.data.itemType});
-  }
+    this.props.dispatcher(NavigationEvent.NAVIGATION_EXPANDABLE_TEXT_CLICK, {isTextExpanded, itemType: this.props.data.itemType});
+  };
   private _handleExpand = (e: MouseEvent) => {
     e?.stopPropagation();
     e?.preventDefault();
@@ -158,7 +141,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               className={styles.expandableText}
               classNameExpanded={styles.expanded}
               buttonProps={{
-                tabIndex: 0
+                tabIndex: 0,
+                role: 'button'
               }}>
               {displayTitle && <div className={styles.title}>{displayTitle}</div>}
               {displayDescription && <div className={styles.descriptionWrapper}>{displayDescription}</div>}
@@ -195,28 +179,22 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     );
   };
 
-  render({selectedItem, showIcon, data}: NavigationItemProps) {
+  render() {
+    const {data, selectedItem, showIcon} = this.props;
     const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription} = data;
     const {imageLoaded} = this.state;
+    const ariaLabelTitle: string = (typeof displayTitle === 'string' && displayTitle ? displayTitle : displayDescription) || '';
 
     const a11yProps: Record<string, any> = {
       ['aria-current']: selectedItem,
-      onFocus: this._handleFocus,
-      onBlur: this._handleBlur,
+      ['aria-label']: ariaLabelTitle,
       tabIndex: 0,
+      role: 'button'
     };
 
-    const ariaLabelTitle: string = typeof displayTitle === 'string' ? displayTitle : displayDescription || '';
-
     return (
-      <A11yWrapper
-        onClick={this._handleClick}
-        onDownKeyPressed={this.props.onNext}
-        onUpKeyPressed={this.props.onPrev}
-        role='button'>
+      <A11yWrapper onClick={this._handleClick}>
         <div
-          tabIndex={0}
-          aria-label={ariaLabelTitle}
           ref={node => {
             this._itemElementRef = node;
           }}
