@@ -1,5 +1,4 @@
 import {Component, h} from 'preact';
-import {ui} from '@playkit-js/kaltura-player-js';
 import * as styles from './NavigationList.scss';
 import {NavigationItem} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';
@@ -60,18 +59,6 @@ export class NavigationList extends Component<Props> {
     return this._itemsRefMap.set(index, ref);
   };
 
-  private _getItemRef = (index: number) => {
-    return this._itemsRefMap.get(index);
-  };
-
-  private _handleUpKeyPressed = (currentIndex: number) => {
-    this._getItemRef(currentIndex - 1)?.setFocus();
-  };
-
-  private _handleDownKeyPressed = (currentIndex: number) => {
-    this._getItemRef(currentIndex + 1)?.setFocus();
-  };
-
   render({data, widgetWidth, showItemsIcons, onSeek, highlightedTime, listDataContainCaptions, searchActive}: Props) {
     if (!data.length) {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
@@ -79,7 +66,6 @@ export class NavigationList extends Component<Props> {
     return (
       <div className={styles.navigationList} data-testid="navigation_list" aria-live="polite" role="tabpanel">
         {data.map((item: ItemData, index: number) => {
-          const itemTypeTranslate = this.props.itemTypesTranslates[item.itemType];
           return (
             <NavigationItem
               key={item.id}
@@ -92,8 +78,6 @@ export class NavigationList extends Component<Props> {
               data={item}
               onSelected={this.updateSelected}
               showIcon={showItemsIcons}
-              onNext={() => this._handleDownKeyPressed(index)}
-              onPrev={() => this._handleUpKeyPressed(index)}
               dispatcher={this.props.dispatcher}
             />
           );
