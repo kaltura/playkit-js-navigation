@@ -79,6 +79,7 @@ export class NavigationList extends Component<Props> {
               onSelected={this.updateSelected}
               showIcon={showItemsIcons}
               dispatcher={this.props.dispatcher}
+              slideNumber={index}
             />
           );
         })}
