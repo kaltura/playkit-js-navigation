@@ -23,11 +23,6 @@ export interface Props {
 
 export class NavigationList extends Component<Props> {
   private _selectedElementY = 0;
-  private _itemsRefMap: Map<number, NavigationItem | null> = new Map();
-
-  componentWillUnmount() {
-    this._itemsRefMap = new Map();
-  }
 
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
@@ -56,22 +51,6 @@ export class NavigationList extends Component<Props> {
     }
   };
 
-  private _setNavigationItemRef = (index: number, ref: NavigationItem | null) => {
-    return this._itemsRefMap.set(index, ref);
-  };
-
-  private _getItemRef = (index: number) => {
-    return this._itemsRefMap.get(index);
-  };
-
-  private _handleUpKeyPressed = (currentIndex: number) => {
-    this._getItemRef(currentIndex - 1)?.setFocus();
-  };
-
-  private _handleDownKeyPressed = (currentIndex: number) => {
-    this._getItemRef(currentIndex + 1)?.setFocus();
-  };
-
   render({data, widgetWidth, showItemsIcons, onSeek, highlightedTime, listDataContainCaptions, searchActive}: Props) {
     if (!data.length) {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
@@ -83,17 +62,12 @@ export class NavigationList extends Component<Props> {
           return (
             <NavigationItem
               key={item.id}
-              ref={node => {
-                this._setNavigationItemRef(index, node);
-              }}
               widgetWidth={widgetWidth}
               onClick={item.onClick ?? onSeek}
               selectedItem={highlightedTime === item.displayTime}
               data={item}
               onSelected={this.updateSelected}
               showIcon={showItemsIcons}
-              onNext={() => this._handleDownKeyPressed(index)}
-              onPrev={() => this._handleUpKeyPressed(index)}
               dispatcher={this.props.dispatcher}
               slideNumber={index}
             />

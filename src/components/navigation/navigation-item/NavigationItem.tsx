@@ -17,8 +17,8 @@ export interface NavigationItemProps {
   widgetWidth: number;
   onClick: (time: number, itemType: string) => void;
   showIcon: boolean;
-  onNext: () => void;
-  onPrev: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
   dispatcher: (name: string, payload?: any) => void;
   slideNumber?: number;
   slideAltText?: string;
