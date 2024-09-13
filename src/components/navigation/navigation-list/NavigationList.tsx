@@ -1,5 +1,4 @@
 import {Component, h} from 'preact';
-import {ui} from '@playkit-js/kaltura-player-js';
 import * as styles from './NavigationList.scss';
 import {NavigationItem} from '../navigation-item/NavigationItem';
 import {EmptyList} from '../icons/EmptyList';
@@ -56,9 +55,8 @@ export class NavigationList extends Component<Props> {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
     }
     return (
-      <div className={styles.navigationList} data-testid="navigation_list" aria-live="polite">
+      <div className={styles.navigationList} data-testid="navigation_list" aria-live="polite" role="tabpanel">
         {data.map((item: ItemData, index: number) => {
-          const itemTypeTranslate = this.props.itemTypesTranslates[item.itemType];
           return (
             <NavigationItem
               key={item.id}

@@ -30,7 +30,9 @@
       "search_no_results_description": "Versuchen Sie es mit einem allgemeineren Schlüsselwort",
       "loading": "Wird geladen",
       "auto_scroll": "AutoScroll fortsetzen",
-      "image_alt": "Folienvorschau"
+      "image_alt": "Folienvorschau",
+      "read_more": "Mehr lesen",
+      "read_less": "Weniger lesen"
     }
   }
 }

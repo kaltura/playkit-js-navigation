@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.21 (2024-09-05)
+
+
+### Bug Fixes
+
+* **SUP-42574:** Navigation Overlay is Missing German translation ([#370](https://github.com/kaltura/playkit-js-navigation/issues/370)) ([f070901](https://github.com/kaltura/playkit-js-navigation/commit/f070901f5b35dda3091baf88f423dc76383da4ff))
+
+### 3.5.20 (2024-08-22)
+
+
+### Bug Fixes
+
+* **FEC-14053:** a11y keyboard navigation (FEC-14054) ([#368](https://github.com/kaltura/playkit-js-navigation/issues/368)) ([3341568](https://github.com/kaltura/playkit-js-navigation/commit/3341568fde116f8e359f8f0c934f1fe496161307))
+
 ### 3.5.19 (2024-06-30)
 
 ### 3.5.18 (2024-06-16)
