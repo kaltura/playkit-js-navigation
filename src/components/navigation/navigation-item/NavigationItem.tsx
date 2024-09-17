@@ -8,7 +8,7 @@ import {ui} from '@playkit-js/kaltura-player-js';
 const {preacti18n} = ui;
 
 const {ExpandableText} = ui.components;
-const {Text, Localizer} = preacti18n;
+const {withText, Text, Localizer} = preacti18n;
 
 export interface NavigationItemProps {
   data: ItemData;
@@ -17,7 +17,11 @@ export interface NavigationItemProps {
   widgetWidth: number;
   onClick: (time: number, itemType: string) => void;
   showIcon: boolean;
+  onNext?: () => void;
+  onPrev?: () => void;
   dispatcher: (name: string, payload?: any) => void;
+  slideNumber?: number;
+  slideAltText?: string;
 }
 
 export interface NavigationItemState {
@@ -25,7 +29,10 @@ export interface NavigationItemState {
   imageFailed: boolean;
   useExpandableText: boolean;
 }
-
+const translates={
+  slideAltText: <Text id="navigation.slide_type.one">Slide</Text>
+};
+@withText(translates)
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
@@ -109,11 +116,12 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     if (this.state.imageFailed) {
       return null;
     }
+    const altText = `${this.props.slideAltText} ${this.props.slideNumber ? this.props.slideNumber + 1 : 1}`
     const {data} = this.props;
     const {previewImage} = data;
     const imageProps: Record<string, any> = {
       src: previewImage,
-      alt: <Text id="navigation.image_alt">Slide Preview</Text>,
+      alt: altText,
       className: styles.thumbnail,
       onLoad: () => {
         this.setState({imageLoaded: true});
