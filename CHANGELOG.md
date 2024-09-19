@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.22 (2024-09-19)
+
+
+### Bug Fixes
+
+* **ADA-1500:** Slide image alt fix ([#369](https://github.com/kaltura/playkit-js-navigation/issues/369)) ([17c728f](https://github.com/kaltura/playkit-js-navigation/commit/17c728f619f6785f7ebe15dc46e2e65e9e8fbeec))
+
 ### 3.5.21 (2024-09-05)
 
 
