@@ -274,8 +274,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         }
       }
       if (this._getCuePointType(cue) === ItemTypes.Chapter && this._itemsFilter[ItemTypes.Chapter]) {
-        navigationData.push(prepareCuePoint(cue, ItemTypes.Chapter, isLive));
-        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Chapter, cue.id, cue.metadata.title);
+        const preparedCuePoint: ItemData= prepareCuePoint(cue, ItemTypes.Chapter, isLive)
+        navigationData.push(preparedCuePoint);
+        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Chapter, preparedCuePoint.id, preparedCuePoint.displayTitle);
       }
       if (this._getCuePointType(cue) === ItemTypes.Hotspot && this._itemsFilter[ItemTypes.Hotspot]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Hotspot, isLive));
