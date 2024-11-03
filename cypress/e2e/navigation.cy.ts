@@ -77,7 +77,7 @@ describe('Navigation plugin', () => {
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
         cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
         cy.get('[data-testid="navigation_root"]').within(() => {
-          const chapterItem = cy.get('[aria-label="chapter 2 Jump to this point in video"]').should('have.attr', 'aria-current', 'false');
+          const chapterItem = cy.get('[aria-label="00:20 chapter 2 Jump to this point in video"]').should('have.attr', 'aria-current', 'false');
           chapterItem.click({force: true});
           chapterItem.should('have.attr', 'aria-current', 'true');
         });
@@ -89,9 +89,9 @@ describe('Navigation plugin', () => {
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(kalturaPlayer => {
         cy.get('[data-testid="navigation_root"]').should('have.css', 'visibility', 'visible');
         cy.get('[data-testid="navigation_root"]').within(() => {
-          cy.get('[aria-label="Hotspot 1 Jump to this point in video"]').should('have.attr', 'aria-current', 'false');
+          cy.get('[aria-label="00:12 Hotspot 1 Jump to this point in video"]').should('have.attr', 'aria-current', 'false');
           kalturaPlayer.currentTime = 12;
-          cy.get('[aria-label="Hotspot 1 Jump to this point in video"]').should('have.attr', 'aria-current', 'true');
+          cy.get('[aria-label="00:12 Hotspot 1 Jump to this point in video"]').should('have.attr', 'aria-current', 'true');
         });
       });
     });
@@ -141,7 +141,7 @@ describe('Navigation plugin', () => {
         cy.get('[data-testid="navigation_root"]').within(() => {
           const searchInput = cy.get("[aria-label='Search in video']");
           searchInput.type('Dark');
-          cy.get("[aria-label='Dark Side. Jump to this point in video']").should('not.contain.text', '<i>');
+          cy.get("[aria-label='00:19 Dark Side. Jump to this point in video']").should('not.contain.text', '<i>');
         });
       });
     });
@@ -508,7 +508,7 @@ describe('Navigation plugin', () => {
             ]
           })
         );
-        cy.get('[aria-label="10:00 Quiz cue Jump to this point in video"]')
+        cy.get('[aria-label="00:10 Quiz cue Jump to this point in video"]')
           .click({force: true})
           .then(() => {
             expect(onClick).to.have.been.calledOnce;
