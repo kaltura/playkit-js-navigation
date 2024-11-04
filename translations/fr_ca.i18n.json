@@ -30,7 +30,8 @@
       "search_no_results_description": "Essayez un mot-clé plus général",
       "loading": "Chargement en cours",
       "auto_scroll": "Reprendre AutoScroll",
-      "image_alt": "Aperçu de la diapositive"
+      "image_alt": "Aperçu de la diapositive",
+      "instruction_label": "Passer à ce point de la vidéo"
     }
   }
 }

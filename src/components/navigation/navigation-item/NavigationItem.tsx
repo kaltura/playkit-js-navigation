@@ -22,6 +22,7 @@ export interface NavigationItemProps {
   dispatcher: (name: string, payload?: any) => void;
   slideNumber?: number;
   slideAltText?: string;
+  instructionLabel?: string;
 }
 
 export interface NavigationItemState {
@@ -30,7 +31,8 @@ export interface NavigationItemState {
   useExpandableText: boolean;
 }
 const translates={
-  slideAltText: <Text id="navigation.slide_type.one">Slide</Text>
+  slideAltText: <Text id="navigation.slide_type.one">Slide</Text>,
+  instructionLabel: <Text id="navigation.instruction_label">Jump to this point in video</Text>,
 };
 @withText(translates)
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
@@ -188,14 +190,14 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   };
 
   render() {
-    const {data, selectedItem, showIcon} = this.props;
+    const {data, selectedItem, showIcon, instructionLabel} = this.props;
     const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription} = data;
     const {imageLoaded} = this.state;
     const ariaLabelTitle: string = (typeof displayTitle === 'string' && displayTitle ? displayTitle : displayDescription) || '';
 
     const a11yProps: Record<string, any> = {
       ['aria-current']: selectedItem,
-      ['aria-label']: ariaLabelTitle,
+      ['aria-label']: displayTime + " " + ariaLabelTitle + " " + instructionLabel,
       tabIndex: 0,
       role: 'button'
     };

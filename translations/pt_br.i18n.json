@@ -30,7 +30,8 @@
       "search_no_results_description": "Tente uma palavra-chave mais geral",
       "loading": "Carregando",
       "auto_scroll": "Retomar rolagem automática",
-      "image_alt": "Pré-visualização de slide"
+      "image_alt": "Pré-visualização de slide",
+      "instruction_label": "Avançar para este ponto no vídeo"
     }
   }
 }

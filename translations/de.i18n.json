@@ -32,7 +32,8 @@
       "auto_scroll": "AutoScroll fortsetzen",
       "image_alt": "Folienvorschau",
       "read_more": "Mehr lesen",
-      "read_less": "Weniger lesen"
+      "read_less": "Weniger lesen",
+      "instruction_label": "An diese Stelle im Video springen"
     }
   }
 }

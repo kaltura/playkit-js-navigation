@@ -30,7 +30,8 @@
       "search_no_results_description": "もっと一般的なキーワードを試す",
       "loading": "ロード中",
       "auto_scroll": "AutoScrollを再開",
-      "image_alt": "スライドのプレビュー"
+      "image_alt": "スライドのプレビュー",
+      "instruction_label": "ビデオのこのポイントにジャンプする"
     }
   }
 }

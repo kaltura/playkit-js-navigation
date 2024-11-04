@@ -32,8 +32,8 @@
           "search_no_results_description": "嘗試更一般的關鍵字",
           "loading": "載入中",
           "auto_scroll": "恢復自動捲動",
-          "image_alt": "投影片預覽"
+          "image_alt": "投影片預覽",
+          "instruction_label": "跳轉至影片中的這個位置"
         }
     }
 }
-  

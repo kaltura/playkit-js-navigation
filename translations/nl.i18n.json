@@ -30,7 +30,8 @@
       "search_no_results_description": "Probeer een algemener trefwoord",
       "loading": "Laden",
       "auto_scroll": "AutoScroll hervatten",
-      "image_alt": "Voorbeeldweergave"
+      "image_alt": "Voorbeeldweergave",
+      "instruction_label": "Spoel door naar dit punt in de video"
     }
   }
 }
