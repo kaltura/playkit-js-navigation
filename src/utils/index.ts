@@ -29,6 +29,7 @@ export const decodeString = (content: any): string => {
     .replace(/&gt;/gi, '>')
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
+    .replace(/&#039;/gi, '\'')
     .replace(/&quot;/gi, '"');
 };
 
