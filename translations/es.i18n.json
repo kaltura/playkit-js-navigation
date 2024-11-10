@@ -41,7 +41,8 @@
       "auto_scroll": "Reanudar desplazamiento automático",
       "image_alt": "Previsualización de diapositiva",
       "list_type": "Enumerar",
-      "search_description": "Puede buscar en los subtítulos del video palabras o frases específicas"
+      "search_description": "Puede buscar en los subtítulos del video palabras o frases específicas",
+      "instruction_label": "Saltar a este punto del vídeo"
     }
   }
 }

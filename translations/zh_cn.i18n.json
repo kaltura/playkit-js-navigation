@@ -30,7 +30,8 @@
       "search_no_results_description": "尝试一个更通用的关键字",
       "loading": "正在加载",
       "auto_scroll": "恢复自动滚动",
-      "image_alt": "幻灯片预览"
+      "image_alt": "幻灯片预览",
+      "instruction_label": "跳到视频中的此位置"
     }
   }
 }

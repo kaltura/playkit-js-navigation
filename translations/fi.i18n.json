@@ -30,7 +30,8 @@
       "search_no_results_description": "Kokeile yleisempää hakusanaa",
       "loading": "Ladataan",
       "auto_scroll": "Jatka automaattista vieritystä",
-      "image_alt": "Dian esikatselu"
+      "image_alt": "Dian esikatselu",
+      "instruction_label": "Siirry tähän kohtaan videossa"
     }
   }
 }
