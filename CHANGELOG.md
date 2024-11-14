@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.5.25 (2024-11-14)
+
+
+### Bug Fixes
+
+* **SUP-45356:** [Minn State] Issue with Special Characters in Chapter Titles Display on the Player ([#375](https://github.com/kaltura/playkit-js-navigation/issues/375)) ([923a11c](https://github.com/kaltura/playkit-js-navigation/commit/923a11ca5467f6a9b445fbce21480d11069c8d01))
+
 ### 3.5.24 (2024-10-13)
 
 ### 3.5.23 (2024-10-13)

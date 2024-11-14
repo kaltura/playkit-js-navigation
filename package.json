@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/navigation",
-  "version": "3.5.24",
+  "version": "3.5.25",
   "main": "dist/playkit-navigation.js",
   "private": false,
   "bugs": {
