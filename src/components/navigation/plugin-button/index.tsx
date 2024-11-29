@@ -28,6 +28,7 @@ export const PluginButton = withText(translates)(({isActive, setRef, ...otherPro
           setRef(node);
         }}
         type="button"
+        tabIndex={0}
         aria-label={otherProps.label}
         className={[ui.style.upperBarIcon, styles.pluginButton, isActive ? styles.active : ''].join(' ')}
         data-testid={'navigation_pluginButton'}>
