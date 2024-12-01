@@ -31,7 +31,8 @@
       "loading": "Chargement en cours",
       "auto_scroll": "Reprendre AutoScroll",
       "image_alt": "Aperçu de la diapositive",
-      "instruction_label": "Passer à ce point de la vidéo"
+      "instruction_label": "Passer à ce point de la vidéo",
+      "search_description": "Vous pouvez rechercher des mots ou des phrases spécifiques à partir des sous-titres de la vidéo."
     }
   }
 }
