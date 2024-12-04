@@ -31,7 +31,8 @@
       "loading": "正在加载",
       "auto_scroll": "恢复自动滚动",
       "image_alt": "幻灯片预览",
-      "instruction_label": "跳到视频中的此位置"
+      "instruction_label": "跳到视频中的此位置",
+      "search_description": "您可以搜索视频字幕以查找某个字词或短语。"
     }
   }
 }
