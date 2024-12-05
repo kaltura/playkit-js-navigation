@@ -274,17 +274,23 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         }
       }
       if (this._getCuePointType(cue) === ItemTypes.Chapter && this._itemsFilter[ItemTypes.Chapter]) {
-        const preparedCuePoint: ItemData= prepareCuePoint(cue, ItemTypes.Chapter, isLive)
+        const preparedCuePoint: ItemData = prepareCuePoint(cue, ItemTypes.Chapter, isLive);
         navigationData.push(preparedCuePoint);
-        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Chapter, preparedCuePoint.id, preparedCuePoint.displayTitle);
+        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Chapter, preparedCuePoint.id, preparedCuePoint.displayTitle, {
+          onClick: this._handleTimelinePreviewClick
+        });
       }
       if (this._getCuePointType(cue) === ItemTypes.Hotspot && this._itemsFilter[ItemTypes.Hotspot]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Hotspot, isLive));
-        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Hotspot, cue.id);
+        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Hotspot, cue.id, undefined, {
+          onClick: this._handleTimelinePreviewClick
+        });
       }
       if (this._getCuePointType(cue) === ItemTypes.AnswerOnAir && this._itemsFilter[ItemTypes.AnswerOnAir]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.AnswerOnAir, isLive));
-        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.AnswerOnAir, cue.id);
+        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.AnswerOnAir, cue.id, undefined, {
+          onClick: this._handleTimelinePreviewClick
+        });
       }
       if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
         captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
@@ -369,7 +375,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       },
       presets: [ReservedPresetNames.Playback, ReservedPresetNames.Live, ReservedPresetNames.Ads],
       position: this.config.position,
-      expandMode: this.config.expandMode === SidePanelModes.ALONGSIDE ? SidePanelModes.ALONGSIDE : SidePanelModes.OVER,
+      expandMode: this.config.expandMode === SidePanelModes.ALONGSIDE ? SidePanelModes.ALONGSIDE : SidePanelModes.OVER
     }) as number;
 
     this._navigationIcon = this.upperBarManager!.add({
@@ -424,13 +430,17 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (this._itemsFilter[ItemTypes.Caption]) {
       this.eventManager.listen(this._player, this._player.Event.TEXT_TRACK_CHANGED, this._handleLanguageChange);
     }
-    this.eventManager.listen(this._player, 'TimelinePreviewArrowClicked', this._handleTimelinePreviewClick);
   }
 
-  private _handleTimelinePreviewClick = ({payload}: any) => {
-    const {e, byKeyboard, cuePointType} = payload;
-    if (!this.isPluginActive()) this._handleClickOnPluginIcon(e, byKeyboard);
-    this._navigationPluginRef?.handleSearchFilterChange('activeTab')(cuePointType);
+  private _handleTimelinePreviewClick = (payload: any) => {
+    const {e, byKeyboard, cuePoint} = payload;
+    if (!this.isVisible()) {
+      return;
+    }
+    if (!this.isPluginActive()) {
+      this._handleClickOnPluginIcon(e, byKeyboard);
+    }
+    this._navigationPluginRef?.handleSearchFilterChange('activeTab')(cuePoint?.type || ItemTypes.All);
   };
 
   private _seekTo = (time: number, itemType: string) => {
