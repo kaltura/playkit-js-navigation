@@ -22,6 +22,8 @@ import {NavigationEvent} from './events/events';
 
 export const pluginName: string = 'navigation';
 
+import TextOverflowWrapper from './text-input';
+
 const {TimedMetadata} = core;
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
 const liveCuePointTimeThreshold = 20 * 1000; // 20 seconds threshold
@@ -347,6 +349,31 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this.logger.warn('navigation plugin already initialized');
       return;
     }
+
+    this._player.ui.addComponent({
+      label: 'info-overlay',
+      area: 'BottomBarCenterControls',
+      presets: [ReservedPresetNames.Playback, ReservedPresetNames.Live],
+      get: () => {
+        const styles = {
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          width: '100%',
+          lineHeight: '32px',
+          verticalAlign: 'top',
+          fontSize: '14px',
+          fontWeight: 'bold'
+        };
+        return (
+          <TextOverflowWrapper minWidth={80}>
+            <div id={'unisphere-id'} style={styles}>
+              Ethical Frameworks in AI
+            </div>
+          </TextOverflowWrapper>
+        );
+      }
+    });
 
     this._navigationPanel = this.sidePanelsManager!.add({
       label: 'Navigation',
