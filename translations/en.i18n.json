@@ -59,7 +59,8 @@
       "search_description": "You can search the video captions for specific words or phrases.",
       "read_more": "Read more",
       "read_less": "Read less",
-      "instruction_label": "Jump to this point in video"
+      "instruction_label": "Jump to this point in video",
+      "time_label": "Timestamp"
     }
   }
 }
