@@ -7,8 +7,11 @@ import {NavigationEvent} from '../../../events/events';
 import {ui} from '@playkit-js/kaltura-player-js';
 const {preacti18n} = ui;
 
+//@ts-ignore
+const {getDurationAsText} = KalturaPlayer.ui.utils;
 const {ExpandableText} = ui.components;
 const {withText, Text, Localizer} = preacti18n;
+const {withPlayer} = KalturaPlayer.ui.components;
 
 export interface NavigationItemProps {
   data: ItemData;
@@ -23,6 +26,8 @@ export interface NavigationItemProps {
   slideNumber?: number;
   slideAltText?: string;
   instructionLabel?: string;
+  timeLabel?: string;
+  player?: any;
 }
 
 export interface NavigationItemState {
@@ -33,7 +38,10 @@ export interface NavigationItemState {
 const translates={
   slideAltText: <Text id="navigation.slide_type.one">Slide</Text>,
   instructionLabel: <Text id="navigation.instruction_label">Jump to this point in video</Text>,
+  timeLabel: <Text id="navigation.time_label">Timestamp</Text>,
+
 };
+@withPlayer
 @withText(translates)
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
@@ -190,14 +198,15 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   };
 
   render() {
-    const {data, selectedItem, showIcon, instructionLabel} = this.props;
-    const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription} = data;
+    const {data, selectedItem, showIcon, instructionLabel, timeLabel, player} = this.props;
+    const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription, startTime} = data;
     const {imageLoaded} = this.state;
     const ariaLabelTitle: string = (typeof displayTitle === 'string' && displayTitle ? displayTitle : displayDescription) || '';
+    const timestampLabel = `${timeLabel} ${getDurationAsText(Math.floor(startTime), player?.config.ui.locale, true)}`
 
     const a11yProps: Record<string, any> = {
       ['aria-current']: selectedItem,
-      ['aria-label']: displayTime + " " + ariaLabelTitle + " " + instructionLabel,
+      ['aria-label']: timestampLabel + " " + ariaLabelTitle + " " + instructionLabel,
       tabIndex: 0,
       role: 'button'
     };
