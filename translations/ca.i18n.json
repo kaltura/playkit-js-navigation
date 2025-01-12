@@ -1,0 +1,64 @@
+{
+  "ca": {
+    "navigation": {
+      "hide_plugin": "Amagar la navegació",
+      "show_plugin": "Mostrar la navegació",
+      "whoops": "Ups!",
+      "error_message": "No hem pogut recuperar les teves dades.",
+      "retry": "Reintentar",
+      "search_placeholder": "Cerca en el vídeo",
+      "clear_search": "Esborrar la cerca",
+      "all_types": "Tots",
+      "aoa_type": {
+        "one": "Resposta En Directe",
+        "many": "Respostes En Directe"
+      },
+      "chapter_type": {
+        "one": "Capítol",
+        "many": "Capítols"
+      },
+      "slide_type": {
+        "one": "Diapositiva",
+        "many": "Diapositives"
+      },
+      "hotspot_type": {
+        "one": "Punt d'interès",
+        "many": "Punts d'interès"
+      },
+      "caption_type": {
+        "one": "Subtítol",
+        "many": "Subtítols"
+      },
+      "quiz_question_type": {
+        "one": "Pregunta",
+        "many": "Preguntes"
+      },
+      "reflection_point_title": "Punt de reflexió {{index}}",
+      "question_title": "Pregunta {{index}}",
+      "question_answered": "Respondre",
+      "question_incorrect": "Incorrecte",
+      "question_correct": "Correcte",
+      "search_result_one_type": {
+        "one": "{{totalResults}} resultat en {{type}}",
+        "many": "{{totalResults}} resultats en {{type}}"
+      },
+      "search_result_all_types": {
+        "one": "{{totalResults}} resultat en tot el contingut",
+        "many": "{{totalResults}} resultats en tot el contingut"
+      },
+      "search_result_all_types_with_captions": {
+        "one": "{{totalResults}} resultat en tot el contingut, incloent-hi subtítols",
+        "many": "{{totalResults}} resultats en tot el contingut, incloent-hi subtítols"
+      },
+      "search_no_results_title": "No s'han trobat resultats",
+      "search_no_results_description": "Prova amb una paraula clau més general",
+      "loading": "Carregant",
+      "auto_scroll": "Reprendre AutoScroll",
+      "image_alt": "Previsualització de la diapositiva",
+      "list_type": "Llista",
+      "search_description": "Pots cercar els subtítols del vídeo per paraules o frases específiques.",
+      "read_more": "Llegir més",
+      "read_less": "Llegir menys"
+    }
+  }
+}
