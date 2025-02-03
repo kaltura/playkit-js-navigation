@@ -94,7 +94,8 @@
     "name": "navigation",
     "dependencies": {
       "playkit-kaltura-cuepoints": "3.0.16",
-      "playkit-ui-managers": "1.7.0"
+      "playkit-ui-managers": "1.7.0",
+      "playkit-timeline": "3.0.22"
     }
   }
 }
