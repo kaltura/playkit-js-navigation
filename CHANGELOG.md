@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.6.0 (2025-02-07)
+
+
+### Features
+
+* **FEC-14328:** Player v7 | Add timeline as a dependency of navigation plugin ([#385](https://github.com/kaltura/playkit-js-navigation/issues/385)) ([9e29ab4](https://github.com/kaltura/playkit-js-navigation/commit/9e29ab45b3012ae4a644a407976f7dd63a2ea38a))
+
 ### 3.5.31 (2025-01-23)
 
 ### 3.5.30 (2025-01-09)
