@@ -1,5 +1,21 @@
 @import '../../../theme.scss';
 
+.navigationItemWrapper{
+  position: relative;
+}
+.expandButton {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  color: #ffffff;
+  background: none;
+  border: none;
+  padding: 4px 4px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  z-index: 1;
+}
 .navigation-item {
   position: relative;
   padding: 8px 8px 8px 0;
@@ -130,3 +146,5 @@
   justify-content: space-between;
   gap: 8px;
 }
+
+
