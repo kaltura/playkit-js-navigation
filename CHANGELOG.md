@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.7.0 (2025-03-06)
+
+
+### Features
+
+* **FEC-14380:** update package.json ([#390](https://github.com/kaltura/playkit-js-navigation/issues/390)) ([224da36](https://github.com/kaltura/playkit-js-navigation/commit/224da36b9cdcea33a0a705937983f23e75378cab))
+
 ## 3.6.0 (2025-02-07)
 
 
