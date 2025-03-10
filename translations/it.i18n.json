@@ -32,7 +32,8 @@
       "auto_scroll": "Riprendi Scorrimento automatico",
       "image_alt": "Anteprima diapositiva",
       "instruction_label": "Vai a questo punto del video",
-      "search_description": "È possibile cercare nelle didascalie dei video parole o frasi specifiche."
+      "search_description": "È possibile cercare nelle didascalie dei video parole o frasi specifiche.",
+      "time_label": "Timestamp"
     }
   }
 }

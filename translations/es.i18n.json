@@ -42,7 +42,8 @@
       "image_alt": "Previsualización de diapositiva",
       "list_type": "Enumerar",
       "instruction_label": "Saltar a este punto del vídeo",
-      "search_description": "Puede buscar palabras o frases concretas en los subtítulos del vídeo."
+      "search_description": "Puede buscar palabras o frases concretas en los subtítulos del vídeo.",
+      "time_label": "Marca de tiempo"
     }
   }
 }

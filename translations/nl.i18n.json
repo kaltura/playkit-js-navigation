@@ -32,7 +32,8 @@
       "auto_scroll": "AutoScroll hervatten",
       "image_alt": "Voorbeeldweergave",
       "instruction_label": "Spoel door naar dit punt in de video",
-      "search_description": "U kunt de video-onderschriften doorzoeken op specifieke woorden of zinnen."
+      "search_description": "U kunt de video-onderschriften doorzoeken op specifieke woorden of zinnen.",
+      "time_label": "Tijdstempel"
     }
   }
 }

@@ -32,7 +32,8 @@
       "auto_scroll": "AutoScrollを再開",
       "image_alt": "スライドのプレビュー",
       "instruction_label": "ビデオのこのポイントにジャンプする",
-      "search_description": "ビデオキャプションで特定の単語やフレーズを検索できます。"
+      "search_description": "ビデオキャプションで特定の単語やフレーズを検索できます。",
+      "time_label": "タイプスタンプ"
     }
   }
 }

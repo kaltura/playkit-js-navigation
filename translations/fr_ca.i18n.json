@@ -32,7 +32,8 @@
       "auto_scroll": "Reprendre AutoScroll",
       "image_alt": "Aperçu de la diapositive",
       "instruction_label": "Passer à ce point de la vidéo",
-      "search_description": "Vous pouvez rechercher des mots ou des phrases spécifiques à partir des sous-titres de la vidéo."
+      "search_description": "Vous pouvez rechercher des mots ou des phrases spécifiques à partir des sous-titres de la vidéo.",
+      "time_label": "Horodatage"
     }
   }
 }
