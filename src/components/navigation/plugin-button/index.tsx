@@ -5,7 +5,7 @@ import {pluginName} from '../../../navigation-plugin';
 import {ui} from '@playkit-js/kaltura-player-js';
 const {preacti18n} = ui;
 
-const {Tooltip, Icon} = ui.components;
+const {Tooltip, Icon} = KalturaPlayer.ui.components;
 const {withText, Text} = preacti18n;
 
 const translates = ({isActive}: PluginButtonProps) => {
@@ -22,7 +22,7 @@ interface PluginButtonProps {
 
 export const PluginButton = withText(translates)(({isActive, setRef, ...otherProps}: PluginButtonProps) => {
   return (
-    <Tooltip label={otherProps.label!} type="bottom">
+    <Tooltip label={otherProps.label!} type="bottom-left" strictPosition={true}>
       <button
         ref={node => {
           setRef(node);
