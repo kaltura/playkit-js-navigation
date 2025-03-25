@@ -282,7 +282,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
       if (this._getCuePointType(cue) === ItemTypes.Hotspot && this._itemsFilter[ItemTypes.Hotspot]) {
         navigationData.push(prepareCuePoint(cue, ItemTypes.Hotspot, isLive));
-        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Hotspot, cue.id, undefined, {
+        const title = cue.metadata?.title || cue.metadata?.text || cue.text || '';
+        this.timelineManager?.addKalturaCuePoint(cue.startTime, ItemTypes.Hotspot, cue.id, title, {
           onClick: this._handleTimelinePreviewClick
         });
       }
