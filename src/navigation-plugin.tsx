@@ -308,6 +308,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _onTimedMetadataChange = ({payload}: TimedMetadataEvent) => {
     const navigationCuePoints: Array<CuePoint> = payload.cues.filter((cue: CuePoint) => {
       const cuePointType = this._getCuePointType(cue);
+      
       return cuePointType && this._itemsFilter[cuePointType];
     });
     if (this._player.currentTime < Math.max(...Array.from(this._activeCuePointsMap.values()))) {
