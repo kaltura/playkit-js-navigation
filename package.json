@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/navigation",
-  "version": "3.6.0",
+  "version": "3.7.2",
   "main": "dist/playkit-navigation.js",
   "private": false,
   "bugs": {
@@ -14,6 +14,7 @@
   "dependencies": {
     "@playkit-js/common": "1.5.22",
     "@playkit-js/ui-managers": "1.5.2",
+    "@playkit-js/webpack-common": "^1.0.3",
     "sanitize-html": "2.11.0"
   },
   "devDependencies": {
@@ -93,9 +94,9 @@
   "kaltura": {
     "name": "navigation",
     "dependencies": {
-      "playkit-kaltura-cuepoints": "3.0.16",
-      "playkit-ui-managers": "1.7.0",
-      "playkit-timeline": "3.0.22"
+      "playkit-kaltura-cuepoints": "3.0.19",
+      "playkit-ui-managers": "1.8.0",
+      "playkit-timeline": "3.1.2"
     }
   }
 }

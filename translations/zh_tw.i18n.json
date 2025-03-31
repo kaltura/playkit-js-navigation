@@ -34,7 +34,8 @@
           "auto_scroll": "恢復自動捲動",
           "image_alt": "投影片預覽",
           "instruction_label": "跳轉至影片中的這個位置",
-          "search_description": "您可以在影片字幕中搜尋特定單字或片語。"
+          "search_description": "您可以在影片字幕中搜尋特定單字或片語。",
+          "time_label": "時間戳記"
         }
     }
 }
