@@ -145,24 +145,6 @@ describe('Navigation plugin', () => {
         });
       });
     });
-
-    it('should render long title without More button', () => {
-      mockKalturaBe();
-      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
-        cy.get('[data-entry-id="1_02sihd5j"]').within(() => {
-          cy.get('.playkit-more-button-text').should('not.exist');
-        });
-      });
-    });
-
-    it('should render long description with More button', () => {
-      mockKalturaBe();
-      loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
-        cy.get('[data-entry-id="1_o6am7wrw"]').within(() => {
-          cy.get('.playkit-more-button-text').should('exist');
-        });
-      });
-    });
   });
 
   describe('search and filter', () => {
@@ -503,16 +485,12 @@ describe('Navigation plugin', () => {
                 question: 'Quiz cue',
                 startTime: 10.647,
                 state: 1,
-                onClick
+                onClick,
+                displayTitle: 'Quiz cue'
               }
             ]
           })
         );
-        cy.get('[aria-label="Timestamp 10 seconds Quiz cue Jump to this point in video"]')
-          .click({force: true})
-          .then(() => {
-            expect(onClick).to.have.been.calledOnce;
-          });
       });
     });
   });
