@@ -120,6 +120,15 @@
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      padding-right: 28px
+    }
+    .expandedTitle {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
     }
 
     .descriptionWrapper {
