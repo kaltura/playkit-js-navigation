@@ -189,7 +189,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               )}
             </div>
             <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
-              <div className={styles.title}>
+              <div className={[styles.title , isExpanded ? styles.expandedTitle : null].join(' ')}>
                 {displayTitle}
               </div>
               {isExpanded && (
