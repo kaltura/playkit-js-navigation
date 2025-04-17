@@ -34,7 +34,6 @@ export interface NavigationItemState {
   imageLoaded: boolean;
   imageFailed: boolean;
   useExpandableText: boolean;
-  isExpanded: boolean;
 }
 const translates={
   slideAltText: <Text id="navigation.slide_type.one">Slide</Text>,
@@ -53,10 +52,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     this.state = {
       imageLoaded: false,
       imageFailed: false,
-      useExpandableText: typeof this.props.data?.displayTitle === 'string',
-      isExpanded: false,
+      useExpandableText: typeof this.props.data?.displayTitle === 'string'
     };
-    this._toggleExpand = this._toggleExpand.bind(this);
   }
 
   public setFocus() {
@@ -78,8 +75,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       data !== nextProps.data ||
       nextState.imageLoaded !== this.state.imageLoaded ||
       nextState.imageFailed !== this.state.imageFailed ||
-      nextProps.widgetWidth !== widgetWidth ||
-      nextState.isExpanded !== this.state.isExpanded
+      nextProps.widgetWidth !== widgetWidth
     ) {
       return true;
     }
@@ -147,66 +143,102 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return <img {...imageProps} />;
   };
 
-  private _toggleExpand = () => {
-    this.setState((prevState) => ({
-      isExpanded: !prevState.isExpanded,
-    }));
+  private _renderTitleAndDescription = (ariaLabelTitle: string) => {
+    const {previewImage, displayTitle, displayDescription} = this.props.data;
+    const hasTitle = Boolean(displayTitle || displayDescription);
+    if (previewImage && hasTitle) {
+      if (this.state.useExpandableText) {
+        return (
+          <div className={styles.titleWrapper}>
+            <ExpandableText
+              text={ariaLabelTitle || displayDescription || ''}
+              lines={1}
+              forceShowMore={Boolean(displayTitle && displayDescription)}
+              onClick={this._handleExpand}
+              onExpand={this._onExpand}
+              className={styles.expandableText}
+              classNameExpanded={styles.expanded}
+              buttonProps={{
+                tabIndex: 0,
+                role: 'button'
+              }}>
+              {displayTitle && <div className={styles.title}>{displayTitle}</div>}
+              {displayDescription && <div className={styles.descriptionWrapper}>{displayDescription}</div>}
+            </ExpandableText>
+          </div>
+        );
+      }
+      return <div className={styles.title}>{displayTitle || displayDescription}</div>;
+    }
+    return (
+      <Fragment>
+        {displayTitle && <div className={styles.title}>{displayTitle}</div>}
+        {displayDescription && (
+          <div className={styles.descriptionWrapper}>
+            <Localizer>
+              <ExpandableText
+                buttonProps={{
+                  tabIndex: 0,
+                  readMoreLabel: <Text id="navigation.read_more">Read more</Text>,
+                  readLessLabel: <Text id="navigation.read_less">Read less</Text>
+                }}
+                text={displayDescription}
+                lines={3}
+                className={styles.expandableText}
+                classNameExpanded={styles.expanded}
+                onClick={this._handleExpand}
+                onExpand={this._onExpand}>
+                {displayDescription}
+              </ExpandableText>
+            </Localizer>
+          </div>
+        )}
+      </Fragment>
+    );
   };
 
   render() {
     const {data, selectedItem, showIcon, instructionLabel, timeLabel, player} = this.props;
     const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription, startTime} = data;
-    const { imageLoaded, isExpanded } = this.state;
+    const {imageLoaded} = this.state;
+    const ariaLabelTitle: string = (typeof displayTitle === 'string' && displayTitle ? displayTitle : displayDescription) || '';
     const timestampLabel = `${timeLabel} ${getDurationAsText(Math.floor(startTime), player?.config.ui.locale, true)}`
+
     const a11yProps: Record<string, any> = {
       ['aria-current']: selectedItem,
-      ['aria-label']: timestampLabel + " " + displayTitle + " " + instructionLabel,
+      ['aria-label']: timestampLabel + " " + ariaLabelTitle + " " + instructionLabel,
       tabIndex: 0,
       role: 'button'
     };
 
     return (
-      <div className={styles.navigationItemWrapper}>
-        <A11yWrapper onClick={this._handleClick}>
-          <div
-            ref={node => {
-              this._itemElementRef = node;
-            }}
-            className={[
-              styles[groupData ? groupData : 'single'],
-              styles.navigationItem,
-              selectedItem ? styles.selected : null,
-              previewImage && !imageLoaded ? styles.hidden : null
-            ].join(' ')}
-            data-entry-id={id}
-            {...a11yProps}>
-            <div className={[styles.metadata, liveCuePoint ? null : styles.withTime].join(' ')}>
-              {!liveCuePoint && <span>{displayTime}</span>}
-              {showIcon && (
-                <div className={styles.iconWrapper}>
-                  <IconsFactory iconType={itemType} />
-                </div>
-              )}
-            </div>
-            <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
-              <div className={[styles.title , isExpanded ? styles.expandedTitle : null].join(' ')}>
-                {displayTitle}
+      <A11yWrapper onClick={this._handleClick}>
+        <div
+          ref={node => {
+            this._itemElementRef = node;
+          }}
+          className={[
+            styles[groupData ? groupData : 'single'],
+            styles.navigationItem,
+            selectedItem ? styles.selected : null,
+            previewImage && !imageLoaded ? styles.hidden : null
+          ].join(' ')}
+          data-entry-id={id}
+          {...a11yProps}>
+          <div className={[styles.metadata, liveCuePoint ? null : styles.withTime].join(' ')}>
+            {!liveCuePoint && <span>{displayTime}</span>}
+            {showIcon && (
+              <div className={styles.iconWrapper}>
+                <IconsFactory iconType={itemType} />
               </div>
-              {isExpanded && (
-                <div className={styles.descriptionWrapper}>
-                  {displayDescription}
-                </div>
-              )}
-              {previewImage && this._renderThumbnail()}
-            </div>
+            )}
           </div>
-        </A11yWrapper>
-        {displayDescription && (
-          <button onClick={this._toggleExpand} className={styles.expandButton}>
-            {isExpanded ? "Less" : "More"}
-          </button>
-        )}
-      </div>
+          <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
+            {this._renderTitleAndDescription(ariaLabelTitle)}
+            {previewImage && this._renderThumbnail()}
+          </div>
+        </div>
+      </A11yWrapper>
     );
   }
 }
