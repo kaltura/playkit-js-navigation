@@ -201,7 +201,14 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const {data, selectedItem, showIcon, instructionLabel, timeLabel, player} = this.props;
     const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription, startTime} = data;
     const {imageLoaded} = this.state;
-    const ariaLabelTitle: string = (typeof displayTitle === 'string' && displayTitle ? displayTitle : displayDescription) || '';
+    const ariaLabelTitle =
+      typeof data.displayTitle === 'string'
+        ? data.displayTitle
+        : data.ariaLabel
+        ? data.ariaLabel
+        : typeof data.displayDescription === 'string'
+        ? data.displayDescription
+        : '';
     const timestampLabel = `${timeLabel} ${getDurationAsText(Math.floor(startTime), player?.config.ui.locale, true)}`
 
     const a11yProps: Record<string, any> = {
