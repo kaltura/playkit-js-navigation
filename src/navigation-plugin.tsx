@@ -188,6 +188,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         itemData.quizState = quizQuestion.state;
         itemData.displayTitle = this._makeQuizTitle(quizQuestion.state, quizQuestion.index, quizQuestion.type);
         itemData.displayDescription = decodeString(quizQuestion.question);
+        itemData.ariaLabel = this._makeQuizTitleAriaLabel(quizQuestion.state, quizQuestion.index, quizQuestion.type, quizQuestion.question);
         itemData.onClick = quizQuestion.onClick;
         return itemData;
       }
@@ -198,6 +199,28 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _makeQuizTitle = (state: number, index: number, type: number) => {
     return <QuizTitle questionState={state} questionIndex={index} questionType={type} />;
   };
+  private _makeQuizTitleAriaLabel = (state: number, index: number, type: number, question: string): string => {
+    const currentIndex = index + 1;
+
+    let label = '';
+    if (type === 3) {
+      label = `Reflection point ${currentIndex}`;
+    } else {
+      label = `Question ${currentIndex}`;
+    }
+    if (state === 2) {
+      label += ' - Answered';
+    } else if (state === 3) {
+      label += ' - Incorrect';
+    } else if (state === 4) {
+      label += ' - Correct';
+    }
+    if (question) {
+      label += `: ${decodeString(question)}`;
+    }
+    return label;
+  };
+
 
   private _handleLanguageChange = () => {
     this._activeCaptionMapId = this._getCaptionMapId();
