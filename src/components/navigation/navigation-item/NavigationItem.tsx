@@ -41,6 +41,15 @@ const translates={
   timeLabel: <Text id="navigation.time_label">Timestamp</Text>,
 
 };
+function getAriaLabelTitle(data: ItemData): string {
+  if (typeof data.displayTitle === 'string') {
+    return data.displayTitle;
+  } else if (data.ariaLabel) {
+    return data.ariaLabel;
+  } else {
+    return data.displayDescription || '';
+  }
+}
 @withPlayer
 @withText(translates)
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
@@ -201,14 +210,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const {data, selectedItem, showIcon, instructionLabel, timeLabel, player} = this.props;
     const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription, startTime} = data;
     const {imageLoaded} = this.state;
-    const ariaLabelTitle =
-      typeof data.displayTitle === 'string'
-        ? data.displayTitle
-        : data.ariaLabel
-        ? data.ariaLabel
-        : typeof data.displayDescription === 'string'
-        ? data.displayDescription
-        : '';
+    const ariaLabelTitle = getAriaLabelTitle(data);
     const timestampLabel = `${timeLabel} ${getDurationAsText(Math.floor(startTime), player?.config.ui.locale, true)}`
 
     const a11yProps: Record<string, any> = {
