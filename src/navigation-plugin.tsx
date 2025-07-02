@@ -19,9 +19,11 @@ import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 import {QuizTitle} from './components/navigation/navigation-item/QuizTitle';
 import {NavigationEvent} from './events/events';
+import { render } from 'preact-render-to-string';
 
 export const pluginName: string = 'navigation';
 
+const {Text} = ui.preacti18n;
 const {TimedMetadata} = core;
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
 const liveCuePointTimeThreshold = 20 * 1000; // 20 seconds threshold
@@ -202,23 +204,31 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _makeQuizTitleAriaLabel = (state: number, index: number, type: number, question: string): string => {
     const currentIndex = index + 1;
 
-    let label = '';
+    let title;
     if (type === 3) {
-      label = `Reflection point ${currentIndex}`;
+      title = <Text id="navigation.reflection_point_title" fields={{ index: `${currentIndex}` }}>{`Reflection point ${currentIndex}`}</Text>;
     } else {
-      label = `Question ${currentIndex}`;
+      title = <Text id="navigation.question_title" fields={{ index: `${currentIndex}` }}>{`Question ${currentIndex}`}</Text>;
     }
-    if (state === 2) {
-      label += ' - Answered';
-    } else if (state === 3) {
-      label += ' - Incorrect';
-    } else if (state === 4) {
-      label += ' - Correct';
+
+    let stateLabel;
+    switch (state) {
+      case 2:
+        stateLabel = <Text id="navigation.question_answered">Answered</Text>;
+        break;
+      case 3:
+        stateLabel = <Text id="navigation.question_incorrect">Incorrect</Text>;
+        break;
+      case 4:
+        stateLabel = <Text id="navigation.question_correct">Correct</Text>;
+        break;
     }
-    if (question) {
-      label += `: ${decodeString(question)}`;
-    }
-    return label;
+
+    const titleStr = render(title);
+    const stateStr = stateLabel ? ` - ${render(stateLabel)}` : '';
+    const questionStr = question ? `: ${decodeString(question)}` : '';
+
+    return `${titleStr}${stateStr}${questionStr}`;
   };
 
 

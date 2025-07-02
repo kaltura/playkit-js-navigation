@@ -15,6 +15,7 @@
     "@playkit-js/common": "1.5.22",
     "@playkit-js/ui-managers": "1.5.2",
     "@playkit-js/webpack-common": "^1.0.3",
+    "preact-render-to-string": "^6.5.13",
     "sanitize-html": "2.11.0"
   },
   "devDependencies": {
