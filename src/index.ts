@@ -1,7 +1,6 @@
 import { NavigationPlugin, pluginName } from "./navigation-plugin";
 import {registerPlugin} from '@playkit-js/kaltura-player-js';
 
-
 declare var __VERSION__: string;
 declare var __NAME__: string;
 
