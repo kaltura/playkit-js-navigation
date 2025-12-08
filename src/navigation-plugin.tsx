@@ -19,9 +19,11 @@ import {icons} from './components/icons';
 import {NavigationConfig, PluginStates, ItemTypes, ItemData, CuePoint, HighlightedMap, CuePointsMap} from './types';
 import {QuizTitle} from './components/navigation/navigation-item/QuizTitle';
 import {NavigationEvent} from './events/events';
+import { render } from 'preact-render-to-string';
 
 export const pluginName: string = 'navigation';
 
+const {Text} = ui.preacti18n;
 const {TimedMetadata} = core;
 const {SidePanelModes, SidePanelPositions, ReservedPresetNames} = ui;
 const liveCuePointTimeThreshold = 20 * 1000; // 20 seconds threshold
@@ -30,6 +32,17 @@ interface TimedMetadataEvent {
   payload: {
     cues: Array<CuePoint>;
   };
+}
+
+enum QuestionState {
+  Unanswered = 1,
+  Answered = 2,
+  Incorrect = 3,
+  Correct = 4
+}
+enum QuestionType {
+  Question = 1,
+  ReflectionPoint = 3
 }
 
 export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
@@ -188,6 +201,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         itemData.quizState = quizQuestion.state;
         itemData.displayTitle = this._makeQuizTitle(quizQuestion.state, quizQuestion.index, quizQuestion.type);
         itemData.displayDescription = decodeString(quizQuestion.question);
+        itemData.ariaLabel = this._makeQuizTitleAriaLabel(quizQuestion.state, quizQuestion.index, quizQuestion.type, quizQuestion.question);
         itemData.onClick = quizQuestion.onClick;
         return itemData;
       }
@@ -198,6 +212,36 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _makeQuizTitle = (state: number, index: number, type: number) => {
     return <QuizTitle questionState={state} questionIndex={index} questionType={type} />;
   };
+  private _makeQuizTitleAriaLabel = (state: QuestionState, index: number, type: QuestionType, question: string): string => {
+    const currentIndex = index + 1;
+
+    let title;
+    if (type === QuestionType.ReflectionPoint) {
+      title = <Text id="navigation.reflection_point_title" fields={{ index: `${currentIndex}` }}>{`Reflection point ${currentIndex}`}</Text>;
+    } else {
+      title = <Text id="navigation.question_title" fields={{ index: `${currentIndex}` }}>{`Question ${currentIndex}`}</Text>;
+    }
+
+  let stateLabel;
+  switch (state) {
+    case QuestionState.Answered:
+      stateLabel = <Text id="navigation.question_answered">Answered</Text>;
+      break;
+    case QuestionState.Incorrect:
+      stateLabel = <Text id="navigation.question_incorrect">Incorrect</Text>;
+      break;
+    case QuestionState.Correct:
+      stateLabel = <Text id="navigation.question_correct">Correct</Text>;
+      break;
+  }
+
+  const titleStr = render(title);
+  const stateStr = stateLabel ? ` - ${render(stateLabel)}` : '';
+  const questionStr = question ? `: ${decodeString(question)}` : '';
+
+  return `${titleStr}${stateStr}${questionStr}`;
+};
+
 
   private _handleLanguageChange = () => {
     this._activeCaptionMapId = this._getCaptionMapId();

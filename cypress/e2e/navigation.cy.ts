@@ -508,7 +508,14 @@ describe('Navigation plugin', () => {
             ]
           })
         );
-        cy.get('[aria-label="Timestamp 10 seconds Quiz cue Jump to this point in video"]')
+        cy.get('[aria-label]')
+          .filter((i, el) => {
+            const label = el.getAttribute('aria-label') || '';
+            return (
+              label.includes('Timestamp 10 seconds') &&
+              label.includes('Jump to this point in video')
+            );
+          })
           .click({force: true})
           .then(() => {
             expect(onClick).to.have.been.calledOnce;
