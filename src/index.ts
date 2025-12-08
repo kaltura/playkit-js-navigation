@@ -1,4 +1,5 @@
 import { NavigationPlugin, pluginName } from "./navigation-plugin";
+import {registerPlugin} from '@playkit-js/kaltura-player-js';
 
 declare var __VERSION__: string;
 declare var __NAME__: string;
@@ -10,4 +11,4 @@ export {NavigationPlugin as Plugin};
 export {VERSION, NAME};
 export {NavigationEvent} from './events/events'
 
-KalturaPlayer.core.registerPlugin(pluginName, NavigationPlugin);
+registerPlugin(pluginName, NavigationPlugin as any);
