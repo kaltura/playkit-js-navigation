@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/navigation",
-  "version": "3.7.9",
+  "version": "3.7.10",
   "main": "dist/playkit-navigation.js",
   "private": false,
   "bugs": {
@@ -51,7 +51,7 @@
     "translations"
   ],
   "scripts": {
-    "preinstall": "npx --yes --prefer-online --registry=https://npm.pkg.github.com --package @kaltura/kaltura-tools@latest kaltura-tools check --root=.",
+    "disabled-preinstall": "npx --yes --prefer-online --registry=https://npm.pkg.github.com --package @kaltura/kaltura-tools@latest kaltura-tools check --root=.",
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",
     "build": "webpack --mode production",

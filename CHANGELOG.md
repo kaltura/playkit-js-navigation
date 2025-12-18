@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.7.10 (2025-12-18)
+
+
+### Bug Fixes
+
+* **ADA-2818:** Make Quiz title be announced by SR ([#394](https://github.com/kaltura/playkit-js-navigation/issues/394)) ([f23e71d](https://github.com/kaltura/playkit-js-navigation/commit/f23e71dbec1fc08a2ae622c26f5bf58aa6399dec))
+
 ### 3.7.9 (2025-11-27)
 
 ### 3.7.8 (2025-11-06)
