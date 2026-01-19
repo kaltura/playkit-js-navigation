@@ -486,6 +486,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._handleClickOnPluginIcon(e, byKeyboard);
     }
     this._navigationPluginRef?.handleSearchFilterChange('activeTab')(cuePoint?.type || ItemTypes.All);
+    if (cuePoint) {
+      this._seekTo(cuePoint?.startTime, cuePoint?.type);
+    }
   };
 
   private _seekTo = (time: number, itemType: string) => {
