@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.7.11 (2026-01-29)
+
+
+### Bug Fixes
+
+* **FEC-14723:**  Clicking on Bookmark of chapter cuepoint does not move to beginning of chapter ([#397](https://github.com/kaltura/playkit-js-navigation/issues/397)) ([dcd1b13](https://github.com/kaltura/playkit-js-navigation/commit/dcd1b137aabfe0fdcd0aba0b8d35f2a6aadbc046))
+
 ### 3.7.10 (2025-12-18)
 
 
