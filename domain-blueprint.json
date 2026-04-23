@@ -133,11 +133,9 @@
     "navigation filter tabs"
   ],
   "errorPatterns": [
-    "kalturaCuepoints haven't registered",
-    "sidePanelsManager haven't registered",
-    "upperBarManager haven't registered",
+    "kalturaCuepoints, sidePanelsManager or upperBarManager haven't registered",
     "navigation plugin already initialized",
-    "Navigation - couldn't retrieve your Data",
+    "We couldn't retrieve your Data",
     "visible configuration is false"
   ],
   "configurationOptions": {
