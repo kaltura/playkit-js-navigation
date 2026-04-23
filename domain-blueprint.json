@@ -1,0 +1,171 @@
+{
+  "repository": {
+    "name": "@playkit-js/navigation",
+    "version": "3.7.x",
+    "repositoryUrl": "https://github.com/kaltura/playkit-js-navigation"
+  },
+  "coreResponsibility": {
+    "summary": "A Kaltura Player plugin that provides an interactive side-panel navigation widget allowing users to search, browse, and jump to video cue points including chapters, slides, hotspots, captions, Q&A items, and quiz questions.",
+    "type": "UI Plugin",
+    "category": "Player Navigation & Discovery"
+  },
+  "domainAndLogicOwnership": {
+    "featureOwnership": [
+      "Side-panel navigation widget with search and filter capabilities",
+      "Chapter navigation and display",
+      "Slide/thumbnail navigation with preview images",
+      "Hotspot navigation and listing",
+      "Answer On Air (Q&A) navigation",
+      "Caption/transcript search and navigation",
+      "Quiz question navigation with state tracking (answered/unanswered/correct/incorrect)",
+      "Auto-scroll to currently active cue point",
+      "Tab-based filtering by cue point type",
+      "Timeline marker integration for chapters and hotspots",
+      "Live stream cue point handling with future cue point buffering",
+      "Keyboard accessibility and screen reader support"
+    ],
+    "dataHandling": {
+      "managedStates": [
+        "Navigation panel open/closed state",
+        "Active cue points map (highlighted items per type)",
+        "Search query and filter state",
+        "Auto-scroll enabled/disabled state",
+        "Live future cue points map (pending cue points not yet reached)"
+      ],
+      "dataObjects": [
+        "ItemData - processed cue point data for UI rendering",
+        "CuePoint - raw timed metadata from kaltura-cuepoints plugin",
+        "SearchFilter - current search query, active tab, available tabs",
+        "HighlightedMap - map of item types to their active start times",
+        "CaptionMap - language-specific caption data storage"
+      ],
+      "itemTypes": [
+        "All (aggregate view)",
+        "Chapter",
+        "Slide",
+        "Hotspot",
+        "AnswerOnAir",
+        "Caption",
+        "QuizQuestion"
+      ]
+    }
+  },
+  "integrationPoints": {
+    "upstream": {
+      "repositories": [
+        {
+          "name": "playkit-js-kaltura-cuepoints",
+          "role": "Provides CuePointManager service and raw cue point data through TIMED_METADATA_ADDED and TIMED_METADATA_CHANGE events"
+        },
+        {
+          "name": "playkit-js-ui-managers",
+          "role": "Provides SidePanelsManager and UpperBarManager services for UI integration"
+        },
+        {
+          "name": "playkit-js-timeline",
+          "role": "Provides TimelineManager service for adding chapter/hotspot markers to the timeline"
+        },
+        {
+          "name": "kaltura-player-js",
+          "role": "Core player framework providing BasePlugin, event system, and player state"
+        }
+      ],
+      "services": [
+        "kalturaCuepoints - CuePointManager for registering and receiving cue point types",
+        "sidePanelsManager - Side panel UI management",
+        "upperBarManager - Upper bar button management",
+        "timeline - Timeline marker management"
+      ]
+    },
+    "downstream": {
+      "consumers": [
+        "Kaltura Player V7 web player",
+        "KMC (Kaltura Management Console) player embed",
+        "MediaSpace player instances",
+        "Custom player integrations"
+      ]
+    },
+    "externalApis": {
+      "kalturaApis": [
+        "Kaltura Cue Points API (via kaltura-cuepoints plugin)",
+        "Kaltura Thumb Assets API (for slide preview images)",
+        "Kaltura Caption Assets API (for transcript data)"
+      ],
+      "thirdPartySdks": []
+    }
+  },
+  "technicalStack": {
+    "primaryLanguages": ["TypeScript", "TSX (Preact)"],
+    "frameworks": [
+      "Preact (UI rendering)",
+      "SCSS (styling)"
+    ],
+    "buildTools": ["Webpack", "TypeScript Compiler"],
+    "testingFramework": "Cypress",
+    "entryPoints": {
+      "main": "src/index.ts",
+      "plugin": "src/navigation-plugin.tsx",
+      "uiComponent": "src/components/navigation/index.tsx"
+    },
+    "sourceOfTruthFiles": [
+      "src/navigation-plugin.tsx - Core plugin logic, cue point processing, player event handling",
+      "src/components/navigation/index.tsx - Main Navigation UI component with search/filter logic",
+      "src/types/navigation-item-data.ts - ItemTypes enum and data structures",
+      "src/utils/index.ts - Cue point processing, filtering, and sorting utilities"
+    ],
+    "outputArtifact": "dist/playkit-navigation.js"
+  },
+  "triageKeywords": [
+    "navigation plugin",
+    "navigation panel",
+    "side panel navigation",
+    "chapter navigation",
+    "slide navigation",
+    "hotspot navigation",
+    "caption search",
+    "transcript search",
+    "search in video",
+    "cue point navigation",
+    "quiz question navigation",
+    "answer on air",
+    "playkit-navigation",
+    "navigation auto-scroll",
+    "navigation filter tabs"
+  ],
+  "errorPatterns": [
+    "kalturaCuepoints haven't registered",
+    "sidePanelsManager haven't registered",
+    "upperBarManager haven't registered",
+    "navigation plugin already initialized",
+    "Navigation - couldn't retrieve your Data",
+    "visible configuration is false"
+  ],
+  "configurationOptions": {
+    "position": "Side panel position: 'right' | 'left' | 'top' | 'bottom'",
+    "expandMode": "Panel expand behavior: 'alongside' | 'hidden' | 'over'",
+    "expandOnFirstPlay": "Auto-open on first play: boolean",
+    "itemsOrder": "Tab/item ordering and filtering: Record<string, number>",
+    "visible": "Show/hide the plugin: boolean"
+  },
+  "events": {
+    "dispatched": [
+      "navigation_open",
+      "navigation_close",
+      "navigation_search",
+      "navigation_item_click",
+      "navigation_expandable_text_clicked"
+    ],
+    "listened": [
+      "TIMED_METADATA_CHANGE",
+      "TIMED_METADATA_ADDED",
+      "RESIZE",
+      "PLAYBACK_ENDED",
+      "TEXT_TRACK_CHANGED",
+      "QuizQuestionChanged"
+    ]
+  },
+  "i18n": {
+    "supportedLanguages": 18,
+    "translationPath": "translations/"
+  }
+}
