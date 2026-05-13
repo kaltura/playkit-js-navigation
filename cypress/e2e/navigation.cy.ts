@@ -146,20 +146,20 @@ describe('Navigation plugin', () => {
       });
     });
 
-    it('should render long title without More button', () => {
+    it('should render long title without toggle button', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
         cy.get('[data-entry-id="1_02sihd5j"]').within(() => {
-          cy.get('.playkit-more-button-text').should('not.exist');
+          cy.get('button[aria-label="Toggle description"]').should('not.exist');
         });
       });
     });
 
-    it('should render long description with More button', () => {
+    it('should render long description with toggle button', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
         cy.get('[data-entry-id="1_o6am7wrw"]').within(() => {
-          cy.get('.playkit-more-button-text').should('exist');
+          cy.get('button[aria-label="Toggle description"]').should('exist');
         });
       });
     });

@@ -27,6 +27,7 @@ export interface NavigationItemProps {
   slideAltText?: string;
   instructionLabel?: string;
   timeLabel?: string;
+  toggleLabel?: string;
   player?: any;
 }
 
@@ -41,6 +42,7 @@ const translates={
   slideAltText: <Text id="navigation.slide_type.one">Slide</Text>,
   instructionLabel: <Text id="navigation.instruction_label">Jump to this point in video</Text>,
   timeLabel: <Text id="navigation.time_label">Timestamp</Text>,
+  toggleLabel: <Text id="navigation.toggle_description">Toggle description</Text>,
 
 };
 function getAriaLabelTitle(data: ItemData): string {
@@ -188,7 +190,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       aria-expanded={this.state.isExpanded}
       aria-controls={`nav-content-${this.props.data.id}`}
       type="button"
-      aria-label={"Toggle description"}>
+      aria-label={this.props.toggleLabel}>
       <ChevronRight />
     </button>
     );
@@ -255,14 +257,15 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
   render() {
     const {data, selectedItem, showIcon, instructionLabel, timeLabel, player} = this.props;
-    const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayTitle, displayDescription, startTime} = data;
-    const {imageLoaded} = this.state;
+    const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayDescription, startTime} = data;
+    const {imageLoaded, isExpanded} = this.state;
     const ariaLabelTitle = getAriaLabelTitle(data);
     const timestampLabel = `${timeLabel} ${getDurationAsText(Math.floor(startTime), player?.config.ui.locale, true)}`
 
     const a11yProps: Record<string, any> = {
       ['aria-current']: selectedItem,
       ['aria-label']: timestampLabel + " " + ariaLabelTitle + " " + instructionLabel,
+      ['aria-describedby']: isExpanded && displayDescription ? `nav-content-${id}` : undefined,
       tabIndex: 0,
       role: 'button'
     };
