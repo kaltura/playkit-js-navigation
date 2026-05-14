@@ -149,7 +149,7 @@ describe('Navigation plugin', () => {
     it('should render long title without toggle button', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
-        cy.get('[data-entry-id="1_02sihd5j"]').within(() => {
+        cy.get('[data-entry-id="1_02sihd5j"]').parent().within(() => {
           cy.get('button[aria-label="Toggle description"]').should('not.exist');
         });
       });
@@ -158,7 +158,7 @@ describe('Navigation plugin', () => {
     it('should render long description with toggle button', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
-        cy.get('[data-entry-id="1_o6am7wrw"]').within(() => {
+        cy.get('[data-entry-id="1_o6am7wrw"]').parent().within(() => {
           cy.get('button[aria-label="Toggle description"]').should('exist');
         });
       });
