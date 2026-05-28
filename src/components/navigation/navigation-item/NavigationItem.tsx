@@ -123,8 +123,9 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       previousProps.widgetWidth !== this.props.widgetWidth ||
       previousProps.data.displayDescription !== this.props.data.displayDescription;
     const imageJustLoaded = !previousState.imageLoaded && this.state.imageLoaded;
+    const justCollapsed = previousState.isExpanded && !this.state.isExpanded;
     
-    if (relevantPropsChanged || imageJustLoaded) {
+    if (relevantPropsChanged || imageJustLoaded || justCollapsed) {
       this._checkOverflow();
     }
   }
