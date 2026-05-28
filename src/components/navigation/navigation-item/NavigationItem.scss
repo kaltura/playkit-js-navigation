@@ -183,7 +183,7 @@
     transition: transform 0.2s ease;
   }
 
-  &.expanded svg {
+  &.toggle-button-expanded svg {
     transform: rotate(90deg);
   }
 }

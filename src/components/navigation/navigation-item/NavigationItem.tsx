@@ -37,6 +37,7 @@ export interface NavigationItemState {
   useExpandableText: boolean;
   isExpanded: boolean;
   announcement: string;
+  hasOverflow: boolean;
 }
 const translates={
   slideAltText: <Text id="navigation.slide_type.one">Slide</Text>,
@@ -59,7 +60,9 @@ function getAriaLabelTitle(data: ItemData): string {
 export class NavigationItem extends Component<NavigationItemProps, NavigationItemState> {
   private _itemElementRef: HTMLDivElement | null = null;
   private _textContainerRef: HTMLDivElement | null = null;
+  private _descriptionRef: HTMLDivElement | null = null;
   private _announcementTimeout?: number;
+  private _overflowCheckFrame?: number;
 
   constructor(props: NavigationItemProps) {
     super(props);
@@ -68,7 +71,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       imageFailed: false,
       useExpandableText: typeof this.props.data?.displayTitle === 'string',
       isExpanded: false,
-      announcement: ''
+      announcement: '',
+      hasOverflow: false
     };
   }
 
@@ -93,6 +97,8 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       nextState.imageFailed !== this.state.imageFailed ||
       nextState.isExpanded !== this.state.isExpanded ||
       nextState.announcement !== this.state.announcement ||
+      nextState.hasOverflow !== this.state.hasOverflow ||
+      nextState.useExpandableText !== this.state.useExpandableText ||
       nextProps.widgetWidth !== widgetWidth
     ) {
       return true;
@@ -100,7 +106,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return false;
   }
 
-  componentDidUpdate(previousProps: Readonly<NavigationItemProps>, nextState: Readonly<NavigationItemState>) {
+  componentDidUpdate(previousProps: Readonly<NavigationItemProps>, previousState: Readonly<NavigationItemState>) {
     if (this.state.announcement) {
       window.clearTimeout(this._announcementTimeout);
 
@@ -111,15 +117,29 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
     this._getSelected();
     this.matchHeight();
+    
+    // Only check overflow when conditions that affect it change
+    const relevantPropsChanged = 
+      previousProps.widgetWidth !== this.props.widgetWidth ||
+      previousProps.data.displayDescription !== this.props.data.displayDescription;
+    const imageJustLoaded = !previousState.imageLoaded && this.state.imageLoaded;
+    
+    if (relevantPropsChanged || imageJustLoaded) {
+      this._checkOverflow();
+    }
   }
 
   componentDidMount() {
     this._getSelected();
     this.matchHeight();
+    this._checkOverflow();
   }
   componentWillUnmount() {
     if (this._announcementTimeout) {
       window.clearTimeout(this._announcementTimeout);
+    }
+    if (this._overflowCheckFrame) {
+      window.cancelAnimationFrame(this._overflowCheckFrame);
     }
   }
   private _getSelected = () => {
@@ -159,9 +179,11 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       let announcement = '';
 
       if (newExpandedState) {
-        const {displayTitle, displayDescription, startTime} = this.props.data;
+        const {displayDescription, startTime} = this.props.data;
         const timestamp = getDurationAsText(Math.floor(startTime), this.props.player?.config.ui.locale, true);
-        announcement = [`${this.props.timeLabel} ${timestamp}`, displayTitle, displayDescription].filter(Boolean).join('. ');
+        const titleText = getAriaLabelTitle(this.props.data);
+        const descriptionText = typeof displayDescription === 'string' ? displayDescription : '';
+        announcement = [`${this.props.timeLabel} ${timestamp}`, titleText, descriptionText].filter(Boolean).join('. ');
       }
 
       return {
@@ -171,11 +193,35 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     });
   };
 
-  private _shouldShowToggleButton = (): boolean => {
-    const {previewImage, displayTitle, displayDescription} = this.props.data;
-    const hasTitle = Boolean(displayTitle || displayDescription);
+  private _checkOverflow = () => {
+    // Cancel any pending check
+    if (this._overflowCheckFrame) {
+      window.cancelAnimationFrame(this._overflowCheckFrame);
+    }
     
-    return (previewImage && hasTitle && this.state.useExpandableText) || (!previewImage && Boolean(displayDescription));
+    // Schedule measurement in RAF to batch layout reads and reduce thrashing
+    this._overflowCheckFrame = window.requestAnimationFrame(() => {
+      // Only check overflow when collapsed - when expanded, the content is not clamped
+      if (this.state.isExpanded) {
+        return;
+      }
+      
+      if (!this._descriptionRef || !this.props.data.displayDescription) {
+        if (this.state.hasOverflow) {
+          this.setState({hasOverflow: false});
+        }
+        return;
+      }
+
+      const isOverflowing = this._descriptionRef.scrollHeight > this._descriptionRef.clientHeight;
+      if (isOverflowing !== this.state.hasOverflow) {
+        this.setState({hasOverflow: isOverflowing});
+      }
+    });
+  };
+
+  private _shouldShowToggleButton = (): boolean => {
+    return this.state.hasOverflow;
   };
 
   private _renderToggleButton = () => {
@@ -186,7 +232,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return (
     <button
       onClick={this._toggleExpand}
-      className={[styles.toggleButton, this.state.isExpanded ? styles.expanded : null].join(' ')}
+      className={[styles.toggleButton, this.state.isExpanded ? styles.toggleButtonExpanded : null].join(' ')}
       aria-expanded={this.state.isExpanded}
       aria-controls={`nav-content-${this.props.data.id}`}
       type="button"
@@ -217,7 +263,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     return <img {...imageProps} />;
   };
 
-  private _renderTitleAndDescription = (ariaLabelTitle: string) => {
+  private _renderTitleAndDescription = () => {
     const {previewImage, displayTitle, displayDescription} = this.props.data;
     const {isExpanded} = this.state;
     const hasTitle = Boolean(displayTitle || displayDescription);
@@ -229,6 +275,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               {displayTitle && <div className={styles.title}>{displayTitle}</div>}
               {displayDescription && (
                 <div 
+                  ref={node => { this._descriptionRef = node; }}
                   className={[styles.descriptionWrapper, !isExpanded ? styles['clamped-1'] : null].join(' ')}>
                   {displayDescription}
                 </div>
@@ -245,6 +292,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
         {displayDescription && (
           <div className={styles.descriptionWrapper}>
             <div 
+              ref={node => { this._descriptionRef = node; }}
               className={[isExpanded ? styles.expanded : styles.expandableText, !isExpanded ? styles['clamped-3'] : null].join(' ')}
               id={`nav-content-${this.props.data.id}`}>
               {displayDescription}
@@ -258,14 +306,25 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
   render() {
     const {data, selectedItem, showIcon, instructionLabel, timeLabel, player} = this.props;
     const {id, previewImage, itemType, displayTime, liveCuePoint, groupData, displayDescription, startTime} = data;
-    const {imageLoaded, isExpanded} = this.state;
+    const {imageLoaded, isExpanded, hasOverflow} = this.state;
     const ariaLabelTitle = getAriaLabelTitle(data);
     const timestampLabel = `${timeLabel} ${getDurationAsText(Math.floor(startTime), player?.config.ui.locale, true)}`
+    
+    // Include description in aria-label when it exists but doesn't overflow (short description or already expanded)
+    const descriptionText = typeof displayDescription === 'string' ? displayDescription : '';
+    const includeDescriptionInLabel = descriptionText && !hasOverflow;
+    const ariaLabelParts = [timestampLabel, ariaLabelTitle];
+    if (includeDescriptionInLabel) {
+      ariaLabelParts.push(descriptionText);
+    }
+    if (instructionLabel) {
+      ariaLabelParts.push(instructionLabel);
+    }
 
     const a11yProps: Record<string, any> = {
       ['aria-current']: selectedItem,
-      ['aria-label']: timestampLabel + " " + ariaLabelTitle + " " + instructionLabel,
-      ['aria-describedby']: isExpanded && displayDescription ? `nav-content-${id}` : undefined,
+      ['aria-label']: ariaLabelParts.join(' '),
+      ['aria-describedby']: isExpanded && displayDescription && hasOverflow ? `nav-content-${id}` : undefined,
       tabIndex: 0,
       role: 'button'
     };
@@ -294,7 +353,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               )}
             </div>
             <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
-              {this._renderTitleAndDescription(ariaLabelTitle)}
+              {this._renderTitleAndDescription()}
               {previewImage && this._renderThumbnail()}
             </div>
           </div>
