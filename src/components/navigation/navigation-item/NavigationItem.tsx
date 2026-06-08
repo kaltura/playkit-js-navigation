@@ -112,7 +112,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
       this._announcementTimeout = window.setTimeout(() => {
         this.setState({announcement: ''});
-      }, 0);
+      }, 150);
     }
 
     this._getSelected();
@@ -216,24 +216,25 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
 
       const isOverflowing = this._descriptionRef.scrollHeight > this._descriptionRef.clientHeight;
       if (isOverflowing !== this.state.hasOverflow) {
-        this.setState({hasOverflow: isOverflowing});
+        // Reset isExpanded when overflow disappears to keep state clean
+        const shouldResetExpanded = !isOverflowing && this.state.isExpanded;
+        this.setState({
+          hasOverflow: isOverflowing,
+          ...(shouldResetExpanded ? {isExpanded: false} : {})
+        });
       }
     });
   };
 
-  private _shouldShowToggleButton = (): boolean => {
-    return this.state.hasOverflow;
-  };
-
   private _renderToggleButton = () => {
-    if (!this._shouldShowToggleButton()) {
+    if (!this.state.hasOverflow) {
       return null;
     }
 
     return (
     <button
       onClick={this._toggleExpand}
-      className={[styles.toggleButton, this.state.isExpanded ? styles.toggleButtonExpanded : null].join(' ')}
+      className={[styles.toggleButton, this.state.isExpanded ? styles.toggleButtonExpanded : null].filter(Boolean).join(' ')}
       aria-expanded={this.state.isExpanded}
       aria-controls={`nav-content-${this.props.data.id}`}
       type="button"
@@ -275,9 +276,9 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
             <div id={`nav-content-${this.props.data.id}`}>
               {displayTitle && <div className={styles.title}>{displayTitle}</div>}
               {displayDescription && (
-                <div 
+                <div
                   ref={node => { this._descriptionRef = node; }}
-                  className={[styles.descriptionWrapper, !isExpanded ? styles['clamped-1'] : null].join(' ')}>
+                  className={[styles.descriptionWrapper, !isExpanded ? styles['clamped-1'] : null].filter(Boolean).join(' ')}>
                   {displayDescription}
                 </div>
               )}
@@ -292,9 +293,9 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
         {displayTitle && <div className={styles.title}>{displayTitle}</div>}
         {displayDescription && (
           <div className={styles.descriptionWrapper}>
-            <div 
+            <div
               ref={node => { this._descriptionRef = node; }}
-              className={[isExpanded ? styles.expanded : styles.expandableText, !isExpanded ? styles['clamped-3'] : null].join(' ')}
+              className={[isExpanded ? styles.expanded : styles.expandableText, !isExpanded ? styles['clamped-3'] : null].filter(Boolean).join(' ')}
               id={`nav-content-${this.props.data.id}`}>
               {displayDescription}
             </div>
@@ -331,7 +332,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     };
 
     return (
-      <div className={styles.itemContainer}>
+      <div className={styles.itemContainer} data-testid="nav-item-container">
         <A11yWrapper onClick={this._handleClick}>
           <div
             ref={node => {
@@ -342,10 +343,10 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
               styles.navigationItem,
               selectedItem ? styles.selected : null,
               previewImage && !imageLoaded ? styles.hidden : null
-            ].join(' ')}
+            ].filter(Boolean).join(' ')}
             data-entry-id={id}
             {...a11yProps}>
-            <div className={[styles.metadata, liveCuePoint ? null : styles.withTime].join(' ')}>
+            <div className={[styles.metadata, liveCuePoint ? null : styles.withTime].filter(Boolean).join(' ')}>
               {!liveCuePoint && <span>{displayTime}</span>}
               {showIcon && (
                 <div className={styles.iconWrapper}>
@@ -353,7 +354,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
                 </div>
               )}
             </div>
-            <div className={[styles.content, previewImage ? styles.hasImage : null].join(' ')}>
+            <div className={[styles.content, previewImage ? styles.hasImage : null].filter(Boolean).join(' ')}>
               {this._renderTitleAndDescription()}
               {previewImage && this._renderThumbnail()}
             </div>
