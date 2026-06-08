@@ -314,7 +314,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     
     // Include description in aria-label when it exists but doesn't overflow (short description or already expanded)
     const descriptionText = typeof displayDescription === 'string' ? displayDescription : '';
-    const includeDescriptionInLabel = descriptionText && !hasOverflow;
+    const includeDescriptionInLabel = descriptionText && (!hasOverflow || isExpanded);
     const ariaLabelParts = [timestampLabel, ariaLabelTitle];
     if (includeDescriptionInLabel) {
       ariaLabelParts.push(descriptionText);
