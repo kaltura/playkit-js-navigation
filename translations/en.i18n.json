@@ -60,7 +60,8 @@
       "read_more": "Read more",
       "read_less": "Read less",
       "instruction_label": "Jump to this point in video",
-      "time_label": "Timestamp"
+      "time_label": "Timestamp",
+      "toggle_description": "Toggle description"
     }
   }
 }
