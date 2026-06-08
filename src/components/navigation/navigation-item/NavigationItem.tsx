@@ -312,9 +312,9 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     const ariaLabelTitle = getAriaLabelTitle(data);
     const timestampLabel = `${timeLabel} ${getDurationAsText(Math.floor(startTime), player?.config.ui.locale, true)}`
     
-    // Include description in aria-label when it exists but doesn't overflow (short description or already expanded)
+    // Include description in aria-label when it is not overflowing
     const descriptionText = typeof displayDescription === 'string' ? displayDescription : '';
-    const includeDescriptionInLabel = descriptionText && (!hasOverflow || isExpanded);
+    const includeDescriptionInLabel = descriptionText && !hasOverflow;
     const ariaLabelParts = [timestampLabel, ariaLabelTitle];
     if (includeDescriptionInLabel) {
       ariaLabelParts.push(descriptionText);
