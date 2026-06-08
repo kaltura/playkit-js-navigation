@@ -43,7 +43,7 @@ const translates={
   slideAltText: <Text id="navigation.slide_type.one">Slide</Text>,
   instructionLabel: <Text id="navigation.instruction_label">Jump to this point in video</Text>,
   timeLabel: <Text id="navigation.time_label">Timestamp</Text>,
-  toggleLabel: <Text id="navigation.toggle_description">Toggle description</Text>,
+  toggleLabel: <Text id="navigation.toggle_description">Toggle description for</Text>,
 
 };
 function getAriaLabelTitle(data: ItemData): string {
@@ -238,7 +238,7 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
       aria-expanded={this.state.isExpanded}
       aria-controls={`nav-content-${this.props.data.id}`}
       type="button"
-      aria-label={this.props.toggleLabel}>
+      aria-label={`${this.props.toggleLabel} ${getAriaLabelTitle(this.props.data)}`}>
       <ChevronRight />
     </button>
     );
