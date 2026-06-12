@@ -150,7 +150,7 @@ describe('Navigation plugin', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
         cy.get('[data-entry-id="1_02sihd5j"]').closest('[data-testid="nav-item-container"]').within(() => {
-          cy.get('button[aria-label="Toggle description"]').should('not.exist');
+          cy.get('button[aria-label="Toggle description for Pellentesque in ipsum id orci porta dapibus. Nulla quis lorem ut libero malesuada feugiat. Donec rutrum congue leo eget malesuada. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Proin eget tortor risus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Cras ultricies ligula sed magna dictum porta. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Quisque velit nisi, pretium ut lacinia in, elementum id enim."]').should('not.exist');
         });
       });
     });
@@ -159,7 +159,7 @@ describe('Navigation plugin', () => {
       mockKalturaBe();
       loadPlayer({expandOnFirstPlay: true}, {muted: true, autoplay: true}).then(() => {
         cy.get('[data-entry-id="1_o6am7wrw"]').closest('[data-testid="nav-item-container"]').within(() => {
-          cy.get('button[aria-label="Toggle description"]').should('exist');
+          cy.get('button[aria-label="Toggle description for chapter 2"]').should('exist');
         });
       });
     });
