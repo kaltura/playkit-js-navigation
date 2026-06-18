@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.7.15 (2026-06-18)
+
+
+### Bug Fixes
+
+* **ADA-3332:** Add title to toggle button label ([#400](https://github.com/kaltura/playkit-js-navigation/issues/400)) ([4351482](https://github.com/kaltura/playkit-js-navigation/commit/43514824144f17d5c01f99733ebd61d5bc922c25))
+
 ### 3.7.14 (2026-06-04)
 
 ### 3.7.13 (2026-05-07)
