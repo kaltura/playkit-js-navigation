@@ -58,7 +58,7 @@ export class NavigationList extends Component<Props> {
     // NavigationItem is wrapped by HOCs, so access the focusable element via DOM query
     const focusableElement = item.base.querySelector(`[data-entry-id="${itemId}"]`);
     if (focusableElement instanceof HTMLElement) {
-      focusableElement.focus();
+      focusableElement.focus({preventScroll: true});
     }
   };
 
