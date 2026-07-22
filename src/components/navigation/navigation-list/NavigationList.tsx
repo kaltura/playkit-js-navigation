@@ -59,6 +59,7 @@ export class NavigationList extends Component<Props> {
     const focusableElement = item.base.querySelector(`[data-entry-id="${itemId}"]`);
     if (focusableElement instanceof HTMLElement) {
       focusableElement.focus({preventScroll: true});
+      focusableElement.scrollIntoView({block: 'nearest', inline: 'nearest'});
     }
   };
 
