@@ -106,10 +106,10 @@ class TranslatedNavigationFilter extends Component<Omit<FilterProps, 'itemTypesT
 }
 
 @withText(translates(1))
-class TranslatedNavigationList extends Component<Omit<Props, 'itemTypesTranslates'> & {onListRef?: (ref: NavigationList | null) => void}> {
+class TranslatedNavigationList extends Component<Omit<Props, 'itemTypesTranslates'>> {
   render() {
     const itemTypesTranslates = getItemTypesTranslates(this.props);
-    return <NavigationList {...this.props} itemTypesTranslates={itemTypesTranslates} ref={(ref) => this.props.onListRef?.(ref)} />;
+    return <NavigationList {...this.props} itemTypesTranslates={itemTypesTranslates} />;
   }
 }
 
@@ -117,7 +117,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
   private _widgetRootRef: HTMLElement | null = null;
   private _preventScrollEvent = false;
   private _listElementRef: HTMLDivElement | null = null;
-  private _navigationListRef: NavigationList | null = null;
 
   static defaultProps?: {
     retry: () => {};
@@ -193,10 +192,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
         });
       }
     }
-  };
-
-  public focusItemById = (itemId: string) => {
-    this._navigationListRef?.focusItemById(itemId);
   };
 
   private _getHeaderStyles = (): string => {
@@ -277,7 +272,6 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     }
     return (
       <TranslatedNavigationList
-        onListRef={(ref) => (this._navigationListRef = ref)}
         searchActive={searchFilter.searchQuery.length > 0}
         widgetWidth={widgetWidth}
         autoScroll={false} // TODO: temporary disable auto-scroll till https://kaltura.atlassian.net/browse/FEV-804 got a fix
