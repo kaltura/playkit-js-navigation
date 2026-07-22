@@ -22,7 +22,6 @@ export interface Props {
 
 export class NavigationList extends Component<Props> {
   private _selectedElementY = 0;
-  private _itemRefs: Map<string, NavigationItem> = new Map();
 
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
@@ -51,26 +50,6 @@ export class NavigationList extends Component<Props> {
     }
   };
 
-  public focusItemById = (itemId: string) => {
-    const item = this._itemRefs.get(itemId);
-    if (!item?.base || !(item.base instanceof HTMLElement)) return;
-
-    // NavigationItem is wrapped by HOCs, so access the focusable element via DOM query
-    const focusableElement = item.base.querySelector(`[data-entry-id="${itemId}"]`);
-    if (focusableElement instanceof HTMLElement) {
-      focusableElement.focus({preventScroll: true});
-      focusableElement.scrollIntoView({block: 'nearest', inline: 'nearest'});
-    }
-  };
-
-  private _setItemRef = (id: string, ref: NavigationItem | null) => {
-    if (ref) {
-      this._itemRefs.set(id, ref);
-    } else {
-      this._itemRefs.delete(id);
-    }
-  };
-
   render({data, widgetWidth, showItemsIcons, onSeek, highlightedTime, listDataContainCaptions, searchActive}: Props) {
     if (!data.length) {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
@@ -81,7 +60,6 @@ export class NavigationList extends Component<Props> {
           return (
             <NavigationItem
               key={item.id}
-              ref={(ref) => this._setItemRef(item.id, ref)}
               widgetWidth={widgetWidth}
               onClick={item.onClick ?? onSeek}
               selectedItem={highlightedTime === item.displayTime}

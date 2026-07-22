@@ -482,18 +482,12 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     if (!this.isVisible()) {
       return;
     }
-    const wasActive = this.isPluginActive();
-    if (!wasActive) {
-      // Pass false for byKeyboard to prevent search input from auto-focusing
-      this._handleClickOnPluginIcon(e, false);
+    if (!this.isPluginActive()) {
+      this._handleClickOnPluginIcon(e, byKeyboard);
     }
     this._navigationPluginRef?.handleSearchFilterChange('activeTab')(cuePoint?.type || ItemTypes.All);
     if (cuePoint) {
       this._seekTo(cuePoint?.startTime, cuePoint?.type);
-      // Move focus to the clicked cuepoint item
-      requestAnimationFrame(() => {
-        this._navigationPluginRef?.focusItemById?.(cuePoint.id);
-      });
     }
   };
 
