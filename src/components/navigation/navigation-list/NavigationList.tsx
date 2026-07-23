@@ -22,6 +22,38 @@ export interface Props {
 
 export class NavigationList extends Component<Props> {
   private _selectedElementY = 0;
+  private _itemRefs: Map<string, NavigationItem> = new Map();
+
+  private _getVerticalScrollAncestor = (element: HTMLElement): HTMLElement | null => {
+    let current: HTMLElement | null = element.parentElement;
+    while (current) {
+      if (current.scrollHeight > current.clientHeight) {
+        return current;
+      }
+      current = current.parentElement;
+    }
+    return null;
+  };
+
+  private _scrollItemIntoViewVertically = (element: HTMLElement): void => {
+    const container = this._getVerticalScrollAncestor(element);
+    if (!container) {
+      return;
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const padding = 8;
+
+    if (elementRect.top < containerRect.top) {
+      container.scrollTop -= containerRect.top - elementRect.top + padding;
+      return;
+    }
+
+    if (elementRect.bottom > containerRect.bottom) {
+      container.scrollTop += elementRect.bottom - containerRect.bottom + padding;
+    }
+  };
 
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
@@ -50,6 +82,31 @@ export class NavigationList extends Component<Props> {
     }
   };
 
+  public focusItemById = (itemId: string) => {
+    const item = this._itemRefs.get(itemId);
+    if (!item?.base || !(item.base instanceof HTMLElement)) return;
+
+    // NavigationItem is wrapped by HOCs, so access the focusable element via DOM query
+    const focusableElement = item.base.querySelector(`[data-entry-id="${itemId}"]`);
+    if (focusableElement instanceof HTMLElement) {
+      try {
+        focusableElement.focus({preventScroll: true});
+      } catch (_error) {
+        focusableElement.focus();
+      }
+
+      this._scrollItemIntoViewVertically(focusableElement);
+    }
+  };
+
+  private _setItemRef = (id: string, ref: NavigationItem | null) => {
+    if (ref) {
+      this._itemRefs.set(id, ref);
+    } else {
+      this._itemRefs.delete(id);
+    }
+  };
+
   render({data, widgetWidth, showItemsIcons, onSeek, highlightedTime, listDataContainCaptions, searchActive}: Props) {
     if (!data.length) {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
@@ -60,6 +117,7 @@ export class NavigationList extends Component<Props> {
           return (
             <NavigationItem
               key={item.id}
+              ref={(ref) => this._setItemRef(item.id, ref)}
               widgetWidth={widgetWidth}
               onClick={item.onClick ?? onSeek}
               selectedItem={highlightedTime === item.displayTime}
