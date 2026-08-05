@@ -106,7 +106,7 @@ class TranslatedNavigationFilter extends Component<Omit<FilterProps, 'itemTypesT
 }
 
 @withText(translates(1))
-class TranslatedNavigationList extends Component<Omit<Props, 'itemTypesTranslates'> & {onListRef?: (ref: NavigationList | null) => void}> {
+class TranslatedNavigationList extends Component<Omit<Props, 'itemTypesTranslates'> & {onListRef?: (ref: NavigationList | null) => void; getScrollContainer?: () => HTMLElement | null}> {
   render() {
     const itemTypesTranslates = getItemTypesTranslates(this.props);
     return <NavigationList {...this.props} itemTypesTranslates={itemTypesTranslates} ref={(ref) => this.props.onListRef?.(ref)} />;
@@ -278,6 +278,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
     return (
       <TranslatedNavigationList
         onListRef={(ref) => (this._navigationListRef = ref)}
+        getScrollContainer={() => this._listElementRef}
         searchActive={searchFilter.searchQuery.length > 0}
         widgetWidth={widgetWidth}
         autoScroll={false} // TODO: temporary disable auto-scroll till https://kaltura.atlassian.net/browse/FEV-804 got a fix

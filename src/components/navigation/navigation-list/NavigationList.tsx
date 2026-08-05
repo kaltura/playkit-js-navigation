@@ -18,25 +18,15 @@ export interface Props {
   searchActive: boolean;
   itemTypesTranslates: ItemTypesTranslates;
   dispatcher: (name: string, payload?: any) => void;
+  getScrollContainer?: () => HTMLElement | null;
 }
 
 export class NavigationList extends Component<Props> {
   private _selectedElementY = 0;
-  private _itemRefs: Map<string, NavigationItem> = new Map();
-
-  private _getVerticalScrollAncestor = (element: HTMLElement): HTMLElement | null => {
-    let current: HTMLElement | null = element.parentElement;
-    while (current) {
-      if (current.scrollHeight > current.clientHeight) {
-        return current;
-      }
-      current = current.parentElement;
-    }
-    return null;
-  };
+  private _focusableElements: Map<string, HTMLElement> = new Map();
 
   private _scrollItemIntoViewVertically = (element: HTMLElement): void => {
-    const container = this._getVerticalScrollAncestor(element);
+    const container = this.props.getScrollContainer?.();
     if (!container) {
       return;
     }
@@ -83,27 +73,26 @@ export class NavigationList extends Component<Props> {
   };
 
   public focusItemById = (itemId: string) => {
-    const item = this._itemRefs.get(itemId);
-    if (!item?.base || !(item.base instanceof HTMLElement)) return;
+    const element = this._focusableElements.get(itemId);
+    if (!element) return;
 
-    // NavigationItem is wrapped by HOCs, so access the focusable element via DOM query
-    const focusableElement = item.base.querySelector(`[data-entry-id="${itemId}"]`);
-    if (focusableElement instanceof HTMLElement) {
-      try {
-        focusableElement.focus({preventScroll: true});
-      } catch (_error) {
-        focusableElement.focus();
-      }
-
-      this._scrollItemIntoViewVertically(focusableElement);
+    try {
+      // Use preventScroll to avoid browser-specific scrolling issues (Firefox/Safari)
+      // Scrolling is handled separately by _scrollItemIntoViewVertically
+      element.focus({preventScroll: true});
+    } catch (_error) {
+      // Fallback for browsers that don't support preventScroll option
+      element.focus();
     }
+
+    this._scrollItemIntoViewVertically(element);
   };
 
-  private _setItemRef = (id: string, ref: NavigationItem | null) => {
-    if (ref) {
-      this._itemRefs.set(id, ref);
+  private _handleFocusableElement = (id: string) => (element: HTMLElement | null) => {
+    if (element) {
+      this._focusableElements.set(id, element);
     } else {
-      this._itemRefs.delete(id);
+      this._focusableElements.delete(id);
     }
   };
 
@@ -117,7 +106,7 @@ export class NavigationList extends Component<Props> {
           return (
             <NavigationItem
               key={item.id}
-              ref={(ref) => this._setItemRef(item.id, ref)}
+              onFocusableElementReady={this._handleFocusableElement(item.id)}
               widgetWidth={widgetWidth}
               onClick={item.onClick ?? onSeek}
               selectedItem={highlightedTime === item.displayTime}

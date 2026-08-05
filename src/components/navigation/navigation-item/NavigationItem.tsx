@@ -29,6 +29,7 @@ export interface NavigationItemProps {
   timeLabel?: string;
   toggleLabel?: string;
   player?: any;
+  onFocusableElementReady?: (element: HTMLElement | null) => void;
 }
 
 export interface NavigationItemState {
@@ -134,8 +135,12 @@ export class NavigationItem extends Component<NavigationItemProps, NavigationIte
     this._getSelected();
     this.matchHeight();
     this._checkOverflow();
+    // Expose the focusable element to parent via callback
+    this.props.onFocusableElementReady?.(this._itemElementRef);
   }
   componentWillUnmount() {
+    // Clean up the focusable element reference
+    this.props.onFocusableElementReady?.(null);
     if (this._announcementTimeout) {
       window.clearTimeout(this._announcementTimeout);
     }

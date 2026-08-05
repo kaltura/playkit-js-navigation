@@ -478,7 +478,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   }
 
   private _handleTimelinePreviewClick = (payload: any) => {
-    const {e, byKeyboard, cuePoint} = payload;
+    const {e, cuePoint} = payload;
     if (!this.isVisible()) {
       return;
     }
@@ -491,7 +491,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._seekTo(cuePoint?.startTime, cuePoint?.type);
       // Move focus to the clicked cuepoint item
       requestAnimationFrame(() => {
-        this._navigationPluginRef?.focusItemById?.(cuePoint.id);
+        requestAnimationFrame(() => {
+          this._navigationPluginRef?.focusItemById?.(cuePoint.id);
+        });
       });
     }
   };
