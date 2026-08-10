@@ -18,10 +18,32 @@ export interface Props {
   searchActive: boolean;
   itemTypesTranslates: ItemTypesTranslates;
   dispatcher: (name: string, payload?: any) => void;
+  getScrollContainer?: () => HTMLElement | null;
 }
 
 export class NavigationList extends Component<Props> {
   private _selectedElementY = 0;
+  private _focusableElements: Map<string, HTMLElement> = new Map();
+
+  private _scrollItemIntoViewVertically = (element: HTMLElement): void => {
+    const container = this.props.getScrollContainer?.();
+    if (!container) {
+      return;
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const padding = 8;
+
+    if (elementRect.top < containerRect.top) {
+      container.scrollTop -= containerRect.top - elementRect.top + padding;
+      return;
+    }
+
+    if (elementRect.bottom > containerRect.bottom) {
+      container.scrollTop += elementRect.bottom - containerRect.bottom + padding;
+    }
+  };
 
   shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (
@@ -50,6 +72,30 @@ export class NavigationList extends Component<Props> {
     }
   };
 
+  public focusItemById = (itemId: string) => {
+    const element = this._focusableElements.get(itemId);
+    if (!element) return;
+
+    try {
+      // Use preventScroll to avoid browser-specific scrolling issues (Firefox/Safari)
+      // Scrolling is handled separately by _scrollItemIntoViewVertically
+      element.focus({preventScroll: true});
+    } catch (_error) {
+      // Fallback for browsers that don't support preventScroll option
+      element.focus();
+    }
+
+    this._scrollItemIntoViewVertically(element);
+  };
+
+  private _handleFocusableElement = (id: string) => (element: HTMLElement | null) => {
+    if (element) {
+      this._focusableElements.set(id, element);
+    } else {
+      this._focusableElements.delete(id);
+    }
+  };
+
   render({data, widgetWidth, showItemsIcons, onSeek, highlightedTime, listDataContainCaptions, searchActive}: Props) {
     if (!data.length) {
       return listDataContainCaptions ? <EmptyState /> : <EmptyList showNoResultsText={searchActive} />;
@@ -60,6 +106,7 @@ export class NavigationList extends Component<Props> {
           return (
             <NavigationItem
               key={item.id}
+              onFocusableElementReady={this._handleFocusableElement(item.id)}
               widgetWidth={widgetWidth}
               onClick={item.onClick ?? onSeek}
               selectedItem={highlightedTime === item.displayTime}
