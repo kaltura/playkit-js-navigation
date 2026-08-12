@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.7.17 (2026-08-12)
+
+
+### Bug Fixes
+
+* **ADA-2775:** Move focus to Navigation Item ([#406](https://github.com/kaltura/playkit-js-navigation/issues/406)) ([ab0cd88](https://github.com/kaltura/playkit-js-navigation/commit/ab0cd88c9688ff4d87cf3896106bb9506395677e))
+
 ### 3.7.16 (2026-07-30)
 
 ### 3.7.15 (2026-06-18)
