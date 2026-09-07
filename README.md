@@ -210,8 +210,8 @@ Set these on any ancestor element (e.g. the player container) or on `.playkit-na
 
 | Property | Default | Description |
 |---|---|---|
-| `--navigation-item-font-size` | `14px` | Font size for item content |
-| `--navigation-item-line-height` | `normal` | Line height for item content |
+| `--navigation-item-title-font-size` | `14px` | Font size for item content |
+| `--navigation-item-title-line-height` | `normal` | Line height for item content |
 | `--navigation-item-description-font-size` | `12px` | Font size for item description text |
 | `--navigation-timestamp-font-size` | `12px` | Font size for item timestamps |
 

@@ -67,7 +67,6 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'demo')
     },
-    open: true
     // host: '192.168.68.107'
   },
   resolve: {
