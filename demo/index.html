@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Navigation Plugin Demo Page" />
+    <title>Navigation Plugin</title>
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <script src="https://unpkg.com/@playkit-js/kaltura-player-js@canary/dist/kaltura-ovp-player.js"></script>
+    <script src="https://unpkg.com/@playkit-js/ui-managers@canary/dist/playkit-ui-managers.js"></script>
+    <script src="https://unpkg.com/@playkit-js/playkit-js-kaltura-cuepoints@canary/dist/playkit-kaltura-cuepoints.js"></script>
+    <script src="https://unpkg.com/@playkit-js/playkit-js-timeline@canary/dist/playkit-js-timeline.js"></script>
+    <script src="../playkit-navigation.js"></script>
+  </head>
+  <body>
+    <div id="player-placeholder"></div>
+    <script type="text/javascript">
+      const config = {
+        log: {
+          level: 'DEBUG'
+        },
+        targetId: 'player-placeholder',
+        provider: {
+          env: {
+            cdnUrl: 'https://cfvod.nvq2.ovp.kaltura.com',
+            serviceUrl: 'https://api.nvq2.ovp.kaltura.com/api_v3'
+          },
+          partnerId: 242
+        },
+        plugins: {
+          navigation: {},
+          uiManagers: {},
+          kalturaCuepoints: {},
+          timeline: {}
+        }
+      };
+
+      const player = KalturaPlayer.setup(config);
+      player.loadMedia({ entryId: '0_0bqh13hk' });
+    </script>
+  </body>
+</html>
