@@ -186,6 +186,35 @@ Bump version: `yarn release`;<br/>
 ## Additional flashvars
 "playkit-navigation":"Version" (check latest version of navigation plugin)
 
+## CSS Theming
+
+The plugin exposes CSS custom properties so integrators can theme the panel without overriding internal CSS-module selectors. All properties carry fallback defaults that reproduce the original appearance exactly when left unset.
+
+Set these on any ancestor element (e.g. the player container) or on `.playkit-navigation` directly.
+
+### Panel appearance
+
+| Property | Default | Description |
+|---|---|---|
+| `--navigation-panel-background` | `rgba(0, 0, 0, 0.7)` | Panel background color |
+| `--navigation-panel-blur` | `10px` | Panel backdrop-filter blur radius |
+
+### Panel layout
+
+| Property | Default | Description |
+|---|---|---|
+| `--navigation-item-padding` | `8px 8px 8px 0` | Padding of each navigation item row |
+| `--navigation-item-thumbnail-width` | `400px` | Maximum width of item thumbnails |
+
+### Chapter/item labels
+
+| Property | Default | Description |
+|---|---|---|
+| `--navigation-item-title-font-size` | `14px` | Font size for item content |
+| `--navigation-item-title-line-height` | `normal` | Line height for item content |
+| `--navigation-item-description-font-size` | `12px` | Font size for item description text |
+| `--navigation-timestamp-font-size` | `12px` | Font size for item timestamps |
+
 <a name="dependencies"></a>
 ## Dependencies
 

@@ -1,0 +1,20 @@
+body {
+  background-color: #212121;
+}
+
+.playkit-navigation {
+  --navigation-panel-background: rgba(0, 0, 0, 0.7);
+  --navigation-panel-blur: 10px;
+  --navigation-item-padding: 8px 8px 8px 0;
+  --navigation-item-thumbnail-width: 400px;
+  --navigation-item-title-font-size: 14px;
+  --navigation-item-title-line-height: normal;
+  --navigation-item-description-font-size: 12px;
+  --navigation-timestamp-font-size: 12px;
+}
+
+#player-placeholder {
+  margin: 100px auto;
+  width: 768px;
+  height: 480px;
+}

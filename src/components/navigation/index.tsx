@@ -333,7 +333,7 @@ export class Navigation extends Component<NavigationProps, NavigationState> {
       <ScreenReaderProvider>
         <div
           data-testid="navigation_root"
-          className={`${styles.root} ${kitchenSinkActive ? '' : styles.hidden}`}
+          className={`${styles.root} playkit-navigation ${kitchenSinkActive ? '' : styles.hidden}`}
           ref={node => {
             this._widgetRootRef = node;
           }}

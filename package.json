@@ -55,7 +55,7 @@
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",
     "build": "webpack --mode production",
-    "dev": "webpack-dev-server --mode development",
+    "dev": "webpack-dev-server --open --mode development",
     "watch": "webpack --progress --color --watch --mode development",
     "cy:open": "cypress open",
     "cy:run": "yarn run cy:run:chrome && yarn run cy:run:firefox && yarn run cy:run:edge && yarn run cy:run:safari",
