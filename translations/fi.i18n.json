@@ -33,7 +33,8 @@
       "image_alt": "Dian esikatselu",
       "instruction_label": "Siirry tähän kohtaan videossa",
       "search_description": "Voit hakea videon tekstityksistä tiettyjä sanoja tai ilmauksia.",
-      "time_label": "Aikaleima"
+      "time_label": "Aikaleima",
+      "toggle_description": "Ota kuvaus käyttöön tai pois käytöstä kohteelle"
     }
   }
 }
