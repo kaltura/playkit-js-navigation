@@ -33,7 +33,8 @@
       "image_alt": "Voorbeeldweergave",
       "instruction_label": "Spoel door naar dit punt in de video",
       "search_description": "U kunt de video-onderschriften doorzoeken op specifieke woorden of zinnen.",
-      "time_label": "Tijdstempel"
+      "time_label": "Tijdstempel",
+      "toggle_description": "Wijzig beschrijving voor"
     }
   }
 }

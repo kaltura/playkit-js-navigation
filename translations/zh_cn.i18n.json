@@ -33,7 +33,8 @@
       "image_alt": "幻灯片预览",
       "instruction_label": "跳到视频中的此位置",
       "search_description": "您可以搜索视频字幕以查找某个字词或短语。",
-      "time_label": "时间戳"
+      "time_label": "时间戳",
+      "toggle_description": "切换以下描述"
     }
   }
 }

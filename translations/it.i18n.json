@@ -33,7 +33,8 @@
       "image_alt": "Anteprima diapositiva",
       "instruction_label": "Vai a questo punto del video",
       "search_description": "È possibile cercare nelle didascalie dei video parole o frasi specifiche.",
-      "time_label": "Timestamp"
+      "time_label": "Timestamp",
+      "toggle_description": "Attiva/disattiva la descrizione per"
     }
   }
 }
