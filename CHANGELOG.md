@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.8.0 (2026-09-24)
+
+
+### Features
+
+* **FEC-14944:** Navigation plugin: expose CSS custom properties and stable root class for theming ([#413](https://github.com/kaltura/playkit-js-navigation/issues/413)) ([c1def5f](https://github.com/kaltura/playkit-js-navigation/commit/c1def5f8f6ab60bb12b213440865ea1483856098))
+
 ### 3.7.19 (2026-09-03)
 
 ### 3.7.18 (2026-08-28)
