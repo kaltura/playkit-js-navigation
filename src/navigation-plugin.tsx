@@ -174,9 +174,11 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }));
   };
 
-  private _addCaptionData = (newData: ItemData[]) => {
-    this._activeCaptionMapId = this._getCaptionMapId();
-    this._captionMap.set(this._activeCaptionMapId, this._sanitizeCaptions(newData));
+  private _addCaptionData = (newData: ItemData[], cueCaptionMapId: string) => {
+    // cues carry the language they were loaded for, which can differ from the active track (e.g. CC is off)
+    const captionMapId = cueCaptionMapId || this._getCaptionMapId();
+    this._captionMap.set(captionMapId, this._sanitizeCaptions(newData));
+    this._activeCaptionMapId = this._getCaptionMapId() || captionMapId;
     this._createOrUpdatePlugin();
   };
 
@@ -253,6 +255,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _getCaptionMapId = (): string => {
     const allTextTracks = this._player.getTracks(this._player.Track.TEXT) || [];
     const activeTextTrack = allTextTracks.find(track => track.active);
+    if (activeTextTrack?.language === 'off') {
+      return this._activeCaptionMapId;
+    }
     if (activeTextTrack) {
       const captionMapId = `${activeTextTrack.language}-${activeTextTrack.label}`;
       return captionMapId;
@@ -302,6 +307,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     const isLive = this._player.isLive();
     const navigationData: ItemData[] = [];
     const captionData: ItemData[] = [];
+    let cueCaptionMapId = '';
     payload.cues.forEach((cue: CuePoint) => {
       if (this._getCuePointType(cue) === ItemTypes.Slide && this._itemsFilter[ItemTypes.Slide]) {
         const preparedCuePoint = prepareCuePoint(cue, ItemTypes.Slide, isLive);
@@ -338,6 +344,10 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         });
       }
       if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
+        const {language, label} = cue.metadata || {};
+        if (!cueCaptionMapId && language && label) {
+          cueCaptionMapId = `${language}-${label}`;
+        }
         captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
       }
     });
@@ -345,7 +355,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       this._addNavigationData(navigationData);
     }
     if (captionData.length) {
-      this._addCaptionData(captionData);
+      this._addCaptionData(captionData, cueCaptionMapId);
     }
   };
 
