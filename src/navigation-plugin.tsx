@@ -174,11 +174,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }));
   };
 
-  private _addCaptionData = (newData: ItemData[], cueCaptionMapId: string) => {
-    const captionMapId = cueCaptionMapId || this._getCaptionMapId();
+  private _addCaptionData = (newData: ItemData[], captionMapId: string) => {
     this._captionMap.set(captionMapId, this._sanitizeCaptions(newData));
-    this._activeCaptionMapId = this._getCaptionMapId() || captionMapId;
-    this._createOrUpdatePlugin();
   };
 
   private _addQuizData = (newData: ItemData[]) => {
@@ -305,8 +302,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _onTimedMetadataAdded = ({payload}: TimedMetadataEvent) => {
     const isLive = this._player.isLive();
     const navigationData: ItemData[] = [];
-    const captionData: ItemData[] = [];
-    let cueCaptionMapId = '';
+    const captionData: Map<string, ItemData[]> = new Map();
     payload.cues.forEach((cue: CuePoint) => {
       if (this._getCuePointType(cue) === ItemTypes.Slide && this._itemsFilter[ItemTypes.Slide]) {
         const preparedCuePoint = prepareCuePoint(cue, ItemTypes.Slide, isLive);
@@ -344,17 +340,21 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
       }
       if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
         const {language, label} = cue.metadata || {};
-        if (!cueCaptionMapId && language && label) {
-          cueCaptionMapId = `${language}-${label}`;
-        }
-        captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
+        const captionMapId = language && label ? `${language}-${label}` : this._getCaptionMapId();
+        const captions = captionData.get(captionMapId) || [];
+        captions.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
+        captionData.set(captionMapId, captions);
       }
     });
     if (navigationData.length) {
       this._addNavigationData(navigationData);
     }
-    if (captionData.length) {
-      this._addCaptionData(captionData, cueCaptionMapId);
+    captionData.forEach((captions, captionMapId) => {
+      this._addCaptionData(captions, captionMapId);
+    });
+    if (captionData.size) {
+      this._activeCaptionMapId = this._getCaptionMapId();
+      this._createOrUpdatePlugin();
     }
   };
 
