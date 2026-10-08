@@ -175,7 +175,6 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _addCaptionData = (newData: ItemData[], cueCaptionMapId: string) => {
-    // cues carry the language they were loaded for, which can differ from the active track (e.g. CC is off)
     const captionMapId = cueCaptionMapId || this._getCaptionMapId();
     this._captionMap.set(captionMapId, this._sanitizeCaptions(newData));
     this._activeCaptionMapId = this._getCaptionMapId() || captionMapId;
