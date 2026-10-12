@@ -352,8 +352,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     captionData.forEach((captions, captionMapId) => {
       this._addCaptionData(captions, captionMapId);
     });
-    if (captionData.size) {
-      this._activeCaptionMapId = this._getCaptionMapId();
+    const [firstCaptionMapId] = [...captionData.keys()];
+    if (firstCaptionMapId) {
+      this._activeCaptionMapId = this._getCaptionMapId() || firstCaptionMapId;
       this._createOrUpdatePlugin();
     }
   };
