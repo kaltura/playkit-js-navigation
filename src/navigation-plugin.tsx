@@ -174,10 +174,8 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
     }));
   };
 
-  private _addCaptionData = (newData: ItemData[]) => {
-    this._activeCaptionMapId = this._getCaptionMapId();
-    this._captionMap.set(this._activeCaptionMapId, this._sanitizeCaptions(newData));
-    this._createOrUpdatePlugin();
+  private _addCaptionData = (newData: ItemData[], captionMapId: string) => {
+    this._captionMap.set(captionMapId, this._sanitizeCaptions(newData));
   };
 
   private _addQuizData = (newData: ItemData[]) => {
@@ -253,6 +251,9 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _getCaptionMapId = (): string => {
     const allTextTracks = this._player.getTracks(this._player.Track.TEXT) || [];
     const activeTextTrack = allTextTracks.find(track => track.active);
+    if (activeTextTrack?.language === 'off') {
+      return this._activeCaptionMapId;
+    }
     if (activeTextTrack) {
       const captionMapId = `${activeTextTrack.language}-${activeTextTrack.label}`;
       return captionMapId;
@@ -301,7 +302,7 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
   private _onTimedMetadataAdded = ({payload}: TimedMetadataEvent) => {
     const isLive = this._player.isLive();
     const navigationData: ItemData[] = [];
-    const captionData: ItemData[] = [];
+    const captionData: Map<string, ItemData[]> = new Map();
     payload.cues.forEach((cue: CuePoint) => {
       if (this._getCuePointType(cue) === ItemTypes.Slide && this._itemsFilter[ItemTypes.Slide]) {
         const preparedCuePoint = prepareCuePoint(cue, ItemTypes.Slide, isLive);
@@ -338,14 +339,23 @@ export class NavigationPlugin extends KalturaPlayer.core.BasePlugin {
         });
       }
       if (this._getCuePointType(cue) === ItemTypes.Caption && this._itemsFilter[ItemTypes.Caption]) {
-        captionData.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
+        const {language, label} = cue.metadata || {};
+        const captionMapId = language && label ? `${language}-${label}` : this._getCaptionMapId();
+        const captions = captionData.get(captionMapId) || [];
+        captions.push(prepareCuePoint(cue, ItemTypes.Caption, isLive));
+        captionData.set(captionMapId, captions);
       }
     });
     if (navigationData.length) {
       this._addNavigationData(navigationData);
     }
-    if (captionData.length) {
-      this._addCaptionData(captionData);
+    captionData.forEach((captions, captionMapId) => {
+      this._addCaptionData(captions, captionMapId);
+    });
+    const [firstCaptionMapId] = [...captionData.keys()];
+    if (firstCaptionMapId) {
+      this._activeCaptionMapId = this._getCaptionMapId() || firstCaptionMapId;
+      this._createOrUpdatePlugin();
     }
   };
 

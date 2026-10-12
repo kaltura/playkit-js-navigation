@@ -39,6 +39,8 @@ export interface RawItemData {
   cuePointType: ItemTypes;
   createdAt?: number;
   text?: string;
+  language?: string;
+  label?: string;
   description?: string;
   title?: string;
   assetId?: string;
