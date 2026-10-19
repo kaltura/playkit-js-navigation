@@ -33,7 +33,8 @@
       "image_alt": "スライドのプレビュー",
       "instruction_label": "ビデオのこのポイントにジャンプする",
       "search_description": "ビデオキャプションで特定の単語やフレーズを検索できます。",
-      "time_label": "タイプスタンプ"
+      "time_label": "タイプスタンプ",
+      "toggle_description": "説明の表示を切り替える："
     }
   }
 }

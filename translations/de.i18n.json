@@ -35,7 +35,8 @@
       "read_less": "Weniger lesen",
       "instruction_label": "An diese Stelle im Video springen",
       "search_description": "Sie können die Untertitel des Videos nach bestimmten Wörtern oder Phrasen durchsuchen.",
-      "time_label": "Zeitstempel"
+      "time_label": "Zeitstempel",
+      "toggle_description": "Beschreibung ein-/ausblenden für"
     }
   }
 }

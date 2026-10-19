@@ -33,7 +33,8 @@
       "image_alt": "Pré-visualização de slide",
       "instruction_label": "Avançar para este ponto no vídeo",
       "search_description": "Você pode buscar palavras ou frases específicas nas legendas do vídeo.",
-      "time_label": "Marcação de data e hora"
+      "time_label": "Marcação de data e hora",
+      "toggle_description": "Alterar descrição para"
     }
   }
 }

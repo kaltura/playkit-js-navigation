@@ -33,7 +33,8 @@
       "image_alt": "Aperçu de la diapositive",
       "instruction_label": "Passer à ce point de la vidéo",
       "search_description": "Vous pouvez rechercher des mots ou des phrases spécifiques à partir des sous-titres de la vidéo.",
-      "time_label": "Horodatage"
+      "time_label": "Horodatage",
+      "toggle_description": "Description du bouton bascule pour"
     }
   }
 }
